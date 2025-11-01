@@ -1,0 +1,82 @@
+trinnov_startup_appletv:
+  alias: Trinnov Startup - AppleTV
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 4
+  description: ''
+trinnov_startup_xbox_360:
+  alias: Trinnov Startup - Xbox 360
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 1
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:microsoft-xbox
+trinnov_startup_laptop_aux:
+  alias: Trinnov Startup - Laptop Aux
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 0
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:laptop
+trinnov_startup_xbox_one:
+  alias: Trinnov Startup - Xbox One
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 2
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:microsoft-xbox
+trinnov_startup_kaleidescape:
+  alias: Trinnov Startup - Kaleidescape
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 3
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:movie-open
+trinnov_startup_bluray:
+  alias: Trinnov Startup - BluRay
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 5
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:disc
+trinnov_startup_desktop:
+  alias: Trinnov Startup - Desktop
+  use_blueprint:
+    path: richardberg/slow_device_startup.yaml
+    input:
+      media_entity: media_player.jbl_sdp_75_12583992
+      remote_entity: remote.jbl_sdp_75_12583992
+      startup_commands:
+      - source_set 6
+      repeat_turnon_after: 20
+  description: ''
+  icon: mdi:desktop-tower

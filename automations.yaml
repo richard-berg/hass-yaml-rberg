@@ -1,0 +1,372 @@
+- id: '1743363578054'
+  alias: Kitchen Pico Near Microwave Button 1
+  description: ''
+  triggers:
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 600
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 100
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 100
+  mode: single
+- id: '1743364023845'
+  alias: Kitchen Pico Near Microwave Button 3
+  description: ''
+  triggers:
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 250
+      - type: turn_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+  mode: single
+- id: '1743365603143'
+  alias: Kitchen Pico Near Microwave Button 4
+  description: ''
+  triggers:
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 250
+      - type: turn_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+  mode: single
+- id: '1743365729065'
+  alias: Kitchen Pico Near Microwave Button 2
+  description: ''
+  triggers:
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 600
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 20
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 20
+  mode: single
+- id: '1748768216487'
+  alias: Scene Controller Big Button Pressed
+  description: ''
+  triggers:
+  - device_id: 3c8af79616e79efac56c870b59bce97b
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '005'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 005
+    metadata: {}
+    trigger: device
+    value: 0
+  conditions: []
+  actions:
+  - type: toggle
+    device_id: cecd0cf1679e0e002fa52d07cd91402a
+    entity_id: b8422cdcd431deb12f5f14c946d1b478
+    domain: light
+  mode: single
+- id: '1753028337724'
+  alias: All Amplifiers (Switch)
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.all_amplifiers
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: input_boolean.all_amplifiers
+      state: 'on'
+    then:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: scene.amplifiers_on
+    else:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: scene.amplifiers_off
+  mode: single
+- id: '1753049932123'
+  alias: Lumagen via Harmony IR
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.lumagen_power_via_harmony_ir
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: input_boolean.lumagen_power_via_harmony_ir
+      state: 'on'
+    then:
+    - action: remote.send_command
+      target:
+        device_id: 94e8a0806a6c8a747e54053d95a71617
+      data:
+        num_repeats: 1
+        delay_secs: 0.4
+        hold_secs: 0
+        device: '82303834'
+        command: PowerOn
+    else:
+    - action: remote.send_command
+      metadata: {}
+      data:
+        device: '82303834'
+        command: PowerOff
+      target:
+        device_id: 94e8a0806a6c8a747e54053d95a71617
+  mode: single
+- id: '1753065101071'
+  alias: Hushbox Fans from Panasonic
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.pt_rz660
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  conditions: []
+  actions:
+  - if:
+    - condition: state
+      entity_id: media_player.pt_rz660
+      state: 'on'
+    then:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: scene.hushbox_fans_medium
+    else:
+    - action: scene.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: scene.hushbox_fans_off
+  mode: single
+- id: '1753667995762'
+  alias: Theater AppleTV Playing
+  description: ''
+  triggers:
+  - device_id: f1190f320fdcaeb1a9e3a070c82fda73
+    domain: media_player
+    entity_id: 3e167fd64cd16bb64fc523b7ab2adfee
+    type: playing
+    trigger: device
+  conditions:
+  - condition: state
+    entity_id: switch.ap7902_outlet_15_buckeye_nc502x6_top
+    state: 'on'
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.theater_off
+  mode: single
+- id: '1753668429461'
+  alias: Theater AppleTV Stop Playing
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.home_theater
+    from: playing
+  conditions: []
+  actions:
+  - action: scene.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: scene.theater_eating
+  mode: single
+- id: '1755320957689'
+  alias: Low Battery Notifications & Actions
+  description: ''
+  use_blueprint:
+    path: Blackshome/low-battery-notifications-and-actions.yaml
+    input:
+      include_time: time_enabled
+      time: '22:00:00'
+      include_easy_notify: enable_easy_notify
+      include_persistent_notification: enable_persistent_notification
+      notify_device:
+      - c4f2d6ae1c0c3da84ec3e3b86712daf7
+      notify_interruption_level: active
+      notify_action_buttons: enable_to_do_list_button_and_confirmation
+      to_do_list: todo.smarthome_stuff
+- id: '1755321656471'
+  alias: Link Master Bath Shower Lights
+  description: ''
+  use_blueprint:
+    path: alexdelprete/ha-blueprint-linked-entities.yaml
+    input:
+      linked_entity:
+      - light.master_bathroom_shower_lights
+      - light.master_bathroom_shower_niche
+      delay_miliseconds: 0
+- id: '1755322337743'
+  alias: Link Kitchen Toe Kicks
+  description: ''
+  use_blueprint:
+    path: alexdelprete/ha-blueprint-linked-entities.yaml
+    input:
+      linked_entity:
+      - light.kitchen_perimeter_toe_kick
+      - light.living_room_middle_walkway

@@ -1,0 +1,266 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+panel_custom:
+  - name: material-you-panel
+    url_path: material-you-configuration
+    sidebar_title: Material You Utilities
+    sidebar_icon: mdi:material-design
+    module_url: /hacsfiles/material-you-utilities/material-you-utilities.min.js
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+http:
+  ip_ban_enabled: true
+  login_attempts_threshold: 10
+
+shell_command:
+  turn_off_trinnov: echo -e 'id home_assistant; power_off_SECURED_FHZMCH48FE;' | nc 192.168.1.10 44100
+
+# Panasonic PJ
+media_player:
+  - platform: pjlink
+    host: 192.168.1.15
+    password: bXVxCRN.UM6eqgfZ
+
+sensor:
+  # AP7902 (Closet)
+  - platform: snmp
+    name: AP7902 Load Total
+    unique_id: 00:C0:B7:B3:3B:C6.load.1
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1
+    unit_of_measurement: A
+    value_template: "{{((value | float) / 10) | float}}"
+  - platform: snmp
+    name: AP7902 Load Outlets 01-08
+    unique_id: 00:C0:B7:B3:3B:C6.load.2
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.2
+    unit_of_measurement: A
+    value_template: "{{((value | float) / 10) | float}}"
+  - platform: snmp
+    name: AP7902 Load Outlets 09-16
+    unique_id: 00:C0:B7:B3:3B:C6.load.3
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.3
+    unit_of_measurement: A
+    value_template: "{{((value | float) / 10) | float}}"
+  # AP7901 (Stage)
+  - platform: snmp
+    name: AP7901 Load Total
+    unique_id: 00:C0:B7:F5:A2:A6.load.1
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.12.2.3.1.1.2.1
+    unit_of_measurement: A
+    value_template: "{{((value | float) / 10) | float}}"
+
+switch:
+  - platform: wake_on_lan
+    mac: 4c.cc.6a.b5.8c.ef
+    name: "JBL SDP-75 WOL"
+    host: 192.168.1.10
+    turn_off:
+      service: shell_command.turn_off_trinnov
+  - platform: snmp
+    name: AP7902 Outlet 01 - APC SmartUPS
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.01
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.1
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 02 - Brother Printer
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.02
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.2
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 03 - Logitech Harmony Hub
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.03
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.3
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 04 - Orei HDMI Splitter
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.04
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.4
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 05 - Sonos Port
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.05
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.5
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 06 - MiniDSP Flex
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.06
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.6
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 07 - JBL SDP-75
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.07
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.7
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 08 - Buckeye NC252x8 middle
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.08
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.8
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 09 - Xbox 360
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.09
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.9
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 10 - Xbox One
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.10
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.10
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 11 - Kaleidescape Strato 6TB
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.11
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.11
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 12 - Vertical PDU (players)
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.12
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.12
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 13 - Buckeye NC252x8 bottom
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.13
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.13
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 14 - Lumagen Radiance Pro 4242
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.14
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.14
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 15 - Buckeye NC502x6 top
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.15
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.15
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7902 Outlet 16 - Behringer SD8
+    #unique_id: 00:C0:B7:B3:3B:C6.outlet.16
+    host: 192.168.1.27
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.16
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 1 - Powersoft Quattrocanali 2404 DSP+D
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.1
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.1
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 2 - Behringer SD16
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.2
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.2
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 3 - RF Venue Distro4
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.3
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.3
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 4 -
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.4
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.4
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 5 -
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.5
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.5
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 6 -
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.6
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.6
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 7 -
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.7
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.7
+    payload_on: 1
+    payload_off: 2
+  - platform: snmp
+    name: AP7901 Outlet 8 - TP-Link 8-Port Unmanaged Switch
+    #unique_id: 00:C0:B7:F5:A2:A6.outlet.8
+    host: 192.168.1.28
+    community: wfycnfkxtewd
+    baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.8
+    payload_on: 1
+    payload_off: 2
