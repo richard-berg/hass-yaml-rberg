@@ -1,0 +1,494 @@
+- id: '1748768634783'
+  name: Bedroom Bright
+  entities:
+    light.bedroom_pendant_lifx_a21:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode: color_temp
+      brightness: 255
+      color_temp_kelvin: 4594
+      color_temp: 217
+      hs_color:
+      - 26.747
+      - 25.057
+      rgb_color:
+      - 255
+      - 220
+      - 191
+      xy_color:
+      - 0.388
+      - 0.356
+      friendly_name: Bedroom Pendant LIFX A21
+      supported_features: 36
+      state: 'on'
+    light.master_bedroom_cove_lights:
+      supported_color_modes:
+      - brightness
+      color_mode:
+      brightness:
+      device_id: '9'
+      zone_id: '8'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'off'
+  icon: mdi:lightbulb-on
+  metadata: {}
+- id: '1750558155712'
+  name: Hushbox Fans Low
+  entities:
+    number.pj_box_exhaust_port_1_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 1 - Intake On Power
+      state: '2'
+    number.pj_box_exhaust_port_2_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 2 - Exhaust On Power
+      state: '2'
+    select.pj_box_exhaust_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 1 - Intake Active Mode
+      state: 'On'
+    select.pj_box_exhaust_port_2_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 2 - Exhaust Active Mode
+      state: 'On'
+  icon: mdi:fan-speed-1
+  metadata:
+    number.pj_box_exhaust_port_1_on_power:
+      entity_only: true
+    number.pj_box_exhaust_port_2_on_power:
+      entity_only: true
+    select.pj_box_exhaust_port_1_active_mode:
+      entity_only: true
+    select.pj_box_exhaust_port_2_active_mode:
+      entity_only: true
+- id: '1750558189910'
+  name: Hushbox Fans Medium
+  entities:
+    number.pj_box_exhaust_port_1_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 1 - Intake On Power
+      state: '4'
+    number.pj_box_exhaust_port_2_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 2 - Exhaust On Power
+      state: '4'
+    select.pj_box_exhaust_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 1 - Intake Active Mode
+      state: 'On'
+    select.pj_box_exhaust_port_2_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 2 - Exhaust Active Mode
+      state: 'On'
+  icon: mdi:fan-speed-2
+  metadata:
+    number.pj_box_exhaust_port_1_on_power:
+      entity_only: true
+    number.pj_box_exhaust_port_2_on_power:
+      entity_only: true
+    select.pj_box_exhaust_port_1_active_mode:
+      entity_only: true
+    select.pj_box_exhaust_port_2_active_mode:
+      entity_only: true
+- id: '1750558293957'
+  name: Hushbox Fans Off
+  entities:
+    select.pj_box_exhaust_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 1 - Intake Active Mode
+      state: 'Off'
+    select.pj_box_exhaust_port_2_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 2 - Exhaust Active Mode
+      state: 'Off'
+  icon: mdi:fan-off
+  metadata:
+    select.pj_box_exhaust_port_1_active_mode:
+      entity_only: true
+    select.pj_box_exhaust_port_2_active_mode:
+      entity_only: true
+- id: '1750559239516'
+  name: HVAC Off
+  entities:
+    climate.thermostat:
+      hvac_modes:
+      - 'off'
+      - cool
+      - heat
+      min_temp: 45
+      max_temp: 95
+      fan_modes:
+      - 'on'
+      - auto
+      - diffuse
+      preset_modes:
+      - none
+      - away
+      - hold
+      fan_mode: diffuse
+      hvac_action: 'off'
+      preset_mode: hold
+      fan_action: running
+      permanent_hold: true
+      dr_phase: -1
+      friendly_name: Honeywell Thermostat
+      supported_features: 411
+      state: 'off'
+  icon: mdi:hvac-off
+  metadata: {}
+- id: '1750559335089'
+  name: HVAC Cool
+  entities:
+    climate.thermostat:
+      hvac_modes:
+      - 'off'
+      - cool
+      - heat
+      min_temp: 50
+      max_temp: 99
+      fan_modes:
+      - 'on'
+      - auto
+      - diffuse
+      preset_modes:
+      - none
+      - away
+      - hold
+      current_temperature: 74
+      temperature: 74
+      target_temp_high:
+      target_temp_low:
+      current_humidity: 51
+      fan_mode: auto
+      hvac_action: fan
+      preset_mode: hold
+      fan_action: running
+      permanent_hold: true
+      dr_phase: -1
+      friendly_name: Honeywell Thermostat
+      supported_features: 411
+      state: cool
+    sensor.thermostat_humidity:
+      state_class: measurement
+      unit_of_measurement: '%'
+      device_class: humidity
+      friendly_name: Honeywell Thermostat Humidity
+      state: '51.0'
+    sensor.thermostat_outdoor_humidity:
+      state_class: measurement
+      unit_of_measurement: '%'
+      device_class: humidity
+      friendly_name: Honeywell Thermostat Outdoor humidity
+      state: '55.0'
+    sensor.thermostat_outdoor_temperature:
+      state_class: measurement
+      unit_of_measurement: °F
+      device_class: temperature
+      friendly_name: Honeywell Thermostat Outdoor temperature
+      state: '80.0'
+    sensor.thermostat_temperature:
+      state_class: measurement
+      unit_of_measurement: °F
+      device_class: temperature
+      friendly_name: Honeywell Thermostat Temperature
+      state: '74.0'
+  icon: mdi:air-conditioner
+  metadata: {}
+- id: '1750559399851'
+  name: HVAC Heat
+  entities:
+    climate.thermostat:
+      hvac_modes:
+      - 'off'
+      - cool
+      - heat
+      min_temp: 40
+      max_temp: 90
+      fan_modes:
+      - 'on'
+      - auto
+      - diffuse
+      preset_modes:
+      - none
+      - away
+      - hold
+      current_temperature: 74
+      temperature: 67
+      target_temp_high:
+      target_temp_low:
+      current_humidity: 51
+      fan_mode: auto
+      hvac_action: idle
+      preset_mode: hold
+      fan_action: idle
+      permanent_hold: true
+      dr_phase: -1
+      friendly_name: Honeywell Thermostat
+      supported_features: 411
+      state: heat
+    sensor.thermostat_humidity:
+      state_class: measurement
+      unit_of_measurement: '%'
+      device_class: humidity
+      friendly_name: Honeywell Thermostat Humidity
+      state: '51.0'
+    sensor.thermostat_outdoor_humidity:
+      state_class: measurement
+      unit_of_measurement: '%'
+      device_class: humidity
+      friendly_name: Honeywell Thermostat Outdoor humidity
+      state: '55.0'
+    sensor.thermostat_outdoor_temperature:
+      state_class: measurement
+      unit_of_measurement: °F
+      device_class: temperature
+      friendly_name: Honeywell Thermostat Outdoor temperature
+      state: '80.0'
+    sensor.thermostat_temperature:
+      state_class: measurement
+      unit_of_measurement: °F
+      device_class: temperature
+      friendly_name: Honeywell Thermostat Temperature
+      state: '74.0'
+  icon: mdi:heat-pump
+  metadata: {}
+- id: '1750570065930'
+  name: Hushbox Fans High
+  entities:
+    number.pj_box_exhaust_port_1_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 1 - Intake On Power
+      state: '6'
+    number.pj_box_exhaust_port_2_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: PJ Box Port 2 - Exhaust On Power
+      state: '6'
+    select.pj_box_exhaust_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 1 - Intake Active Mode
+      state: 'On'
+    select.pj_box_exhaust_port_2_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: PJ Box Port 2 - Exhaust Active Mode
+      state: 'On'
+  icon: mdi:fan-speed-3
+  metadata:
+    number.pj_box_exhaust_port_1_on_power:
+      entity_only: true
+    number.pj_box_exhaust_port_2_on_power:
+      entity_only: true
+    select.pj_box_exhaust_port_1_active_mode:
+      entity_only: true
+    select.pj_box_exhaust_port_2_active_mode:
+      entity_only: true
+- id: '1753027037971'
+  name: Amplifiers On
+  entities:
+    select.av_closet_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: Port 1 - AV Rack Duct Fan Active Mode
+      state: 'On'
+    select.av_closet_port_1_auto_settings_mode:
+      options:
+      - Auto
+      - Target
+      friendly_name: Port 1 - AV Rack Duct Fan Auto Settings Mode
+      state: Auto
+    number.av_closet_port_1_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: Port 1 - AV Rack Duct Fan On Power
+      state: '5'
+    switch.ap7902_outlet_08_buckeye_nc252x8_middle:
+      friendly_name: AP7902 Outlet 08 - Buckeye NC252x8 middle
+      state: 'on'
+    switch.ap7902_outlet_13_buckeye_nc252x8_bottom:
+      friendly_name: AP7902 Outlet 13 - Buckeye NC252x8 bottom
+      state: 'on'
+    switch.ap7902_outlet_15_buckeye_nc502x6_top:
+      friendly_name: AP7902 Outlet 15 - Buckeye NC502x6 top
+      state: 'on'
+  icon: mdi:amplifier
+  metadata:
+    select.av_closet_port_1_active_mode:
+      entity_only: true
+    select.av_closet_port_1_auto_settings_mode:
+      entity_only: true
+    number.av_closet_port_1_on_power:
+      entity_only: true
+    switch.ap7902_outlet_08_buckeye_nc252x8_middle:
+      entity_only: true
+    switch.ap7902_outlet_13_buckeye_nc252x8_bottom:
+      entity_only: true
+    switch.ap7902_outlet_15_buckeye_nc502x6_top:
+      entity_only: true
+- id: '1753027130940'
+  name: Amplifiers Off
+  entities:
+    select.av_closet_port_1_active_mode:
+      options:
+      - 'Off'
+      - 'On'
+      - Auto
+      - Timer to On
+      - Timer to Off
+      - Cycle
+      - Schedule
+      - VPD
+      friendly_name: Port 1 - AV Rack Duct Fan Active Mode
+      state: 'On'
+    select.av_closet_port_1_auto_settings_mode:
+      options:
+      - Auto
+      - Target
+      friendly_name: Port 1 - AV Rack Duct Fan Auto Settings Mode
+      state: Auto
+    number.av_closet_port_1_on_power:
+      min: 0
+      max: 10
+      step: 1
+      mode: auto
+      device_class: power_factor
+      icon: mdi:knob
+      friendly_name: Port 1 - AV Rack Duct Fan On Power
+      state: '2'
+    switch.ap7902_outlet_08_buckeye_nc252x8_middle:
+      friendly_name: AP7902 Outlet 08 - Buckeye NC252x8 middle
+      state: 'off'
+    switch.ap7902_outlet_13_buckeye_nc252x8_bottom:
+      friendly_name: AP7902 Outlet 13 - Buckeye NC252x8 bottom
+      state: 'off'
+    switch.ap7902_outlet_15_buckeye_nc502x6_top:
+      friendly_name: AP7902 Outlet 15 - Buckeye NC502x6 top
+      state: 'off'
+  icon: mdi:amplifier
+  metadata:
+    select.av_closet_port_1_active_mode:
+      entity_only: true
+    select.av_closet_port_1_auto_settings_mode:
+      entity_only: true
+    number.av_closet_port_1_on_power:
+      entity_only: true
+    switch.ap7902_outlet_08_buckeye_nc252x8_middle:
+      entity_only: true
+    switch.ap7902_outlet_13_buckeye_nc252x8_bottom:
+      entity_only: true
+    switch.ap7902_outlet_15_buckeye_nc502x6_top:
+      entity_only: true
