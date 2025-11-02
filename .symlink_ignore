@@ -1,0 +1,6 @@
+.git
+.symlink_ignore
+.vscode
+LICENSE
+README.md
+setup_symlinks.sh

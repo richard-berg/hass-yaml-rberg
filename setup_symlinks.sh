@@ -1,88 +1,95 @@
 #!/usr/bin/env bash
 # setup_symlinks.sh
-# Regenerates symlinks from a Git repo into /config
-# Only mirrors Home Assistant configuration files and directories
+#
+# See README.md
 
 set -euo pipefail
 
 # --- 1️⃣ Determine repo path ---
 REPO_DIR="${1:-$(dirname "$(realpath "${BASH_SOURCE[0]}")")}"
 CONFIG_DIR="/config"
+IGNORE_FILE="$REPO_DIR/.symlink_ignore"
 
-# --- 2️⃣ Validate the repo looks like a HA config mirror ---
-# Must contain at least configuration.yaml
-if [ ! -f "$REPO_DIR/configuration.yaml" ]; then
-  echo "ERROR: $REPO_DIR does not appear to be a Home Assistant config mirror repository."
-  echo "It must contain at least 'configuration.yaml'."
-  echo
-  echo "Usage: $0 [path-to-repo]"
-  echo "Example: $0 /config/git/hass-yaml-rberg"
+# --- 2️⃣ Validate HA repo ---
+if [ ! -f "$REPO_DIR/configuration.yaml" ] || [ ! -d "$REPO_DIR/.git" ]; then
+  echo "ERROR: $REPO_DIR does not appear to be a Home Assistant Git repo mirror."
   exit 1
 fi
 
-echo "Regenerating HAOS symlink farm from repo: $REPO_DIR"
-
+echo "Regenerating HAOS symlinks from repo: $REPO_DIR"
 cd "$CONFIG_DIR"
 
-# --- 3️⃣ Define which top-level HA files to mirror ---
-ha_files=(
-  automations.yaml
-  configuration.yaml
-  scripts.yaml
-  scenes.yaml
-  secrets.yaml
-  harmony_*.conf
-)
+# --- 3️⃣ Load exclude patterns ---
+declare -a EXCLUDE_PATTERNS=()
+if [ -f "$IGNORE_FILE" ]; then
+  while read -r line; do
+    [[ "$line" =~ ^#.*$ ]] && continue
+    [[ -z "$line" ]] && continue
+    EXCLUDE_PATTERNS+=("$line")
+  done < "$IGNORE_FILE"
+fi
 
-for f in "${ha_files[@]}"; do
-  src="$REPO_DIR/$f"
-  # Skip if file doesn't exist
-  [ -e "$src" ] || continue
+matches_exclude() {
+  local path="$1"
+  for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+    # Simple prefix match for "glob-like" behavior
+    [[ "$path" == $pattern* ]] && return 0
+  done
+  return 1
+}
 
-  # Backup existing file if it's not a symlink
-  if [ -f "$f" ] && [ ! -L "$f" ]; then
-    echo "Backing up existing $f -> $f.bak"
-    cp "$f" "$f.bak"
+# --- 4️⃣ Symlink creation function ---
+create_symlink() {
+  local src="$1"
+  local dest="$2"
+
+  rel_path=$(realpath --relative-to="$(dirname "$dest")" "$item")
+
+  # Skip excluded paths
+  matches_exclude "$rel_path" && return
+
+  # Create parent directories if missing
+  mkdir -p "$(dirname "$dest")"
+
+  # Check existing destination
+  if [ -e "$dest" ] || [ -L "$dest" ]; then
+    if [ -L "$dest" ]; then
+      target=$(readlink "$dest")
+      if [ "$target" == "$rel_path" ]; then
+        return  # symlink already correct
+      fi
+    fi
+    # Backup existing file/dir/link
+    ts=$(date +%Y%m%d%H%M%S)
+    echo "Backing up $dest -> ${dest}.bak.$ts"
+    mv "$dest" "${dest}.bak.$ts"
   fi
 
-  # Remove existing symlink if present
-  [ -L "$f" ] && rm "$f"
+  # Create relative symlink
+  ln -s "$rel_path" "$dest"
+}
 
-  # Create symlink
-  ln -s "$src" "$f"
-done
+# --- 5️⃣ Recursively link repo tree ---
+link_repo_tree() {
+  local src_dir="$1"
+  local dest_dir="$2"
 
-# --- 4️⃣ Mirror directories ---
-ha_dirs=(
-  "blueprints/automation"
-  "blueprints/script"
-  "packages"
-)
+  find "$src_dir" -mindepth 1 -print0 | while IFS= read -r -d '' item; do
+    rel_path="${item#$src_dir/}"
+    dest="$dest_dir/$rel_path"
 
-for base in "${ha_dirs[@]}"; do
-  src_base="$REPO_DIR/$base"
-  [ -d "$src_base" ] || continue
+    # Skip excluded
+    matches_exclude "$rel_path" && continue
 
-  # find all first-level subdirectories to link
-  find "$src_base" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-    name=$(basename "$dir")
-    link_path="$base/$name"
-
-    # Backup existing directory if it's not a symlink
-    if [ -d "$link_path" ] && [ ! -L "$link_path" ]; then
-      echo "Backing up existing directory $link_path -> $link_path.bak"
-      mv "$link_path" "$link_path.bak"
+    if [ -d "$item" ]; then
+      mkdir -p "$dest"
+    elif [ -f "$item" ]; then
+      create_symlink "$item" "$dest"
     fi
-
-    # Remove existing symlink if present
-    [ -L "$link_path" ] && rm "$link_path"
-
-    # Ensure parent directory exists
-    mkdir -p "$(dirname "$link_path")"
-
-    # Create absolute symlink
-    ln -s "$REPO_DIR/$base/$name" "$link_path"
   done
-done
+}
+
+# --- 6️⃣ Execute linking ---
+link_repo_tree "$REPO_DIR" "$CONFIG_DIR"
 
 echo "HAOS symlink farm regenerated successfully."
