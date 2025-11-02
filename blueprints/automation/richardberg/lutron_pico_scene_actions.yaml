@@ -5,6 +5,7 @@ blueprint:
     Tie multiple Lutron Pico controllers to the same suite of automations,
     including long presses and double-clicks.
   author: Richard Berg
+  source_url: https://github.com/richard-berg/hass-yaml-rberg/blob/main/blueprints/automation/richardberg/lutron_pico_scene_actions.yaml
   homeassistant:
     min_version: '2024.10.1'
 
