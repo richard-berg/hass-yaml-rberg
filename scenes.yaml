@@ -1,7 +1,7 @@
 - id: '1748768634783'
   name: Bedroom Bright
   entities:
-    light.bedroom_pendant_lifx_a21:
+    light.pendant:
       min_color_temp_kelvin: 1500
       max_color_temp_kelvin: 9000
       min_mireds: 111
@@ -16,31 +16,31 @@
       effect:
       color_mode: color_temp
       brightness: 255
-      color_temp_kelvin: 4594
-      color_temp: 217
+      color_temp_kelvin: 3989
+      color_temp: 250
       hs_color:
-      - 26.747
-      - 25.057
+      - 26.817
+      - 35.07
       rgb_color:
       - 255
-      - 220
-      - 191
+      - 206
+      - 166
       xy_color:
-      - 0.388
-      - 0.356
-      friendly_name: Bedroom Pendant LIFX A21
+      - 0.42
+      - 0.365
+      friendly_name: Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights:
+    light.master_bedroom_cove_lights_2:
       supported_color_modes:
       - brightness
-      color_mode:
-      brightness:
-      device_id: '9'
-      zone_id: '8'
+      color_mode: brightness
+      brightness: 255
+      device_id: '55'
+      zone_id: '41'
       friendly_name: Master Bedroom Cove Lights
       supported_features: 32
-      state: 'off'
+      state: 'on'
   icon: mdi:lightbulb-on
   metadata: {}
 - id: '1750558155712'
@@ -492,3 +492,221 @@
       entity_only: true
     switch.ap7902_outlet_15_buckeye_nc502x6_top:
       entity_only: true
+- id: '1762056654721'
+  name: Bedroom Moderate
+  entities:
+    light.pendant:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode: color_temp
+      brightness: 128
+      color_temp_kelvin: 3258
+      color_temp: 306
+      hs_color:
+      - 27.448
+      - 50.304
+      rgb_color:
+      - 255
+      - 185
+      - 127
+      xy_color:
+      - 0.473
+      - 0.378
+      friendly_name: Bedroom Pendant
+      supported_features: 36
+      state: 'on'
+    light.master_bedroom_cove_lights_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 127
+      device_id: '55'
+      zone_id: '41'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata: {}
+- id: '1762056729162'
+  name: Bedroom Purple
+  entities:
+    light.pendant:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode: hs
+      brightness: 59
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 281.996
+      - 69.998
+      rgb_color:
+      - 201
+      - 77
+      - 255
+      xy_color:
+      - 0.309
+      - 0.145
+      friendly_name: Bedroom Pendant
+      supported_features: 36
+      state: 'on'
+    light.master_bedroom_cove_lights_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 73
+      device_id: '55'
+      zone_id: '41'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata: {}
+- id: '1762056741945'
+  name: Bedroom Dim Deep Red
+  entities:
+    light.pendant:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode: hs
+      brightness: 3
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 354.996
+      - 100
+      rgb_color:
+      - 255
+      - 0
+      - 21
+      xy_color:
+      - 0.695
+      - 0.297
+      friendly_name: Bedroom Pendant
+      supported_features: 36
+      state: 'on'
+    light.master_bedroom_cove_lights_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 38
+      device_id: '55'
+      zone_id: '41'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata: {}
+- id: '1762057321586'
+  name: Bedroom Dusk
+  entities:
+    light.pendant:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode: hs
+      brightness: 3
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      - 24
+      - 69
+      rgb_color:
+      - 255
+      - 149
+      - 79
+      xy_color:
+      - 0.552
+      - 0.373
+      friendly_name: Bedroom Pendant
+      supported_features: 36
+      state: 'on'
+    light.master_bedroom_cove_lights_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 28
+      device_id: '55'
+      zone_id: '41'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata: {}
+- id: '1762057587726'
+  name: Bedroom Twilight
+  entities:
+    light.pendant:
+      min_color_temp_kelvin: 1500
+      max_color_temp_kelvin: 9000
+      min_mireds: 111
+      max_mireds: 666
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      supported_color_modes:
+      - color_temp
+      - hs
+      effect:
+      color_mode:
+      brightness:
+      color_temp_kelvin:
+      color_temp:
+      hs_color:
+      rgb_color:
+      xy_color:
+      friendly_name: Bedroom Pendant
+      supported_features: 36
+      state: 'off'
+    light.master_bedroom_cove_lights_2:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 20
+      device_id: '55'
+      zone_id: '41'
+      friendly_name: Master Bedroom Cove Lights
+      supported_features: 32
+      state: 'on'
+  icon: mdi:lightbulb-on
+  metadata: {}
