@@ -3,7 +3,7 @@ blueprint:
   description: An event-based startup sequence
   domain: script
   author: Richard Berg
-  source_url: <<optional link to source code>>
+  source_url: https://github.com/richard-berg/hass-yaml-rberg/blob/main/blueprints/script/richardberg/slow_device_startup.yaml
   input:
     media_entity:
       name: Media Entity
