@@ -1,0 +1,30 @@
+# --- Home Assistant internals ---
+backup/
+*.db
+*.db-shm
+*.db-wal
+deps/
+.ha_run.lock
+.HA_VERSION
+home-assistant.log*
+image/
+.storage/
+
+# --- Misc assets I might wanna version someday, but not here ---
+custom_components/
+media/
+tts/
+www/
+
+# --- Other git repos hosted on this filesystem ---
+blueprints/**/alexdelprete
+blueprints/**/Blackshome
+blueprints/**/homeassistant
+git/
+themes/material_you
+
+# --- Secrets ---
+*.pem
+secrets.yaml
+.ssh
+
