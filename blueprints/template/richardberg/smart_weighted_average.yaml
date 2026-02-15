@@ -1,0 +1,100 @@
+blueprint:
+  name: Smart Weighted Average Sensor
+  domain: template
+  description: >
+    Creates a sensor that reports the weighted average of multiple other
+    sensors. Handles unavailable or missing readings intelligently, and lets
+    you control how to treat each source (either "hold" its last known value
+    or "omit" it from the average).
+
+    ---
+    📘 **Setup instructions:**
+    1. Place this file at `/config/blueprints/template/smart_weighted_average.yaml`.
+    2. Restart Home Assistant.
+    3. In the UI, go to *Settings → Devices & Services → Helpers → Create Helper → Template → From Blueprint → Smart Weighted Average Sensor*.
+
+    Requires Home Assistant **2024.10** or later.
+
+  homeassistant:
+    min_version: 2024.10.0
+
+  input:
+    name:
+      name: "Sensor name"
+      description: "Friendly name for this smart average sensor"
+      selector:
+        text:
+
+    sources:
+      name: "Source sensors"
+      description: "List of numeric sensors to include in the weighted average"
+      selector:
+        entity:
+          domain: sensor
+          multiple: true
+
+    weights:
+      name: "Weights"
+      description: >
+        Comma-separated numeric weights corresponding to each sensor.
+        Example: `1, 2, 1`
+      selector:
+        text:
+
+    modes:
+      name: "Offline modes"
+      description: >
+        Comma-separated list of modes (`hold` or `omit`) for each sensor.
+        Example: `hold, omit, hold`
+      selector:
+        text:
+
+    unit:
+      name: "Unit of measurement"
+      description: "Optional unit (°C, %, etc)"
+      default: ""
+      selector:
+        text:
+
+sensor:
+  - name: "{{ name }}"
+    unique_id: smart_weighted_average_{{ name|slugify }}
+    unit_of_measurement: "{{ unit }}"
+    state: >
+      {% set entities = sources %}
+      {% set weights = weights.split(',') | map('trim') | map('float') | list %}
+      {% set modes = modes.split(',') | map('trim') | list %}
+      {% set vals = [] %}
+      {% set ws = [] %}
+
+      {% if entities|length != weights|length or entities|length != modes|length %}
+        {{ log('Length mismatch in smart average inputs for ' ~ this.entity_id) }}
+        unknown
+      {% else %}
+        {% for i in range(entities|length) %}
+          {% set eid = entities[i] %}
+          {% set st = states(eid) %}
+          {% set w = weights[i] %}
+          {% set mode = modes[i] %}
+          {% if st not in ['unavailable','unknown','none',''] %}
+            {% set _ = vals.append(st|float) %}
+            {% set _ = ws.append(w) %}
+          {% elif mode == 'hold' %}
+            {% set last = state_attr(this.entity_id, eid ~ '_last') %}
+            {% if last is number %}
+              {% set _ = vals.append(last) %}
+              {% set _ = ws.append(w) %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if ws|length == 0 %}
+          unknown
+        {% else %}
+          {{ (sum(vals[i]*ws[i] for i in range(vals|length)) / sum(ws)) | round(2) }}
+        {% endif %}
+      {% endif %}
+
+    attributes:
+      sources: "{{ sources }}"
+      weights: "{{ weights }}"
+      modes: "{{ modes }}"
