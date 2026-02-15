@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_stage",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "switch.ap7901_outlet_1_powersoft_quattrocanali_2404_dsp_d",
+                    "switch.ap7901_outlet_2_behringer_sd16",
+                    "switch.ap7901_outlet_3_rf_venue_distro4",
+                    "switch.ap7901_outlet_4",
+                    "switch.ap7901_outlet_5",
+                    "switch.ap7901_outlet_6",
+                    "switch.ap7901_outlet_7",
+                    "switch.ap7901_outlet_8_tp_link_8_port_unmanaged_switch",
+                    "sensor.ap7901_load_total"
+                  ]
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "switch.theater_plug_3_masking_screen"
+                  ]
+                },
+                {
+                  "type": "custom:bubble-card",
+                  "card_type": "button",
+                  "button_type": "switch",
+                  "sub_button": {
+                    "main": [],
+                    "bottom": []
+                  },
+                  "entity": "input_boolean.stage_speakers_intent",
+                  "show_state": true,
+                  "scrolling_effect": true,
+                  "show_last_changed": false,
+                  "show_last_updated": false,
+                  "show_attribute": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

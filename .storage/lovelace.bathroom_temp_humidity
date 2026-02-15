@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.bathroom_temp_humidity",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "custom:mini-graph-card",
+                  "name": "Air Temperature",
+                  "icon": "mdi-thermometer",
+                  "entities": [
+                    {
+                      "entity": "sensor.master_bath_temp_sensor_air_temperature",
+                      "name": "Bathroom"
+                    },
+                    {
+                      "entity": "sensor.bedroom_temperature_humidity_xs_sensor_air_temperature",
+                      "name": "Bedroom"
+                    },
+                    {
+                      "entity": "sensor.living_room_temperature_humidity_xs_sensor_air_temperature",
+                      "name": "Living Room"
+                    }
+                  ]
+                },
+                {
+                  "type": "custom:mini-graph-card",
+                  "name": "Humidity",
+                  "icon": "mdi-thermometer",
+                  "entities": [
+                    {
+                      "entity": "sensor.master_bath_temp_sensor_humidity",
+                      "name": "Bathroom"
+                    },
+                    {
+                      "entity": "sensor.bedroom_temperature_humidity_xs_sensor_humidity",
+                      "name": "Bedroom"
+                    },
+                    {
+                      "entity": "sensor.living_room_temperature_humidity_xs_sensor_humidity",
+                      "name": "Living Room"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "switch.master_bath_towel_heater_switch",
+                    "switch.master_bathroom_exhaust_fan"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "minor_version": 9,
+  "key": "core.area_registry",
+  "data": {
+    "areas": [
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": "sensor.bedroom_temperature_humidity_xs_sensor_humidity",
+        "icon": "mdi:bed",
+        "id": "bedroom",
+        "labels": [],
+        "name": "Bedroom",
+        "picture": null,
+        "temperature_entity_id": "sensor.bedroom_temperature_humidity_xs_sensor_air_temperature",
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2025-06-17T06:28:39.636474+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": "mdi:table-chair",
+        "id": "dining_room",
+        "labels": [],
+        "name": "Dining Room",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2025-03-24T01:42:30.764213+00:00",
+        "modified_at": "2025-06-17T04:16:52.542726+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": "mdi:bathtub",
+        "id": "guest_bathroom",
+        "labels": [],
+        "name": "Guest Bathroom",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2025-06-17T04:09:49.991678+00:00",
+        "modified_at": "2025-06-17T04:09:49.991681+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": "sensor.kitchen_temp_humidity_sensor_humidity",
+        "icon": "mdi:stove",
+        "id": "kitchen",
+        "labels": [],
+        "name": "Kitchen",
+        "picture": null,
+        "temperature_entity_id": "sensor.kitchen_temp_humidity_sensor_air_temperature",
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2025-06-17T06:31:53.540553+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": "sensor.living_room_temperature_humidity_xs_sensor_humidity",
+        "icon": "mdi:sofa",
+        "id": "living_room",
+        "labels": [],
+        "name": "Living Room",
+        "picture": null,
+        "temperature_entity_id": "sensor.living_room_temperature_humidity_xs_sensor_air_temperature",
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2025-06-17T06:29:45.005594+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": "sensor.master_bathroom_temp_humidity_sensor_humidity",
+        "icon": "mdi:shower-head",
+        "id": "master_bathroom",
+        "labels": [],
+        "name": "Master Bathroom",
+        "picture": null,
+        "temperature_entity_id": "sensor.master_bathroom_temp_humidity_sensor_air_temperature",
+        "created_at": "2025-03-24T01:42:30.757227+00:00",
+        "modified_at": "2025-06-17T06:29:59.150967+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": "mdi:server",
+        "id": "pantry",
+        "labels": [],
+        "name": "Pantry",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "1970-01-01T00:00:00+00:00",
+        "modified_at": "2025-06-17T06:28:30.595845+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": "mdi:piano",
+        "id": "stage",
+        "labels": [],
+        "name": "Stage",
+        "picture": null,
+        "temperature_entity_id": null,
+        "created_at": "2025-06-17T04:13:21.023464+00:00",
+        "modified_at": "2025-06-17T04:13:21.023467+00:00"
+      },
+      {
+        "aliases": [],
+        "floor_id": null,
+        "humidity_entity_id": null,
+        "icon": "mdi:projector",
+        "id": "theater",
+        "labels": [],
+        "name": "Theater",
+        "picture": null,
+        "temperature_entity_id": "sensor.apollo_mtr_1_11e5c8_dps310_temperature",
+        "created_at": "2025-03-24T01:42:30.760085+00:00",
+        "modified_at": "2025-06-17T06:28:09.355905+00:00"
+      }
+    ]
+  }
+}

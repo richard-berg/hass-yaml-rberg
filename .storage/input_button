@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "input_button",
+  "data": {
+    "items": [
+      {
+        "id": "check_for_low_batteries",
+        "name": "Check for low batteries",
+        "icon": "mdi:battery-20"
+      }
+    ]
+  }
+}

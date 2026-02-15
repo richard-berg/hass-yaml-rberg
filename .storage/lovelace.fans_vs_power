@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.fans_vs_power",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.pj_box_exhaust_port_1_on_power",
+                  "name": "Intake Level",
+                  "icon": "mdi:fan-chevron-up"
+                },
+                {
+                  "type": "custom:mushroom-number-card",
+                  "entity": "number.pj_box_exhaust_port_2_on_power",
+                  "name": "Exhaust Level",
+                  "icon": "mdi:fan-chevron-down"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

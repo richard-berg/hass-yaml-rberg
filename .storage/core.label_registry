@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "minor_version": 2,
+  "key": "core.label_registry",
+  "data": {
+    "labels": [
+      {
+        "color": "indigo",
+        "description": "Input helpers for Material You Utilities.",
+        "icon": "mdi:material-design",
+        "label_id": "material_you",
+        "name": "Material You",
+        "created_at": "2025-09-30T15:07:39.548291+00:00",
+        "modified_at": "2025-09-30T15:07:39.548293+00:00"
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_dashboards",
+  "data": {
+    "items": [
+      {
+        "id": "dashboard_foyer",
+        "show_in_sidebar": true,
+        "icon": "mdi:tablet-dashboard",
+        "title": "Foyer",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-foyer"
+      },
+      {
+        "id": "dashboard_theater",
+        "show_in_sidebar": true,
+        "title": "Theater",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-theater",
+        "icon": "mdi:theater"
+      },
+      {
+        "id": "av_rack",
+        "show_in_sidebar": true,
+        "title": "AV Rack",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "av-rack",
+        "icon": "mdi:server"
+      },
+      {
+        "id": "fans_vs_power",
+        "show_in_sidebar": true,
+        "icon": "mdi:fan",
+        "title": "Fans vs Power",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "fans-vs-power"
+      },
+      {
+        "id": "dashboard_stage",
+        "show_in_sidebar": true,
+        "icon": "mdi:piano",
+        "title": "Stage",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-stage"
+      },
+      {
+        "id": "dashboard_bedroom",
+        "show_in_sidebar": true,
+        "icon": "mdi:bed",
+        "title": "Bedroom",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-bedroom"
+      },
+      {
+        "id": "bathroom_temp_humidity",
+        "show_in_sidebar": true,
+        "icon": "mdi:thermometer",
+        "title": "Bathroom Temp/Humidity",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "bathroom-temp-humidity"
+      },
+      {
+        "id": "dashboard_batteries",
+        "show_in_sidebar": true,
+        "icon": "mdi:battery-charging-30",
+        "title": "Batteries",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-batteries"
+      },
+      {
+        "id": "lovelace",
+        "icon": "mdi:view-dashboard",
+        "title": "Overview",
+        "url_path": "lovelace",
+        "mode": "storage",
+        "require_admin": false,
+        "show_in_sidebar": true
+      }
+    ]
+  }
+}

@@ -8,7 +8,6 @@ deps/
 .HA_VERSION
 home-assistant.log*
 image/
-.storage/
 
 # --- Misc assets I might wanna version someday, but not here ---
 custom_components/

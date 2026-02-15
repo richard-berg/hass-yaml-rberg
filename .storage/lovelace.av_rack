@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.av_rack",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "switch.ap7902_outlet_01_apc_smartups",
+                    "switch.ap7902_outlet_02_brother_printer",
+                    "switch.ap7902_outlet_03_logitech_harmony_hub",
+                    "switch.ap7902_outlet_04_orei_hdmi_splitter",
+                    "switch.ap7902_outlet_05_sonos_port",
+                    "switch.ap7902_outlet_06_minidsp_flex",
+                    "switch.ap7902_outlet_07_jbl_sdp_75",
+                    "switch.ap7902_outlet_08_buckeye_nc252x8_middle",
+                    "switch.ap7902_outlet_09_xbox_360",
+                    "switch.ap7902_outlet_10_xbox_one",
+                    "switch.ap7902_outlet_11_kaleidescape_strato_6tb",
+                    "switch.ap7902_outlet_12_vertical_pdu_players",
+                    "switch.ap7902_outlet_13_buckeye_nc252x8_bottom",
+                    "switch.ap7902_outlet_14_lumagen_radiance_pro_4242",
+                    "switch.ap7902_outlet_15_buckeye_nc502x6_top",
+                    "switch.ap7902_outlet_16_behringer_sd8",
+                    "sensor.ap7902_load_bank_2",
+                    "sensor.ap7902_load_bank_3"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "sensor.fridge_power_switch_electric_consumption_w",
+                    "sensor.projector_plug_1_electric_consumption_w",
+                    "sensor.projector_plug_2_electric_consumption_w"
+                  ]
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "switch.projector_double_plug_1"
+                    },
+                    {
+                      "entity": "switch.projector_double_plug_2"
+                    },
+                    {
+                      "entity": "switch.projector_plug_1"
+                    },
+                    {
+                      "entity": "switch.projector_plug_2"
+                    },
+                    {
+                      "entity": "input_boolean.pc_audio_intent"
+                    },
+                    {
+                      "entity": "input_boolean.shower_speakers_intent"
+                    },
+                    {
+                      "entity": "input_boolean.stage_speakers_intent"
+                    },
+                    {
+                      "entity": "input_boolean.route_sd8_trinnov_intent"
+                    },
+                    {
+                      "entity": "input_boolean.all_amplifiers"
+                    }
+                  ]
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "button.fridge_power_switch_reset_accumulated_values",
+                    "button.projector_plug_1_reset_accumulated_values",
+                    "button.projector_plug_2_reset_accumulated_values"
+                  ]
+                },
+                {
+                  "type": "tile",
+                  "entity": "number.av_closet_port_1_on_power"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,452 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_theater",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "cards": [
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "input_boolean.pc_audio_intent"
+                },
+                {
+                  "entity": "input_boolean.route_sd8_trinnov_intent"
+                },
+                {
+                  "entity": "input_boolean.all_amplifiers"
+                },
+                {
+                  "entity": "switch.ap7902_outlet_15_buckeye_nc502x6_top"
+                },
+                {
+                  "entity": "switch.ap7902_outlet_08_buckeye_nc252x8_middle"
+                },
+                {
+                  "entity": "switch.ap7902_outlet_13_buckeye_nc252x8_bottom"
+                },
+                {
+                  "entity": "switch.ap7902_outlet_07_jbl_sdp_75"
+                },
+                {
+                  "entity": "switch.kodi_power_state"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "switch.ap7902_outlet_14_lumagen_radiance_pro_4242"
+                },
+                {
+                  "entity": "input_boolean.lumagen_power_via_harmony_ir"
+                },
+                {
+                  "entity": "switch.ap7902_outlet_04_orei_hdmi_splitter"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                "switch.indoor_smart_plug_1",
+                "switch.projector_plug_1",
+                "switch.projector_double_plug_1",
+                "switch.projector_double_plug_2",
+                "switch.projector_plug_2",
+                "sensor.projector_plug_1_electric_consumption_w",
+                "sensor.indoor_smart_plug_1_electric_consumption_w",
+                "sensor.projector_plug_2_electric_consumption_w"
+              ]
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.pt_rz660"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "select.jvc_projector_input"
+                },
+                {
+                  "entity": "remote.jvc_projector"
+                },
+                {
+                  "entity": "binary_sensor.jvc_projector_power"
+                },
+                {
+                  "entity": "sensor.jvc_projector_power_status"
+                }
+              ],
+              "title": "JVC Projector"
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "media-control",
+                  "entity": "media_player.home_theater"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "remote.kaleidescape_strato_0509_00010116"
+                    },
+                    {
+                      "entity": "media_player.kaleidescape_strato_0509_00010116"
+                    },
+                    {
+                      "entity": "switch.ap7902_outlet_11_kaleidescape_strato_6tb"
+                    }
+                  ],
+                  "title": "Kaleidescape"
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.kaleidescape_strato_0509_00010116"
+                }
+              ]
+            },
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "scene.hvac_off",
+                  "name": "Off",
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "scene.hvac_cool",
+                  "name": "Cool",
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "scene.hvac_heat",
+                  "name": "Heat",
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                }
+              ],
+              "title": "HVAC"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_cinemascape_mask",
+                  "name": "Cinemascape mask"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_cinemascape_mode",
+                  "name": "Cinemascape mode"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_bottom_mask_absolute",
+                  "name": "Screen mask bottom mask absolute"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_bottom_trim_relative",
+                  "name": "Screen mask bottom trim relative"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_conservative_ratio",
+                  "name": "Screen mask conservative ratio"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_ratio",
+                  "name": "Screen mask ratio"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_top_mask_absolute",
+                  "name": "Screen mask top mask absolute"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_screen_mask_top_trim_relative",
+                  "name": "Screen mask top trim relative"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_video_color_depth",
+                  "name": "Video color depth"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_video_color_eotf",
+                  "name": "Video color EOTF"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_video_color_sampling",
+                  "name": "Video color sampling"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_video_color_space",
+                  "name": "Video color space"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_video_mode",
+                  "name": "Video mode"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_media_location"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_play_speed"
+                },
+                {
+                  "entity": "sensor.kaleidescape_strato_0509_00010116_play_status"
+                }
+              ],
+              "title": "Kaleidescape Strato - 0509 00010116"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_audiosync"
+                },
+                {
+                  "entity": "binary_sensor.jbl_sdp_75_12583992_bypass"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_decoder"
+                },
+                {
+                  "entity": "binary_sensor.jbl_sdp_75_12583992_dim"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_none"
+                },
+                {
+                  "entity": "binary_sensor.jbl_sdp_75_12583992_mute"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_preset"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_source"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_upmixer"
+                },
+                {
+                  "entity": "sensor.jbl_sdp_75_12583992_volume"
+                },
+                {
+                  "entity": "media_player.jbl_sdp_75_1080"
+                },
+                {
+                  "entity": "remote.jbl_sdp_75_12583992"
+                },
+                {
+                  "entity": "media_player.jbl_sdp_75_12583992"
+                },
+                {
+                  "entity": "select.jbl_sdp_75_12583992_preset"
+                },
+                {
+                  "entity": "select.jbl_sdp_75_12583992_source"
+                }
+              ],
+              "title": "JBL SDP-75 (12583992)"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "number.pj_box_exhaust_port_1_on_power"
+                },
+                {
+                  "entity": "sensor.pj_box_exhaust_port_1_current_power"
+                },
+                {
+                  "entity": "number.pj_box_exhaust_port_2_on_power"
+                },
+                {
+                  "entity": "sensor.pj_box_exhaust_port_2_current_power"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "number.av_closet_port_1_on_power"
+                },
+                {
+                  "entity": "sensor.av_closet_temperature"
+                },
+                {
+                  "entity": "sensor.av_rack_estimated_power_draw"
+                }
+              ]
+            },
+            {
+              "graph": "line",
+              "type": "sensor",
+              "entity": "sensor.pj_box_exhaust_temperature",
+              "detail": 1
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.apollo_mtr_1_11e5c8_co2"
+                },
+                {
+                  "entity": "sensor.apollo_mtr_1_11e5c8_dps310_temperature"
+                }
+              ]
+            },
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "name": "Off",
+                  "show_state": false,
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "entity": "scene.theater_off",
+                  "icon": "mdi:flashlight-off"
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "entity": "scene.theater_mood",
+                  "name": "Mood",
+                  "icon": "mdi:led-strip"
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "entity": "scene.theater_eating",
+                  "icon": "mdi:lightbulb-on-30",
+                  "name": "Eat"
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "tap_action": {
+                    "action": "toggle"
+                  },
+                  "entity": "scene.theater_bright",
+                  "name": "Bright",
+                  "icon": "mdi:lightbulb-multiple"
+                }
+              ],
+              "title": "Light Scene"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "select.lumagen_radiancepro_input_source",
+                  "name": "Input Source"
+                },
+                {
+                  "entity": "select.lumagen_radiancepro_memory_bank",
+                  "name": "Memory Bank"
+                },
+                {
+                  "entity": "switch.lumagen_radiancepro_power",
+                  "name": "Power"
+                },
+                {
+                  "entity": "remote.lumagen_radiancepro_remote",
+                  "name": "Remote"
+                },
+                {
+                  "entity": "select.lumagen_radiancepro_source_aspect_ratio",
+                  "name": "Source Aspect Ratio"
+                }
+              ],
+              "title": "Lumagen RadiancePro"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.lumagen_radiancepro_input_configuration",
+                  "name": "Input Configuration"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_logical_input",
+                  "name": "Logical Input"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_output_cms",
+                  "name": "Output CMS"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_output_resolution",
+                  "name": "Output Resolution"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_output_style",
+                  "name": "Output Style"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_physical_input",
+                  "name": "Physical Input"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_source_aspect_ratio",
+                  "name": "Source Aspect Ratio"
+                },
+                {
+                  "entity": "sensor.lumagen_radiancepro_source_dynamic_range",
+                  "name": "Source Dynamic Range"
+                }
+              ],
+              "title": "Lumagen RadiancePro"
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.coreelec"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "input_boolean",
+  "data": {
+    "items": [
+      {
+        "id": "all_amplifiers",
+        "name": "Theater Speakers Intent",
+        "icon": "mdi:amplifier"
+      },
+      {
+        "id": "lumagen_power_via_harmony_ir",
+        "name": "Lumagen Power via Harmony IR",
+        "icon": "mdi:video"
+      },
+      {
+        "id": "stage_speakers_intent",
+        "name": "Stage Speakers Intent",
+        "icon": "mdi:speaker-multiple"
+      },
+      {
+        "id": "shower_speakers_intent",
+        "name": "Shower Speakers Intent",
+        "icon": "mdi:speaker-bluetooth"
+      },
+      {
+        "id": "route_sd8_trinnov_intent",
+        "name": "Route SD8 -> Trinnov Intent",
+        "icon": "mdi:audio-input-stereo-minijack"
+      },
+      {
+        "id": "pc_audio_intent",
+        "name": "PC Audio Intent",
+        "icon": "mdi:desktop-tower"
+      },
+      {
+        "id": "trinnov_keepalive",
+        "name": "Trinnov Keepalive",
+        "icon": "mdi:equalizer"
+      }
+    ]
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_bedroom",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Lights",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "custom:mushroom-light-card",
+                  "entity": "light.pendant",
+                  "icon": "mdi:chandelier",
+                  "use_light_color": true,
+                  "show_brightness_control": true,
+                  "show_color_temp_control": true,
+                  "show_color_control": true
+                },
+                {
+                  "type": "custom:mushroom-light-card",
+                  "entity": "light.master_bedroom_cove_lights_2",
+                  "icon": "mdi:led-strip",
+                  "show_brightness_control": true,
+                  "use_light_color": true
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Bed Presence",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    "binary_sensor.bed_presence_ac6a30_bed_occupied_left",
+                    "binary_sensor.bed_presence_ac6a30_bed_occupied_right"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "TV",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "grid",
+                  "square": false,
+                  "columns": 1,
+                  "cards": [
+                    {
+                      "type": "entities",
+                      "entities": [
+                        "remote.bedroom"
+                      ]
+                    },
+                    {
+                      "type": "media-control",
+                      "entity": "media_player.lg_webos_tv_oled42c3pua"
+                    },
+                    {
+                      "type": "media-control",
+                      "entity": "media_player.bedroom"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "select.scene_controller_led_indicator_brightness_relay"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_brightness_button_1"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_brightness_button_2"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_brightness_button_3"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_brightness_button_4"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_color_relay"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_color_button_1"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_color_button_2"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_color_button_3"
+                    },
+                    {
+                      "entity": "select.scene_controller_led_indicator_color_button_4"
+                    },
+                    {
+                      "entity": "switch.scene_controller_0x43_button_1_indication_binary"
+                    },
+                    {
+                      "entity": "switch.scene_controller_0x44_button_2_indication_binary"
+                    },
+                    {
+                      "entity": "switch.scene_controller_0x45_button_3_indication_binary"
+                    },
+                    {
+                      "entity": "switch.scene_controller_0x46_button_4_indication_binary"
+                    },
+                    {
+                      "entity": "switch.scene_controller_0x47_button_5_indication_binary"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

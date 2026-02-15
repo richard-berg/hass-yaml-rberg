@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_foyer",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "title": "Home",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "New section"
+                },
+                {
+                  "type": "tile",
+                  "entity": "scene.all_off",
+                  "features_position": "bottom",
+                  "vertical": false,
+                  "icon": "mdi:lightbulb-multiple-off",
+                  "show_entity_picture": false,
+                  "tap_action": {
+                    "action": "toggle"
+                  }
+                }
+              ]
+            }
+          ],
+          "background": {
+            "opacity": 43,
+            "alignment": "center",
+            "size": "cover",
+            "repeat": "no-repeat",
+            "attachment": "fixed",
+            "image": "/api/image/serve/7abddc82be6cd368867697a7e0ac5a3c/original"
+          },
+          "cards": []
+        }
+      ]
+    }
+  }
+}

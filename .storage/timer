@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "timer",
+  "data": {
+    "items": [
+      {
+        "id": "towel_heater_time",
+        "name": "Towel Heater Timer",
+        "icon": "mdi:heating-coil",
+        "restore": false,
+        "duration": "0:00:00"
+      },
+      {
+        "id": "bathroom_exhaust_timer",
+        "name": "Bathroom Exhaust Timer",
+        "icon": "mdi:fan-clock",
+        "restore": true,
+        "duration": "0:00:00"
+      }
+    ]
+  }
+}

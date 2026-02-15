@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_resources",
+  "data": {
+    "items": [
+      {
+        "id": "ded128e5c8b24aafa181b3bb0ab1476e",
+        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=4443503755011",
+        "type": "module"
+      },
+      {
+        "id": "26e3ecbc12ed41a9bb1fe1fdcf2116d3",
+        "url": "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js?hacstag=1512800620130",
+        "type": "module"
+      },
+      {
+        "id": "ee42ff6e3e4949f5b65bc443d970249a",
+        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919311",
+        "type": "module"
+      },
+      {
+        "id": "5ccb0164cad543f690c134be949ae47e",
+        "url": "/hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js?hacstag=193372044232",
+        "type": "module"
+      },
+      {
+        "id": "42850d53fc124517b3a9d2214d159c9d",
+        "url": "/hacsfiles/mini-media-player/mini-media-player-bundle.js?hacstag=14852083811610",
+        "type": "module"
+      },
+      {
+        "id": "284df6993d904cbeb57481c51887864a",
+        "url": "/hacsfiles/apexcharts-card/apexcharts-card.js?hacstag=331701152223",
+        "type": "module"
+      },
+      {
+        "id": "52027517a7da47b1b86dfc3afdbd2859",
+        "url": "/hacsfiles/stack-in-card/stack-in-card.js?hacstag=248954055020",
+        "type": "module"
+      },
+      {
+        "id": "894b799cacbd44b688019fe2a9b89be4",
+        "url": "/hacsfiles/battery-state-card/battery-state-card.js?hacstag=256292682321",
+        "type": "module"
+      },
+      {
+        "id": "22100a80dccc4224b0887ac008150a4b",
+        "url": "/hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js?hacstag=142051833101",
+        "type": "module"
+      },
+      {
+        "id": "9e9b92e9d35f4c1db4aecb87f4fce4a3",
+        "url": "/hacsfiles/kiosk-mode/kiosk-mode.js?hacstag=4973191281001",
+        "type": "module"
+      },
+      {
+        "id": "af95ca00644c4ac981aad02ffceccf13",
+        "url": "/hacsfiles/material-you-utilities/material-you-utilities.min.js?hacstag=9677371532034",
+        "type": "module"
+      },
+      {
+        "id": "2bdcf704c2c24db99118f6a12f09bf56",
+        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892221",
+        "type": "module"
+      },
+      {
+        "id": "db939b64e0af4a979d0c4f32d84bf87f",
+        "url": "/hacsfiles/clock-weather-card/clock-weather-card.js?hacstag=522634019292",
+        "type": "module"
+      },
+      {
+        "id": "6a6dd4cbd4bf4317859eedf21e1fa238",
+        "url": "/hacsfiles/weather-chart-card/weather-chart-card.js?hacstag=6655018292411",
+        "type": "module"
+      },
+      {
+        "id": "d172ebd9532f481d982c66567e9b1625",
+        "url": "/hacsfiles/lovelace-hourly-weather/hourly-weather.js?hacstag=499270202680",
+        "type": "module"
+      },
+      {
+        "id": "26ab951779944e6384ec9230933e4883",
+        "url": "/hacsfiles/simple-weather-card/simple-weather-card-bundle.js?hacstag=172998062085",
+        "type": "module"
+      },
+      {
+        "id": "2c14fea9ad0e489a9135aee4eeb3cd64",
+        "url": "/hacsfiles/weather-card/weather-card.js?hacstag=192732636150",
+        "type": "module"
+      },
+      {
+        "id": "e4b4d240af24471c83a25b4d696535cf",
+        "url": "/hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js?hacstag=2465497471020",
+        "type": "module"
+      },
+      {
+        "id": "56a70683b5de4b84b9c4ff519254c049",
+        "url": "/hacsfiles/calendar-card-pro/calendar-card-pro.js?hacstag=939311749310",
+        "type": "module"
+      },
+      {
+        "id": "8a2c740776a341aeadc11826f5906640",
+        "url": "/hacsfiles/platinum-weather-card/platinum-weather-card.js?hacstag=488086721105",
+        "type": "module"
+      },
+      {
+        "id": "b68893630f164887a9f473de3eb48a47",
+        "url": "/hacsfiles/custom-sonos-card/custom-sonos-card.js?hacstag=449416816970",
+        "type": "module"
+      },
+      {
+        "id": "d1a150a8ec5748e8881a26142cc8ae27",
+        "url": "/hacsfiles/lovelace-plotly-graph-card/plotly-graph-card.js?hacstag=413812496335",
+        "type": "module"
+      },
+      {
+        "id": "be9625f5cef34e228635f5a26d38ef94",
+        "url": "/hacsfiles/lovelace-layout-card/layout-card.js?hacstag=156434866247",
+        "type": "module"
+      },
+      {
+        "id": "2e9b727729b8425db90f37a5492f442e",
+        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=366862031202580",
+        "type": "module"
+      },
+      {
+        "id": "4c2db81fb5b24e558dc720cc08dd63aa",
+        "url": "/hacsfiles/flex-horseshoe-card/flex-horseshoe-card.js?hacstag=20729272512",
+        "type": "module"
+      },
+      {
+        "id": "8d7ab811bc324589bf9860950a22f6a9",
+        "url": "/local/community/custom-brand-icons/custom-brand-icons.js",
+        "type": "module"
+      }
+    ]
+  }
+}

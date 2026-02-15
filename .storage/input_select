@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "minor_version": 2,
+  "key": "input_select",
+  "data": {
+    "items": [
+      {
+        "id": "shower_speakers_override",
+        "name": "Shower Speakers Override",
+        "icon": "mdi:cast-audio",
+        "options": [
+          "Auto",
+          "On",
+          "Off"
+        ]
+      }
+    ]
+  }
+}
