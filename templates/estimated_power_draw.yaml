@@ -1,0 +1,33 @@
+- sensor:
+    - name: "AV Rack Estimated Power Draw"
+      unit_of_measurement: "W"
+      state: >
+        {% set devices = {
+          'switch.ap7902_outlet_01_apc_smartups': 180,
+          'switch.ap7902_outlet_03_logitech_harmony_hub': 1,
+          'switch.ap7902_outlet_04_orei_hdmi_splitter': 1,
+          'switch.ap7902_outlet_05_sonos_port': 4,
+          'switch.ap7902_outlet_06_minidsp_flex': 11,
+          'switch.ap7902_outlet_08_buckeye_nc252x8_middle': 57,
+          'switch.ap7902_outlet_11_kaleidescape_strato_6tb': 20,
+          'switch.ap7902_outlet_13_buckeye_nc252x8_bottom': 57,
+          'switch.ap7902_outlet_14_lumagen_radiance_pro_4242': 2,
+          'switch.ap7902_outlet_15_buckeye_nc502x6_top': 74,
+          'switch.ap7902_outlet_16_behringer_sd8': 12,
+          'binary_sensor.richardb0rg_in_game': 120,
+          'switch.jbl_sdp_75_wol': 73,
+          'input_select.theater_speakers_intent': 200
+        } %}
+
+        {% set ns = namespace(total=0) %}
+
+        {% for entity, watts in devices.items() %}
+          {% set st = states(entity) %}
+          {% if st not in [None, 'unknown', 'unavailable'] %}
+            {% if st | lower == 'on' %}
+              {% set ns.total = ns.total + watts %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {{ ns.total }}
