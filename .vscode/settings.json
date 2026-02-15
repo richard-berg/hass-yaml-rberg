@@ -5,13 +5,13 @@
   },
 
   "yaml.schemas": {
-    "file:///config/git/hass-yaml-rberg/.vscode/schemas/blueprint-automation.json": [
+    "file:///config/.vscode/schemas/blueprint-automation.json": [
       "blueprints/automation/**/*.yaml"
     ],
-    "file:///config/git/hass-yaml-rberg/.vscode/schemas/blueprint-script.json": [
+    "file:///config/.vscode/schemas/blueprint-script.json": [
       "blueprints/script/**/*.yaml"
     ],
-    "file:///config/git/hass-yaml-rberg/.vscode/schemas/configuration.json": [
+    "file:///config/.vscode/schemas/configuration.json": [
       "configuration.yaml"
     ],
 
