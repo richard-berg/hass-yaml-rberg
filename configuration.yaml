@@ -4,7 +4,9 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
-
+  extra_module_url:
+    - /local/custom-brand-icons.js
+    
 panel_custom:
   - name: material-you-panel
     url_path: material-you-configuration
@@ -15,19 +17,21 @@ panel_custom:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+template: !include_dir_merge_list templates/
 
 http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
-
-shell_command:
-  turn_off_trinnov: echo -e 'id home_assistant; power_off_SECURED_FHZMCH48FE;' | nc 192.168.1.10 44100
 
 # Panasonic PJ
 media_player:
   - platform: pjlink
     host: 192.168.1.15
     password: ***REDACTED***
+
+# Metric export
+prometheus:
+  namespace: ha
 
 sensor:
   # AP7902 (Closet)
@@ -66,12 +70,6 @@ sensor:
     value_template: "{{((value | float) / 10) | float}}"
 
 switch:
-  - platform: wake_on_lan
-    mac: 4c.cc.6a.b5.8c.ef
-    name: "JBL SDP-75 WOL"
-    host: 192.168.1.10
-    turn_off:
-      service: shell_command.turn_off_trinnov
   - platform: snmp
     name: AP7902 Outlet 01 - APC SmartUPS
     #unique_id: 00:C0:B7:B3:3B:C6.outlet.01
