@@ -238,38 +238,6 @@
       target:
         entity_id: scene.amplifiers_off
   mode: single
-- id: '1753049932123'
-  alias: Lumagen via Harmony IR
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_boolean.lumagen_power_via_harmony_ir
-  conditions: []
-  actions:
-  - if:
-    - condition: state
-      entity_id: input_boolean.lumagen_power_via_harmony_ir
-      state: 'on'
-    then:
-    - action: remote.send_command
-      target:
-        device_id: 94e8a0806a6c8a747e54053d95a71617
-      data:
-        num_repeats: 1
-        delay_secs: 0.4
-        hold_secs: 0
-        device: '82303834'
-        command: PowerOn
-    else:
-    - action: remote.send_command
-      metadata: {}
-      data:
-        device: '82303834'
-        command: PowerOff
-      target:
-        device_id: 94e8a0806a6c8a747e54053d95a71617
-  mode: single
 - id: '1753065101071'
   alias: Hushbox Fans from Panasonic
   description: ''

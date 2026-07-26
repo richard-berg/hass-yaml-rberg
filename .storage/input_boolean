@@ -10,11 +10,6 @@
         "icon": "mdi:amplifier"
       },
       {
-        "id": "lumagen_power_via_harmony_ir",
-        "name": "Lumagen Power via Harmony IR",
-        "icon": "mdi:video"
-      },
-      {
         "id": "stage_speakers_intent",
         "name": "Stage Speakers Intent",
         "icon": "mdi:speaker-multiple"

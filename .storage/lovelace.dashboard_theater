@@ -44,9 +44,6 @@
                   "entity": "switch.ap7902_outlet_14_lumagen_radiance_pro_4242"
                 },
                 {
-                  "entity": "input_boolean.lumagen_power_via_harmony_ir"
-                },
-                {
                   "entity": "switch.ap7902_outlet_04_orei_hdmi_splitter"
                 }
               ]

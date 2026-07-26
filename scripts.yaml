@@ -362,3 +362,17 @@ x32_set_faders:
     data:
       value: '{{ target_level }}'
     action: number.set_value
+fix_lumagen_memb:
+  sequence:
+  - action: remote.send_command
+    metadata: {}
+    target:
+      entity_id: remote.theater
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: '82303834'
+      command: MemB
+  alias: Fix Lumagen (MemB)
+  description: ''
