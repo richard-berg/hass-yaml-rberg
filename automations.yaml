@@ -124,6 +124,124 @@
       linked_entity:
       - light.kitchen_perimeter_toe_kick
       - light.living_room_middle_walkway
+- id: '1762495960126'
+  alias: Towel Heater On at 6am
+  description: ''
+  triggers:
+  - trigger: time
+    at: 06:00:00
+    weekday:
+    - sun
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.bed_presence_ac6a30_bed_occupied_either
+    state:
+    - 'on'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - condition: numeric_state
+    entity_id: sensor.bedroom_temperature_humidity_xs_sensor_air_temperature
+    below: 75
+  actions:
+  - action: timer.start
+    metadata: {}
+    data:
+      duration: '3:30:00'
+    target:
+      entity_id: timer.towel_heater_time
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.master_bath_towel_heater_switch
+  mode: single
+- id: '1762496361435'
+  alias: Towel Heater Off
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - timer.towel_heater_time
+    to:
+    - idle
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - trigger: numeric_state
+    entity_id:
+    - sensor.master_bath_temp_sensor_air_temperature
+    for:
+      hours: 3
+      minutes: 0
+      seconds: 0
+    above: 83
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.master_bath_towel_heater_switch
+  mode: single
+- id: '1762497389794'
+  alias: Master Bath Exhaust On
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.bathroom_excess_humidity
+    above: 7
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.master_bathroom_exhaust_fan
+  - action: timer.start
+    metadata: {}
+    data:
+      duration: '2:00:00'
+    target:
+      entity_id: timer.bathroom_exhaust_timer
+  mode: single
+- id: '1762497552150'
+  alias: Master Bath Exhaust Off
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - timer.bathroom_exhaust_timer
+    to:
+    - idle
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+  - trigger: numeric_state
+    entity_id:
+    - sensor.bathroom_excess_humidity
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    below: 5
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.master_bathroom_exhaust_fan
+  mode: single
 - id: '1762714084180'
   alias: Kitchen Picos Button 1 = Hood 100%
   description: ''
@@ -193,6 +311,93 @@
   - action: script.hood_light_turn_off
     data: {}
   mode: single
+- id: '1763531858926'
+  alias: Master Bath Paddle Pico Actions
+  description: ''
+  use_blueprint:
+    path: WyspSedai/bp-lutron-caseta-pico-paddle-remote-button-actions.yaml
+    input:
+      pico_id: 260279aadaca549e8c0cdc497596600b
+      short_click_action_on:
+      - choose:
+        - conditions:
+          - condition: or
+            conditions:
+            - condition: device
+              type: is_on
+              device_id: 094de55a912016a06abbb7ec96e82115
+              entity_id: 97baf3134c5acc97ad55deed5ddf1419
+              domain: light
+            - condition: device
+              type: is_on
+              device_id: a32857ea15fbf679499e58bd6d57b2b4
+              entity_id: 32fa27ff34e235716bdeb6e6ae5f35d4
+              domain: light
+            - condition: device
+              type: is_on
+              device_id: 92e3eb9b8a4da67cd05cc8627d102085
+              entity_id: 425542331c23f2a4a4754ea1dedbd944
+              domain: light
+          sequence:
+          - action: scene.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: scene.master_bath_bright
+        - conditions:
+          - condition: or
+            conditions:
+            - condition: time
+              after: '22:30:00'
+              before: 07:30:00
+            - type: is_occupied
+              condition: device
+              device_id: 5bd0e3491ac1fb0a554ef10cb77bb744
+              entity_id: dbc76dced389a7a2fd72f34a33a2d8ed
+              domain: binary_sensor
+          sequence:
+          - action: scene.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+              - scene.pantry_smart_bridge_master_bath_night_mode
+        default:
+        - action: scene.turn_on
+          metadata: {}
+          data: {}
+          target:
+            entity_id:
+            - scene.pantry_smart_bridge_master_bath_normal
+      short_click_action_off:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.master_bath_off
+      double_click_action_off:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.master_bath_off
+          - scene.bedroom_off
+      long_click_action_on:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.pantry_smart_bridge_master_bath_night_mode
+      delay_hold: 750
+      delay_click: 300
+      double_click_action_on:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.master_bath_bright
 - id: '1763718870699'
   alias: Stage Speakers Intent -> On/Off
   description: ''
