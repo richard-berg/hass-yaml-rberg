@@ -34,6 +34,9 @@
                 },
                 {
                   "entity": "switch.kodi_power_state"
+                },
+                {
+                  "entity": "button.ugoos_power_toggle_from_harmony_ir"
                 }
               ]
             },

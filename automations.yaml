@@ -364,3 +364,39 @@
       metadata: {}
       data: {}
   mode: restart
+- id: '1767769579705'
+  alias: Route PC Audio -> Trinnov
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.route_sd8_trinnov_intent
+  conditions:
+  - condition: state
+    entity_id: input_boolean.route_sd8_trinnov_intent
+    state:
+    - 'on'
+  actions:
+  - action: script.route_pc_trinnov
+    metadata: {}
+    data: {}
+  mode: restart
+- id: '1771698642363'
+  alias: Ugoos Power Toggle via Harmony IR
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.ugoos_power_toggle_via_harmony_ir
+  conditions: []
+  actions:
+  - action: remote.send_command
+    target:
+      device_id: 94e8a0806a6c8a747e54053d95a71617
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      device: '82707702'
+      command: PowerToggle
+  mode: single

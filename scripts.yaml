@@ -1,85 +1,43 @@
-trinnov_startup_appletv:
-  alias: Trinnov Startup - AppleTV
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 4
+route_pc_trinnov:
+  sequence:
+  - parallel:
+    - sequence:
+      - action: script.turn_on_trinnov_wait
+        metadata: {}
+        data: {}
+      - action: select.select_option
+        metadata: {}
+        target:
+          entity_id: select.jbl_sdp_75_12583992_source
+        data:
+          option: BEHRINGER SD8 (5L/6R)
+    - sequence:
+      - action: script.wait_for_x32
+        metadata: {}
+        data: {}
+      - parallel:
+        - action: script.x32_unmute_channels
+          metadata: {}
+          data:
+            mute_switches:
+            - switch.behringer_x32_rack_08_51_dc_matrix_5_on
+            - switch.behringer_x32_rack_08_51_dc_channel_17_on
+            - switch.behringer_x32_rack_08_51_dc_main_on
+        - action: script.x32_set_faders
+          metadata: {}
+          data:
+            faders:
+            - number.behringer_x32_rack_08_51_dc_matrix_5_fader
+            target_level: 0.475073307752609
+        - action: script.x32_set_faders
+          metadata: {}
+          data:
+            faders:
+            - number.behringer_x32_rack_08_51_dc_channel_17_fader
+            - number.behringer_x32_rack_08_51_dc_main_fader
+            target_level: 0.749755620956
+  alias: Route PC Audio -> Trinnov
   description: ''
-trinnov_startup_xbox_360:
-  alias: Trinnov Startup - Xbox 360
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 1
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:microsoft-xbox
-trinnov_startup_laptop_aux:
-  alias: Trinnov Startup - Laptop Aux
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 0
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:laptop
-trinnov_startup_xbox_one:
-  alias: Trinnov Startup - Xbox One
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 2
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:microsoft-xbox
-trinnov_startup_kaleidescape:
-  alias: Trinnov Startup - Kaleidescape
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 3
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:movie-open
-trinnov_startup_bluray:
-  alias: Trinnov Startup - BluRay
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 5
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:disc
-trinnov_startup_desktop:
-  alias: Trinnov Startup - Desktop
-  use_blueprint:
-    path: richardberg/slow_device_startup.yaml
-    input:
-      media_entity: media_player.jbl_sdp_75_12583992
-      remote_entity: remote.jbl_sdp_75_12583992
-      startup_commands:
-      - source_set 6
-      repeat_turnon_after: 20
-  description: ''
-  icon: mdi:desktop-tower
 play_sonos_on_stage:
   sequence:
   - parallel:
@@ -298,6 +256,80 @@ text_to_speech_via_x32:
   description: ''
   mode: queued
   max: 10
+turn_on_buckeye_middle_wait:
+  sequence:
+  - condition: state
+    state:
+    - 'off'
+    entity_id: switch.ap7902_outlet_08_buckeye_nc252x8_middle
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.ap7902_outlet_08_buckeye_nc252x8_middle
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  alias: Turn on Buckeye Middle & Wait
+  description: ''
+turn_on_trinnov_wait:
+  sequence:
+  - if:
+    - condition: state
+      entity_id: switch.ap7902_outlet_07_jbl_sdp_75
+      state:
+      - 'off'
+    then:
+    - action: switch.turn_on
+      metadata: {}
+      target:
+        entity_id: switch.ap7902_outlet_07_jbl_sdp_75
+      data: {}
+    - action: notify.mobile_app_richards_iphone_12_mini
+      metadata: {}
+      data:
+        message: Trinnov power was cut; WOL won't work; you need to hit the physical
+          button
+        title: Theater Issue
+    - stop: WOL won't work
+  - delay:
+      seconds: 3
+  - variables:
+      seconds_since_change: "{{ (as_timestamp(now()) - as_timestamp(states.remote.jbl_sdp_75_12583992.last_changed))
+        | float }}  \n"
+      remaining_delay: '{{ [20 - seconds_since_change, 0] | max }}
+
+        '
+  - delay:
+      seconds: '{{ remaining_delay }}'
+  - if:
+    - condition: state
+      entity_id: sensor.jbl_sdp_75_12583992_power_status
+      state:
+      - ready
+    then:
+    - stop: Trinnov already on after stabilizing
+  - action: remote.turn_on
+    metadata: {}
+    target:
+      entity_id: remote.jbl_sdp_75_12583992
+    data: {}
+  - wait_template: '{{ states(''sensor.jbl_sdp_75_12583992_power_status'') == ''ready''
+      }}'
+    timeout: 00:01:40
+    continue_on_timeout: true
+  - if:
+    - condition: template
+      value_template: '{{ wait.completed == false }}'
+    then:
+    - action: notify.persistent_notification
+      metadata: {}
+      data:
+        message: timed out waiting for Trinnov
+  alias: Turn on Trinnov & Wait
+  description: ''
 x32_unmute_channels:
   alias: X32 Unmute Channels
   description: Workaround for X32 startup auto-mute state desync
@@ -362,6 +394,289 @@ x32_set_faders:
     data:
       value: '{{ target_level }}'
     action: number.set_value
+turn_on_pt_rz660_wait:
+  sequence:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - variables:
+      seconds_since_change: "{{ (as_timestamp(now()) - as_timestamp(states.media_player.pt_rz660.last_changed))
+        | float }}  \n"
+      remaining_delay: '{{ [10 - seconds_since_change, 0] | max }}
+
+        '
+  - delay:
+      seconds: '{{ remaining_delay }}'
+  - if:
+    - condition: state
+      entity_id: media_player.pt_rz660
+      state:
+      - 'off'
+      - standby
+    then:
+    - action: media_player.turn_on
+      metadata: {}
+      target:
+        entity_id: media_player.pt_rz660
+      data: {}
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
+  alias: Turn on PT-RZ660 & Wait
+  description: ''
+play_ugoos_on_panasonic:
+  sequence:
+  - parallel:
+    - action: script.turn_on_pt_rz660_wait
+      metadata: {}
+      data: {}
+    - action: switch.turn_on
+      metadata: {}
+      target:
+        entity_id: switch.ap7902_outlet_04_orei_hdmi_splitter
+      data: {}
+    - action: script.turn_on_lumagen_wait
+      metadata: {}
+      data: {}
+    - sequence:
+      - action: script.turn_on_trinnov_wait
+        metadata: {}
+        data: {}
+      - action: select.select_option
+        metadata: {}
+        target:
+          entity_id: select.jbl_sdp_75_12583992_source
+        data:
+          option: Ugoos AM6B+
+    - action: script.turn_on_ugoos_wait
+      metadata: {}
+      data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: script.fix_lumagen_memb
+    metadata: {}
+    data: {}
+  alias: Play Ugoos on Panasonic PJ
+  description: ''
+turn_on_ugoos_wait:
+  sequence:
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+      - media_player.coreelec
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.ap7902_outlet_12_vertical_pdu_players
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - variables:
+      seconds_since_change: "{{ (as_timestamp(now()) - as_timestamp(states.switch.kodi_power_state.last_changed))
+        | float }}  \n"
+      remaining_delay: '{{ [5 - seconds_since_change, 0] | max }}
+
+        '
+  - delay:
+      seconds: '{{ remaining_delay }}'
+  - if:
+    - condition: state
+      entity_id: switch.kodi_power_state
+      state:
+      - 'on'
+    then:
+    - stop: Ugoos was already on
+  - action: button.press
+    metadata: {}
+    target:
+      entity_id: button.ugoos_power_toggle_from_harmony_ir
+    data: {}
+  - wait_template: '{{ is_state(''switch.kodi_power_state'', ''on'') }}
+
+      '
+    timeout: 00:00:30
+    continue_on_timeout: true
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+      - media_player.coreelec
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - if:
+    - condition: state
+      entity_id: switch.kodi_power_state
+      state:
+      - 'off'
+    then:
+    - action: notify.persistent_notification
+      metadata: {}
+      data:
+        message: timed out waiting for Ugoos
+  alias: Turn on Ugoos & Wait
+  description: ''
+turn_on_lumagen_wait:
+  sequence:
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.ap7902_outlet_14_lumagen_radiance_pro_4242
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: button.press
+    metadata: {}
+    target:
+      entity_id: button.lumagen_power_on_via_harmony_ir
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  alias: Turn on Lumagen & Wait
+  description: ''
+turn_off_ugoos:
+  sequence:
+  - action: homeassistant.update_entity
+    metadata: {}
+    data:
+      entity_id:
+      - media_player.coreelec
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.kodi_power_state
+    data: {}
+  alias: Turn off Ugoos
+  description: ''
+play_appletv_on_panasonic_pj:
+  sequence:
+  - parallel:
+    - action: script.turn_on_pt_rz660_wait
+      metadata: {}
+      data: {}
+    - action: switch.turn_on
+      metadata: {}
+      target:
+        entity_id: switch.ap7902_outlet_04_orei_hdmi_splitter
+      data: {}
+    - action: script.turn_on_lumagen_wait
+      metadata: {}
+      data: {}
+    - sequence:
+      - action: script.turn_on_trinnov_wait
+        metadata: {}
+        data: {}
+      - action: select.select_option
+        metadata: {}
+        target:
+          entity_id: select.jbl_sdp_75_12583992_source
+        data:
+          option: AppleTV
+    - action: script.turn_on_appletv_ht_wait
+      metadata: {}
+      data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: script.fix_lumagen_memb
+    metadata: {}
+    data: {}
+  alias: Play AppleTV on Panasonic PJ
+  description: ''
+turn_on_appletv_ht_wait:
+  sequence:
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.ap7902_outlet_12_vertical_pdu_players
+    data: {}
+  - variables:
+      seconds_since_remote_change: '{{ (as_timestamp(now()) - as_timestamp(states.remote.home_theater.last_changed))
+        | float }}
+
+        '
+      seconds_since_media_change: "{{ (as_timestamp(now()) - as_timestamp(states.media_player.home_theater.last_changed))
+        | float }}        \n"
+      remaining_delay: '{{ [10 - seconds_since_remote_change, 10 - seconds_since_media_change,
+        0] | max }}
+
+        '
+  - delay:
+      seconds: '{{ remaining_delay }}'
+  - if:
+    - condition: state
+      entity_id: remote.home_theater
+      state:
+      - 'off'
+    then:
+    - action: remote.turn_on
+      metadata: {}
+      target:
+        entity_id: remote.home_theater
+      data: {}
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 1
+        milliseconds: 0
+  - if:
+    - condition: template
+      value_template: '{{ states(''media_player.home_theater'') not in (''off'', ''unknown'',
+        ''unavailable'') }}'
+    then:
+    - stop: AppleTV already on
+  - action: media_player.turn_on
+    metadata: {}
+    target:
+      entity_id: media_player.home_theater
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  alias: Turn on AppleTV (HT) & Wait
+  description: ''
+toggle_trinnov_mute:
+  sequence:
+  - action: switch.toggle
+    metadata: {}
+    target:
+      entity_id: switch.jbl_sdp_75_12583992_mute
+    data: {}
+  alias: Toggle Trinnov Mute
+  description: ''
 fix_lumagen_memb:
   sequence:
   - action: remote.send_command

@@ -31,7 +31,7 @@
       },
       {
         "id": "trinnov_keepalive",
-        "name": "Trinnov Keepalive",
+        "name": "Trinnov Manual Keepalive",
         "icon": "mdi:equalizer"
       }
     ]
