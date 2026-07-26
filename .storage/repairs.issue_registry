@@ -255,6 +255,132 @@
         "domain": "hacs",
         "is_persistent": false,
         "issue_id": "restart_required_698002523_tags/v0.1.21"
+      },
+      {
+        "created": "2026-02-21T15:23:20.000197+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_718875576_tags/v1.0.5"
+      },
+      {
+        "created": "2026-03-21T02:04:59.170885+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.1.4"
+      },
+      {
+        "created": "2026-03-21T02:06:09.983087+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v2.10.0"
+      },
+      {
+        "created": "2026-03-29T03:11:28.870867+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_718875576_tags/v1.0.7"
+      },
+      {
+        "created": "2026-03-29T03:11:35.150326+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v2.10.1"
+      },
+      {
+        "created": "2026-04-03T03:14:22.333663+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_668937922_tags/2.2.0"
+      },
+      {
+        "created": "2026-04-03T03:14:31.627374+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v2.10.2"
+      },
+      {
+        "created": "2026-04-10T23:11:20.902247+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_718875576_tags/v1.1.0"
+      },
+      {
+        "created": "2026-04-10T23:12:06.136001+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1073082321_tags/v1.0.2"
+      },
+      {
+        "created": "2026-06-06T02:44:22.022200+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_718875576_tags/v1.1.5"
+      },
+      {
+        "created": "2026-06-06T02:44:37.301006+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.2.1"
+      },
+      {
+        "created": "2026-06-06T22:57:20.198644+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v2.13.5"
+      },
+      {
+        "created": "2026-06-06T23:03:18.274620+00:00",
+        "dismissed_version": "2026.6.1",
+        "domain": "homeassistant",
+        "is_persistent": false,
+        "issue_id": "deprecated_yaml_pjlink"
+      },
+      {
+        "created": "2026-06-24T05:40:47.989175+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.2.4"
+      },
+      {
+        "created": "2026-07-05T17:20:59.103560+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.2.5"
+      },
+      {
+        "created": "2026-07-05T17:21:35.097360+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v3.0.0"
+      },
+      {
+        "created": "2026-07-12T20:15:21.313913+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v3.0.2"
+      },
+      {
+        "created": "2026-07-26T17:07:51.862089+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1289599380_tags/v1.2.3"
       }
     ]
   }
