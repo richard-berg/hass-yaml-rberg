@@ -6,7 +6,7 @@
     "items": [
       {
         "id": "ded128e5c8b24aafa181b3bb0ab1476e",
-        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=4443503755011",
+        "url": "/hacsfiles/lovelace-mushroom/mushroom.js?hacstag=444350375511",
         "type": "module"
       },
       {
@@ -16,17 +16,17 @@
       },
       {
         "id": "ee42ff6e3e4949f5b65bc443d970249a",
-        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919311",
+        "url": "/hacsfiles/Bubble-Card/bubble-card.js?hacstag=680112919325",
         "type": "module"
       },
       {
         "id": "5ccb0164cad543f690c134be949ae47e",
-        "url": "/hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js?hacstag=193372044232",
+        "url": "/hacsfiles/lovelace-xiaomi-vacuum-map-card/xiaomi-vacuum-map-card.js?hacstag=193372044241",
         "type": "module"
       },
       {
         "id": "42850d53fc124517b3a9d2214d159c9d",
-        "url": "/hacsfiles/mini-media-player/mini-media-player-bundle.js?hacstag=14852083811610",
+        "url": "/hacsfiles/mini-media-player/mini-media-player-bundle.js?hacstag=14852083811612",
         "type": "module"
       },
       {
@@ -41,7 +41,7 @@
       },
       {
         "id": "894b799cacbd44b688019fe2a9b89be4",
-        "url": "/hacsfiles/battery-state-card/battery-state-card.js?hacstag=256292682321",
+        "url": "/hacsfiles/battery-state-card/battery-state-card.js?hacstag=256292682420",
         "type": "module"
       },
       {
@@ -51,22 +51,22 @@
       },
       {
         "id": "9e9b92e9d35f4c1db4aecb87f4fce4a3",
-        "url": "/hacsfiles/kiosk-mode/kiosk-mode.js?hacstag=4973191281001",
+        "url": "/hacsfiles/kiosk-mode/kiosk-mode.js?hacstag=4973191281402",
         "type": "module"
       },
       {
         "id": "af95ca00644c4ac981aad02ffceccf13",
-        "url": "/hacsfiles/material-you-utilities/material-you-utilities.min.js?hacstag=9677371532034",
+        "url": "/hacsfiles/material-you-utilities/material-you-utilities.min.js?hacstag=9677371532121",
         "type": "module"
       },
       {
         "id": "2bdcf704c2c24db99118f6a12f09bf56",
-        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892221",
+        "url": "/hacsfiles/better-thermostat-ui-card/better-thermostat-ui-card.js?hacstag=439367892323",
         "type": "module"
       },
       {
         "id": "db939b64e0af4a979d0c4f32d84bf87f",
-        "url": "/hacsfiles/clock-weather-card/clock-weather-card.js?hacstag=522634019292",
+        "url": "/hacsfiles/clock-weather-card/clock-weather-card.js?hacstag=522634019294",
         "type": "module"
       },
       {
@@ -91,12 +91,12 @@
       },
       {
         "id": "e4b4d240af24471c83a25b4d696535cf",
-        "url": "/hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js?hacstag=2465497471020",
+        "url": "/hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js?hacstag=2465497471031",
         "type": "module"
       },
       {
         "id": "56a70683b5de4b84b9c4ff519254c049",
-        "url": "/hacsfiles/calendar-card-pro/calendar-card-pro.js?hacstag=939311749310",
+        "url": "/hacsfiles/calendar-card-pro/calendar-card-pro.js?hacstag=939311749320",
         "type": "module"
       },
       {
@@ -106,7 +106,7 @@
       },
       {
         "id": "b68893630f164887a9f473de3eb48a47",
-        "url": "/hacsfiles/custom-sonos-card/custom-sonos-card.js?hacstag=449416816970",
+        "url": "/hacsfiles/custom-sonos-card/custom-sonos-card.js?hacstag=4494168161071",
         "type": "module"
       },
       {
@@ -121,12 +121,12 @@
       },
       {
         "id": "2e9b727729b8425db90f37a5492f442e",
-        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=366862031202580",
+        "url": "/hacsfiles/custom-brand-icons/custom-brand-icons.js?hacstag=3668620312026074",
         "type": "module"
       },
       {
         "id": "4c2db81fb5b24e558dc720cc08dd63aa",
-        "url": "/hacsfiles/flex-horseshoe-card/flex-horseshoe-card.js?hacstag=20729272512",
+        "url": "/hacsfiles/flex-horseshoe-card/flex-horseshoe-card.js?hacstag=207292725547",
         "type": "module"
       },
       {
