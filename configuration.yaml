@@ -23,12 +23,6 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
-# Panasonic PJ
-media_player:
-  - platform: pjlink
-    host: 192.168.1.15
-    password: ***REDACTED***
-
 # Metric export
 prometheus:
   namespace: ha
