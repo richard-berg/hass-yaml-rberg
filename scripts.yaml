@@ -448,6 +448,115 @@ turn_on_trinnov_wait:
         message: timed out waiting for Trinnov
   alias: Turn on Trinnov & Wait
   description: ''
+av_rack_fan_power:
+  alias: Fan Control
+  icon: mdi:fan-auto
+  mode: restart
+  description: 'Robust AC Infinity fan controller with retries and state verification.
+    Entities (number, state, active_mode) must match the AC Infinity naming convention.
+
+    '
+  fields:
+    fan_power:
+      name: Fan Power
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 10
+    fan_numbers:
+      name: Fan Power Entities
+      description: Select the 'On Power' entity of one or more AC Infinity control
+        ports
+      required: true
+      selector:
+        entity:
+          domain: number
+          multiple: true
+    notify_devices:
+      name: Notify Devices (optional)
+      description: Select one or more mobile_app devices
+      required: false
+      selector:
+        device:
+          integration: mobile_app
+          multiple: true
+    send_persistent:
+      name: Create Persistent Notification
+      required: false
+      default: true
+      selector:
+        boolean:
+  sequence:
+  - variables:
+      desired_power: '{{ fan_power | float(999) }}'
+      max_retries: 3
+      retry_interval: 15
+      retry_count: 0
+  - repeat:
+      while:
+      - condition: template
+        value_template: '{{ retry_count < max_retries }}'
+      sequence:
+      - variables:
+          retry_count: '{{ retry_count + 1 }}'
+      - repeat:
+          for_each: '{{ fan_numbers }}'
+          sequence:
+          - variables:
+              base: "{{ repeat.item\n   | replace('number.', '')\n   | replace('_on_power',
+                '') }}\n"
+          - action: select.select_option
+            target:
+              entity_id: select.{{ base }}_active_mode
+            data:
+              option: 'On'
+          - action: number.set_value
+            target:
+              entity_id: '{{ repeat.item }}'
+            data:
+              value: '{{ desired_power }}'
+      - wait_template: "{% set p = desired_power %} {% for num in fan_numbers %}\n
+          \ {% set base = num\n     | replace('number.', '')\n     | replace('_on_power',
+          '') %}\n  {% set cur_sensor = states('sensor.' ~ base ~ '_current_power')
+          | float(999) %}\n  {% set cur_number = states(num) | float(999) %}\n  {%
+          if cur_sensor != p or cur_number != p %}\n    {{ false }}\n  {% endif %}\n{%
+          endfor %} {{ true }}\n"
+        timeout:
+          seconds: '{{ retry_interval }}'
+        continue_on_timeout: true
+      - if:
+        - condition: template
+          value_template: '{{ wait.completed }}'
+        then:
+        - stop: Fans reached desired state
+  - variables:
+      message: 'Fan(s) {{ fan_numbers }} failed to reach power {{ desired_power }}
+        after {{ max_retries }} attempts.
+
+        '
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ send_persistent | default(true) }}'
+      sequence:
+      - action: persistent_notification.create
+        data:
+          title: Fan Control Failure
+          message: '{{ message }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ notify_devices is defined and notify_devices | length
+          > 0 }}
+
+          '
+      sequence:
+      - action: notify.mobile_app
+        data:
+          title: Fan Control Failure
+          message: '{{ message }}'
+          target: '{{ notify_devices }}'
 x32_unmute_channels:
   alias: X32 Unmute Channels
   description: Workaround for X32 startup auto-mute state desync
@@ -675,6 +784,44 @@ turn_on_lumagen_wait:
       seconds: 30
       milliseconds: 0
   alias: Turn on Lumagen & Wait
+  description: ''
+theater_off:
+  sequence:
+  - parallel:
+    - action: switch.turn_off
+      metadata: {}
+      target:
+        entity_id:
+        - switch.ap7902_outlet_04_orei_hdmi_splitter
+      data: {}
+    - action: media_player.turn_off
+      metadata: {}
+      target:
+        entity_id:
+        - media_player.pt_rz660
+        - media_player.home_theater
+      data: {}
+    - action: remote.turn_off
+      metadata: {}
+      target:
+        entity_id:
+        - remote.kaleidescape_strato_0509_00010116
+        - remote.jvc_projector
+      data: {}
+    - action: input_boolean.turn_off
+      metadata: {}
+      target:
+        entity_id: input_boolean.all_amplifiers
+      data: {}
+    - action: button.press
+      metadata: {}
+      target:
+        entity_id: button.lumagen_power_off_via_harmony_ir
+      data: {}
+    - action: script.turn_off_ugoos
+      metadata: {}
+      data: {}
+  alias: Theater Off (except Trinnov)
   description: ''
 turn_off_ugoos:
   sequence:

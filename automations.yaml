@@ -1,61 +1,133 @@
 - id: '1753028337724'
-  alias: All Amplifiers (Switch)
+  alias: Theater Speakers Intent -> On/Off
   description: ''
   triggers:
   - trigger: state
     entity_id:
     - input_boolean.all_amplifiers
+    id: all_amplifiers_switch
   conditions: []
   actions:
-  - if:
-    - condition: state
-      entity_id: input_boolean.all_amplifiers
-      state: 'on'
-    then:
-    - action: scene.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: scene.amplifiers_on
-    else:
-    - action: scene.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: scene.amplifiers_off
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.all_amplifiers
+        state:
+        - 'off'
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.amplifiers_off
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.all_amplifiers
+        state:
+        - 'on'
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.theater_speakers_on
   mode: single
 - id: '1753065101071'
-  alias: Hushbox Fans from Panasonic
+  alias: Projector State(s) -> Hushbox Fans
   description: ''
   triggers:
   - trigger: state
     entity_id:
     - media_player.pt_rz660
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 10
+  - trigger: state
+    entity_id:
+    - sensor.jvc_projector_power_status
   conditions: []
   actions:
-  - if:
-    - condition: state
-      entity_id: media_player.pt_rz660
-      state: 'on'
-    then:
-    - action: scene.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: scene.hushbox_fans_medium
-    else:
-    - action: scene.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: scene.hushbox_fans_off
-  mode: single
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.pt_rz660
+        state:
+        - playing
+      - type: is_on
+        condition: device
+        device_id: 33f818a96184e965cd8c56eb0eba63ab
+        entity_id: eeaa889b075ac5218a96bf4f8b606d3f
+        domain: binary_sensor
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 6
+          fan_numbers:
+          - number.pj_box_exhaust_port_1_on_power
+          - number.pj_box_exhaust_port_2_on_power
+          notify_devices:
+          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+    - conditions:
+      - condition: state
+        entity_id: media_player.pt_rz660
+        state:
+        - 'on'
+        - playing
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 4
+          fan_numbers:
+          - number.pj_box_exhaust_port_1_on_power
+          - number.pj_box_exhaust_port_2_on_power
+          notify_devices:
+          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+    - conditions:
+      - type: is_on
+        condition: device
+        device_id: 33f818a96184e965cd8c56eb0eba63ab
+        entity_id: eeaa889b075ac5218a96bf4f8b606d3f
+        domain: binary_sensor
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 2
+          fan_numbers:
+          - number.pj_box_exhaust_port_1_on_power
+          - number.pj_box_exhaust_port_2_on_power
+          notify_devices:
+          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+    default:
+    - delay:
+        hours: 0
+        minutes: 4
+        seconds: 0
+        milliseconds: 0
+    - if:
+      - condition: device
+        type: is_off
+        device_id: 33f818a96184e965cd8c56eb0eba63ab
+        entity_id: cd0935d6bbb3c8258216dfa0d774c352
+        domain: remote
+      - condition: state
+        entity_id: media_player.pt_rz660
+        state:
+        - 'off'
+      then:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 0
+          fan_numbers:
+          - number.pj_box_exhaust_port_1_on_power
+          - number.pj_box_exhaust_port_2_on_power
+  mode: restart
 - id: '1753667995762'
-  alias: Theater AppleTV Playing
+  alias: Theater Source Playing -> Lights Off
   description: ''
   triggers:
   - device_id: f1190f320fdcaeb1a9e3a070c82fda73
@@ -63,33 +135,58 @@
     entity_id: 3e167fd64cd16bb64fc523b7ab2adfee
     type: playing
     trigger: device
+  - device_id: bcaa713937d57a653d79b3f40ea29d9c
+    domain: media_player
+    entity_id: ccc938119a135e0b64c3f555047ca499
+    type: playing
+    trigger: device
+  - device_id: d152a8f5357756be42aef342164a322d
+    domain: media_player
+    entity_id: 3390be6250586c3ab8f8090066bc91d5
+    type: playing
+    trigger: device
   conditions:
   - condition: state
-    entity_id: switch.ap7902_outlet_15_buckeye_nc502x6_top
-    state: 'on'
+    state:
+    - 'on'
+    entity_id: input_boolean.all_amplifiers
   actions:
   - action: scene.turn_on
     metadata: {}
     data: {}
     target:
       entity_id: scene.theater_off
-  mode: single
+  mode: restart
 - id: '1753668429461'
-  alias: Theater AppleTV Stop Playing
+  alias: Theater Source Stop Playing -> Lights Up
   description: ''
   triggers:
   - trigger: state
     entity_id:
     - media_player.home_theater
     from: playing
-  conditions: []
+  - trigger: state
+    entity_id:
+    - media_player.kaleidescape_strato_0509_00010116
+    from:
+    - playing
+  - trigger: state
+    entity_id:
+    - media_player.coreelec
+    from:
+    - playing
+  conditions:
+  - condition: state
+    state:
+    - 'on'
+    entity_id: input_boolean.all_amplifiers
   actions:
   - action: scene.turn_on
     metadata: {}
     data: {}
     target:
       entity_id: scene.theater_eating
-  mode: single
+  mode: restart
 - id: '1755320957689'
   alias: Low Battery Notifications & Actions
   description: ''
@@ -597,6 +694,76 @@
     metadata: {}
     data: {}
   mode: restart
+- id: '1763256212772'
+  alias: AV Rack Estimated Power Draw -> Fan Speed
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.av_rack_estimated_power_draw
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 3
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.av_rack_estimated_power_draw
+        below: 210
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 2
+          fan_numbers:
+          - number.av_closet_port_1_on_power
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.av_rack_estimated_power_draw
+        above: 210
+        below: 320
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 3
+          fan_numbers:
+          - number.av_closet_port_1_on_power
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.av_rack_estimated_power_draw
+        above: 320
+        below: 550
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 4
+          fan_numbers:
+          - number.av_closet_port_1_on_power
+          notify_devices:
+          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.av_rack_estimated_power_draw
+        above: 550
+      sequence:
+      - action: script.av_rack_fan_power
+        metadata: {}
+        data:
+          send_persistent: true
+          fan_power: 5
+          fan_numbers:
+          - number.av_closet_port_1_on_power
+          notify_devices:
+          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+  mode: queued
+  max: 2
 - id: '1763263699031'
   alias: Bedroom Pico Actions
   description: ''

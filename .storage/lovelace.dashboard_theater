@@ -233,19 +233,10 @@
                   "entity": "sensor.jbl_sdp_75_12583992_audiosync"
                 },
                 {
-                  "entity": "binary_sensor.jbl_sdp_75_12583992_bypass"
-                },
-                {
                   "entity": "sensor.jbl_sdp_75_12583992_decoder"
                 },
                 {
-                  "entity": "binary_sensor.jbl_sdp_75_12583992_dim"
-                },
-                {
                   "entity": "sensor.jbl_sdp_75_12583992_none"
-                },
-                {
-                  "entity": "binary_sensor.jbl_sdp_75_12583992_mute"
                 },
                 {
                   "entity": "sensor.jbl_sdp_75_12583992_preset"
@@ -273,6 +264,24 @@
                 },
                 {
                   "entity": "select.jbl_sdp_75_12583992_source"
+                },
+                {
+                  "entity": "select.jbl_sdp_75_12583992_upmixer"
+                },
+                {
+                  "entity": "button.jbl_sdp_75_12583992_toggle_level_alignment"
+                },
+                {
+                  "entity": "button.jbl_sdp_75_12583992_toggle_acoustic_correction"
+                },
+                {
+                  "entity": "switch.jbl_sdp_75_12583992_dim"
+                },
+                {
+                  "entity": "switch.jbl_sdp_75_12583992_mute"
+                },
+                {
+                  "entity": "binary_sensor.mute_sensor"
                 }
               ],
               "title": "JBL SDP-75 (12583992)"
