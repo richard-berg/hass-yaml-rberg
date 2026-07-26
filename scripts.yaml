@@ -80,3 +80,285 @@ trinnov_startup_desktop:
       repeat_turnon_after: 20
   description: ''
   icon: mdi:desktop-tower
+play_sonos_on_stage:
+  sequence:
+  - parallel:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.ap7902_outlet_05_sonos_port
+        - switch.ap7901_outlet_3_rf_venue_distro4
+    - if:
+      - condition: state
+        entity_id: switch.ap7901_outlet_2_behringer_sd16
+        state:
+        - 'off'
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.ap7901_outlet_2_behringer_sd16
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 6
+          milliseconds: 0
+    - if:
+      - condition: state
+        entity_id: switch.ap7901_outlet_1_powersoft_quattrocanali_2404_dsp_d
+        state:
+        - 'off'
+      then:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id:
+          - switch.ap7901_outlet_1_powersoft_quattrocanali_2404_dsp_d
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 30
+          milliseconds: 0
+    - sequence:
+      - action: script.wait_for_x32
+        metadata: {}
+        data: {}
+      - parallel:
+        - action: script.x32_unmute_channels
+          metadata: {}
+          data:
+            mute_switches:
+            - switch.behringer_x32_rack_08_51_dc_channel_29_on
+            - switch.behringer_x32_rack_08_51_dc_matrix_1_on
+            - switch.behringer_x32_rack_08_51_dc_matrix_3_on
+            - switch.behringer_x32_rack_08_51_dc_main_on
+        - action: script.x32_set_faders
+          metadata: {}
+          data:
+            faders:
+            - number.behringer_x32_rack_08_51_dc_matrix_1_fader
+            - number.behringer_x32_rack_08_51_dc_matrix_3_fader
+            target_level: 0.749755620956
+        - action: script.x32_set_faders
+          metadata: {}
+          data:
+            faders:
+            - number.behringer_x32_rack_08_51_dc_main_fader
+            target_level: 0.5
+        - action: script.x32_set_faders
+          metadata: {}
+          data:
+            faders:
+            - number.behringer_x32_rack_08_51_dc_channel_29_fader
+            target_level: 0.3
+  alias: Turn on Stage PA & Wait
+  description: ''
+  mode: single
+turn_off_stage_pa_but_not_prereqs:
+  sequence:
+  - action: number.set_value
+    metadata: {}
+    data:
+      value: '0'
+    target:
+      entity_id:
+      - number.behringer_x32_rack_08_51_dc_matrix_1_fader
+      - number.behringer_x32_rack_08_51_dc_matrix_2_fader
+      - number.behringer_x32_rack_08_51_dc_matrix_3_fader
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.behringer_x32_rack_08_51_dc_matrix_1_on
+      - switch.behringer_x32_rack_08_51_dc_matrix_2_on
+      - switch.behringer_x32_rack_08_51_dc_matrix_3_on
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 1
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.ap7901_outlet_1_powersoft_quattrocanali_2404_dsp_d
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.ap7901_outlet_2_behringer_sd16
+      - switch.ap7901_outlet_3_rf_venue_distro4
+  alias: Turn off Stage PA (but not prereqs)
+  description: ''
+  mode: restart
+wait_for_x32:
+  sequence:
+  - condition: state
+    state:
+    - 'off'
+    entity_id: binary_sensor.x32_ready
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.indoor_smart_plug_1
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - wait_template: "{{ states('sensor.behringer_x32_rack_08_51_dc_channel_17_fader_db')\n
+      \  not in ('unavailable', 'unknown') }}\n"
+    timeout: 00:00:30
+    continue_on_timeout: true
+  - if:
+    - condition: template
+      value_template: '{{ not wait.completed }}'
+    then:
+    - action: notify.persistent_notification
+      metadata: {}
+      data:
+        message: timed out waiting for x32
+  alias: Turn on X32 & Wait
+  description: ''
+text_to_speech_via_x32:
+  sequence:
+  - parallel:
+    - if:
+      - condition: template
+        value_template: '{{ shower }}'
+      then:
+      - action: input_boolean.turn_on
+        metadata: {}
+        target:
+          entity_id: input_boolean.shower_speakers_intent
+        data: {}
+      - wait_template: '{{ is_state(''script.turn_on_buckeye_middle_wait'', ''on'')
+          }}'
+        timeout: 00:00:01
+        continue_on_timeout: true
+      - wait_template: '{{ is_state(''script.turn_on_buckeye_middle_wait'', ''off'')
+          }}'
+        timeout: 00:01:00
+        continue_on_timeout: false
+    - if:
+      - condition: template
+        value_template: '{{ stage }}'
+      then:
+      - action: input_boolean.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_boolean.stage_speakers_intent
+      - wait_template: '{{ is_state(''script.play_sonos_on_stage'', ''on'') }}'
+        timeout: 00:00:01
+        continue_on_timeout: true
+      - wait_template: '{{ is_state(''script.play_sonos_on_stage'', ''off'') }}'
+        timeout: 00:01:00
+        continue_on_timeout: false
+  - action: tts.speak
+    metadata: {}
+    target:
+      entity_id: tts.piper
+    data:
+      cache: true
+      media_player_entity_id: media_player.living_room
+      message: '{{ message }}'
+  fields:
+    message:
+      selector:
+        text:
+          multiline: false
+      name: Message
+      required: true
+    shower:
+      selector:
+        boolean:
+      name: Shower
+      description: Speak text via the Shower speaker?
+      required: true
+    stage:
+      selector:
+        boolean:
+      name: Stage
+      description: Speak text via Stage PA?
+      required: true
+  alias: Text-to-speech via X32
+  description: ''
+  mode: queued
+  max: 10
+x32_unmute_channels:
+  alias: X32 Unmute Channels
+  description: Workaround for X32 startup auto-mute state desync
+  mode: queued
+  fields:
+    mute_switches:
+      name: Mute Switches
+      required: true
+      selector:
+        entity:
+          domain: switch
+          multiple: true
+  sequence:
+  - target:
+      entity_id: '{{ mute_switches }}'
+    action: switch.turn_off
+  - wait_template: "{% set entities = expand(mute_switches) %} {{ entities | selectattr('state',
+      'eq', 'off') | list | count\n   == entities | count }}\n"
+    timeout: 00:00:02
+    continue_on_timeout: true
+  - delay:
+      milliseconds: 100
+  - target:
+      entity_id: '{{ mute_switches }}'
+    action: switch.turn_on
+  max: 10
+x32_set_faders:
+  alias: X32 Set Faders
+  description: Workaround for X32 startup fader state desync
+  mode: queued
+  fields:
+    faders:
+      name: Channel Faders
+      required: true
+      selector:
+        entity:
+          domain: number
+          multiple: true
+    target_level:
+      name: Target Level
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.1
+          mode: box
+  sequence:
+  - target:
+      entity_id: '{{ faders }}'
+    data:
+      value: 0
+    action: number.set_value
+  - wait_template: "{% set entities = expand(faders) %} {{ entities\n   | selectattr('state',
+      'equalto', '0')\n   | list\n   | count\n   == entities | count }}\n"
+    timeout: 00:00:02
+    continue_on_timeout: true
+  - delay:
+      milliseconds: 100
+  - target:
+      entity_id: '{{ faders }}'
+    data:
+      value: '{{ target_level }}'
+    action: number.set_value

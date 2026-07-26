@@ -370,3 +370,29 @@
       linked_entity:
       - light.kitchen_perimeter_toe_kick
       - light.living_room_middle_walkway
+- id: '1763718870699'
+  alias: Stage Speakers Intent -> On/Off
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.stage_speakers_intent
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.stage_speakers_intent
+        state:
+        - 'on'
+      sequence:
+      - action: script.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: script.play_sonos_on_stage
+    default:
+    - action: script.turn_off_stage_pa_but_not_prereqs
+      metadata: {}
+      data: {}
+  mode: restart
