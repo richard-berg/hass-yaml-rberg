@@ -278,6 +278,27 @@ turn_off_stage_pa_but_not_prereqs:
   alias: Turn off Stage PA (but not prereqs)
   description: ''
   mode: restart
+all_lights_off:
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id: scene.all_off
+    data: {}
+  - action: light.turn_off
+    metadata: {}
+    target:
+      device_id:
+      - 3ef14d9f47cdc2d5b322bf9e0b3832f3
+      - a3b5fe0375bdbf750114e6a0eeffbc22
+    data: {}
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      device_id: 31b79d077da12dfdff693d3c22926c20
+    data: {}
+  alias: All Lights Off
+  description: ''
 wait_for_x32:
   sequence:
   - condition: state
@@ -307,6 +328,28 @@ wait_for_x32:
       data:
         message: timed out waiting for x32
   alias: Turn on X32 & Wait
+  description: ''
+all_lights_on:
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id:
+      - scene.all_on
+    data: {}
+  - action: light.turn_on
+    metadata: {}
+    target:
+      device_id:
+      - 3ef14d9f47cdc2d5b322bf9e0b3832f3
+      - a3b5fe0375bdbf750114e6a0eeffbc22
+    data: {}
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      device_id: 31b79d077da12dfdff693d3c22926c20
+    data: {}
+  alias: All Lights On
   description: ''
 text_to_speech_via_x32:
   sequence:
