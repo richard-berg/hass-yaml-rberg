@@ -78,6 +78,44 @@ hood_light_turn_off:
         domain: light
   alias: Hood Light Turn Off
   description: ''
+play_sonos_in_shower:
+  sequence:
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.ap7902_outlet_05_sonos_port
+    data: {}
+  - action: input_boolean.turn_on
+    metadata: {}
+    target:
+      entity_id: input_boolean.shower_speakers_intent
+    data: {}
+  - action: script.wait_for_x32
+    metadata: {}
+    data: {}
+  - parallel:
+    - action: script.x32_set_faders
+      metadata: {}
+      data:
+        faders:
+        - number.behringer_x32_rack_08_51_dc_channel_29_fader
+        target_level: 0.3
+    - action: script.x32_set_faders
+      metadata: {}
+      data:
+        faders:
+        - number.behringer_x32_rack_08_51_dc_bus_8_fader
+        - number.behringer_x32_rack_08_51_dc_matrix_4_fader
+        target_level: 0.749755620956
+    - action: script.x32_unmute_channels
+      metadata: {}
+      data:
+        mute_switches:
+        - switch.behringer_x32_rack_08_51_dc_channel_29_on
+        - switch.behringer_x32_rack_08_51_dc_bus_8_on
+        - switch.behringer_x32_rack_08_51_dc_matrix_4_on
+  alias: Play Sonos in Shower
+  description: ''
 route_pc_trinnov:
   sequence:
   - parallel:

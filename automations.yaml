@@ -563,6 +563,40 @@
   - action: script.hood_light_turn_off
     data: {}
   mode: single
+- id: '1762717512497'
+  alias: Sonos -> Shower Speaker On
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.shower_speakers_override
+  - trigger: state
+    entity_id:
+    - media_player.living_room
+  conditions:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_select.shower_speakers_override
+      state:
+      - 'On'
+    - condition: and
+      conditions:
+      - condition: device
+        device_id: 0c1f8ea854c2ec1efbc680ff983ed446
+        domain: media_player
+        entity_id: 778b6f83c04a9510ac8a0e5e29660d1d
+        type: is_playing
+      - condition: state
+        entity_id: input_select.shower_speakers_override
+        state:
+        - Auto
+        - 'On'
+  actions:
+  - action: script.play_sonos_in_shower
+    metadata: {}
+    data: {}
+  mode: restart
 - id: '1763263699031'
   alias: Bedroom Pico Actions
   description: ''
@@ -755,6 +789,63 @@
     - action: script.turn_off_stage_pa_but_not_prereqs
       metadata: {}
       data: {}
+  mode: restart
+- id: '1767758673593'
+  alias: Sonos -> Shower Speaker Intent Off
+  description: ''
+  triggers:
+  - trigger: state
+    id: sonos_idle
+    entity_id:
+    - media_player.living_room
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    not_to:
+    - playing
+    - buffering
+  - trigger: state
+    entity_id:
+    - input_select.shower_speakers_override
+    id: shower_speaker_override
+  conditions:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_select.shower_speakers_override
+      state:
+      - 'Off'
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_select.shower_speakers_override
+        state:
+        - Auto
+      - condition: or
+        conditions:
+        - condition: trigger
+          id:
+          - sonos_idle
+        - condition: state
+          entity_id: media_player.living_room
+          state:
+          - 'off'
+          - idle
+          - paused
+          - standby
+          - unavailable
+          - unknown
+          for:
+            hours: 0
+            minutes: 1
+            seconds: 0
+  actions:
+  - action: input_boolean.turn_off
+    metadata: {}
+    target:
+      entity_id: input_boolean.shower_speakers_intent
+    data: {}
   mode: restart
 - id: '1767769579705'
   alias: Route PC Audio -> Trinnov
