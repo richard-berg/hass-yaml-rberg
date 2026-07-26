@@ -1,217 +1,3 @@
-- id: '1743363578054'
-  alias: Kitchen Pico Near Microwave Button 1
-  description: ''
-  triggers:
-  - device_id: 71d5577f22453b64c6a4338f05625de4
-    domain: lutron_caseta
-    type: press
-    subtype: button_1
-    trigger: device
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_off
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 0
-          milliseconds: 600
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 1
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 100
-    - conditions:
-      - condition: device
-        type: is_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 100
-  mode: single
-- id: '1743364023845'
-  alias: Kitchen Pico Near Microwave Button 3
-  description: ''
-  triggers:
-  - device_id: 71d5577f22453b64c6a4338f05625de4
-    domain: lutron_caseta
-    type: press
-    subtype: button_3
-    trigger: device
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 1
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 250
-      - type: turn_off
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-  mode: single
-- id: '1743365603143'
-  alias: Kitchen Pico Near Microwave Button 4
-  description: ''
-  triggers:
-  - device_id: 71d5577f22453b64c6a4338f05625de4
-    domain: lutron_caseta
-    type: press
-    subtype: 'off'
-    trigger: device
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 1
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 250
-      - type: turn_off
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-  mode: single
-- id: '1743365729065'
-  alias: Kitchen Pico Near Microwave Button 2
-  description: ''
-  triggers:
-  - device_id: 71d5577f22453b64c6a4338f05625de4
-    domain: lutron_caseta
-    type: press
-    subtype: button_2
-    trigger: device
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: device
-        type: is_off
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 0
-          milliseconds: 600
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 1
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 20
-    - conditions:
-      - condition: device
-        type: is_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
-      - type: turn_on
-        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
-        entity_id: f0699f2433d6dbee13bd435f115109c8
-        domain: light
-        brightness_pct: 20
-  mode: single
-- id: '1748768216487'
-  alias: Scene Controller Big Button Pressed
-  description: ''
-  triggers:
-  - device_id: 3c8af79616e79efac56c870b59bce97b
-    domain: zwave_js
-    type: event.value_notification.central_scene
-    property: scene
-    property_key: '005'
-    endpoint: 0
-    command_class: 91
-    subtype: Endpoint 0 Scene 005
-    metadata: {}
-    trigger: device
-    value: 0
-  conditions: []
-  actions:
-  - type: toggle
-    device_id: cecd0cf1679e0e002fa52d07cd91402a
-    entity_id: b8422cdcd431deb12f5f14c946d1b478
-    domain: light
-  mode: single
 - id: '1753028337724'
   alias: All Amplifiers (Switch)
   description: ''
@@ -338,6 +124,75 @@
       linked_entity:
       - light.kitchen_perimeter_toe_kick
       - light.living_room_middle_walkway
+- id: '1762714084180'
+  alias: Kitchen Picos Button 1 = Hood 100%
+  description: ''
+  triggers:
+  - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    trigger: device
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    trigger: device
+  conditions: []
+  actions:
+  - action: script.hood_light_turn_on
+    data:
+      brightness: 100
+  mode: single
+- id: '1762714140165'
+  alias: Kitchen Picos Button 2 = Hood 20%
+  description: ''
+  triggers:
+  - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    trigger: device
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    trigger: device
+  conditions: []
+  actions:
+  - action: script.hood_light_turn_on
+    data:
+      brightness: 20
+  mode: single
+- id: '1762714197327'
+  alias: Kitchen Picos Button 3/4 = Hood Off
+  description: ''
+  triggers:
+  - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    trigger: device
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    trigger: device
+  - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    trigger: device
+  - device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    trigger: device
+  conditions: []
+  actions:
+  - action: script.hood_light_turn_off
+    data: {}
+  mode: single
 - id: '1763718870699'
   alias: Stage Speakers Intent -> On/Off
   description: ''

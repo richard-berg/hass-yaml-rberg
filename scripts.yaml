@@ -1,3 +1,83 @@
+hood_light_turn_on:
+  sequence:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          milliseconds: 600
+      - target:
+          entity_id: f0699f2433d6dbee13bd435f115109c8
+        data:
+          brightness_pct: 1
+        action: light.turn_on
+      - delay:
+          seconds: 1
+      - target:
+          entity_id: f0699f2433d6dbee13bd435f115109c8
+        data:
+          brightness_pct: '{{ brightness | float }}'
+        action: light.turn_on
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          seconds: 1
+      - target:
+          entity_id: f0699f2433d6dbee13bd435f115109c8
+        data:
+          brightness_pct: '{{ brightness | float }}'
+        action: light.turn_on
+  alias: Hood Light Turn On
+  description: ''
+  fields:
+    brightness:
+      name: Brightness
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 100
+          mode: slider
+hood_light_turn_off:
+  sequence:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+      sequence:
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
+      - type: turn_on
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+        brightness_pct: 1
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 250
+      - type: turn_off
+        device_id: 3ef14d9f47cdc2d5b322bf9e0b3832f3
+        entity_id: f0699f2433d6dbee13bd435f115109c8
+        domain: light
+  alias: Hood Light Turn Off
+  description: ''
 route_pc_trinnov:
   sequence:
   - parallel:
