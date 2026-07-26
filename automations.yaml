@@ -1014,6 +1014,142 @@
       entity_id: input_boolean.shower_speakers_intent
     data: {}
   mode: restart
+- id: '1767760108240'
+  alias: Buckeye Middle Amp Power <- Shower || Theater Intent
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.shower_speakers_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.all_amplifiers
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: input_boolean.shower_speakers_intent
+          state:
+          - 'on'
+        - condition: state
+          entity_id: input_boolean.all_amplifiers
+          state:
+          - 'on'
+      sequence:
+      - action: script.turn_on_buckeye_middle_wait
+        metadata: {}
+        data: {}
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      target:
+        entity_id: switch.ap7902_outlet_08_buckeye_nc252x8_middle
+      data: {}
+  mode: restart
+- id: '1767762962038'
+  alias: X32 Power <- PC || Shower || Stage || Route Audio
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.shower_speakers_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.route_sd8_trinnov_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.stage_speakers_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.pc_audio_intent
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: input_boolean.pc_audio_intent
+          state:
+          - 'off'
+        - condition: state
+          entity_id: input_boolean.shower_speakers_intent
+          state:
+          - 'off'
+        - condition: state
+          entity_id: input_boolean.stage_speakers_intent
+          state:
+          - 'off'
+        - condition: state
+          entity_id: input_boolean.route_sd8_trinnov_intent
+          state:
+          - 'off'
+      sequence:
+      - sequence:
+        - delay:
+            hours: 0
+            minutes: 1
+            seconds: 0
+            milliseconds: 0
+        - action: switch.turn_off
+          metadata: {}
+          data: {}
+          target:
+            entity_id: switch.indoor_smart_plug_1
+    default:
+    - action: switch.turn_on
+      metadata: {}
+      target:
+        entity_id: switch.indoor_smart_plug_1
+      data: {}
+  mode: restart
+- id: '1767764542939'
+  alias: SD8 Power <- Shower || Stage || Route Audio
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.shower_speakers_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.route_sd8_trinnov_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.stage_speakers_intent
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: input_boolean.shower_speakers_intent
+          state:
+          - 'off'
+        - condition: state
+          entity_id: input_boolean.stage_speakers_intent
+          state:
+          - 'off'
+        - condition: state
+          entity_id: input_boolean.route_sd8_trinnov_intent
+          state:
+          - 'off'
+      sequence:
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.ap7902_outlet_16_behringer_sd8
+    default:
+    - action: switch.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: switch.ap7902_outlet_16_behringer_sd8
+  mode: restart
 - id: '1767769579705'
   alias: Route PC Audio -> Trinnov
   description: ''
@@ -1030,6 +1166,50 @@
   - action: script.route_pc_trinnov
     metadata: {}
     data: {}
+  mode: restart
+- id: '1767772321566'
+  alias: Trinnov Power OFF <- Theater || Keepalive || Route Audio || UC Activity
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.all_amplifiers
+  - trigger: state
+    entity_id:
+    - input_boolean.route_sd8_trinnov_intent
+  - trigger: state
+    entity_id:
+    - input_boolean.trinnov_keepalive
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          state:
+          - 'off'
+          entity_id: input_boolean.all_amplifiers
+        - condition: state
+          state:
+          - 'off'
+          entity_id: input_boolean.route_sd8_trinnov_intent
+        - condition: state
+          state:
+          - 'off'
+          entity_id: input_boolean.trinnov_keepalive
+      sequence:
+      - sequence:
+        - delay:
+            hours: 0
+            minutes: 30
+            seconds: 0
+            milliseconds: 0
+        - action: remote.turn_off
+          metadata: {}
+          target:
+            entity_id: remote.jbl_sdp_75_12583992
+          data: {}
   mode: restart
 - id: '1771698642363'
   alias: Ugoos Power Toggle via Harmony IR
