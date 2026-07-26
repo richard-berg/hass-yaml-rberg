@@ -4,10 +4,14 @@ backup/
 *.db-shm
 *.db-wal
 deps/
+generated/
 .ha_run.lock
+.ha_mcp/
 .HA_VERSION
 home-assistant.log*
 image/
+.cache/
+.cloud/
 
 # --- Misc assets I might wanna version someday, but not here ---
 custom_components/
@@ -22,8 +26,33 @@ blueprints/**/homeassistant
 git/
 themes/material_you
 
-# --- Secrets ---
-*.pem
+# --- Secrets: never commit ---
 secrets.yaml
 .ssh
+*.pem
+*.key
+*.crt
+*.cert
+harmony_*.conf
+
+# --- .storage: ignore by default, allowlist only non-sensitive metadata ---
+.storage/*
+# UI-configured dashboards (Lovelace)
+!.storage/lovelace.*
+!.storage/lovelace_dashboards
+!.storage/lovelace_resources
+# Registries (area/device/entity/label metadata — no secrets)
+!.storage/core.area_registry
+!.storage/core.device_registry
+!.storage/core.entity_registry
+!.storage/core.label_registry
+# UI-configured helpers
+!.storage/input_boolean
+!.storage/input_button
+!.storage/input_select
+!.storage/timer
+# Other safe state
+!.storage/core.logger
+!.storage/homeassistant.exposed_entities
+!.storage/repairs.issue_registry
 
