@@ -262,3 +262,82 @@ switch:
     baseoid: 1.3.6.1.4.1.318.1.1.4.4.2.1.3.8
     payload_on: 1
     payload_off: 2
+
+
+# ha-artnet-led configuration for two Chauvet SlimPAR H6 USB uplights
+# Running in 6-channel mode via sACN (E1.31)
+# Add this block to your Home Assistant configuration.yaml
+#
+# Each DMX channel is exposed as a dimmer light entity (brightness 0–255).
+# Control via scenes: light.turn_on with brightness: <dmx_value>
+# Fading is handled by ha-artnet-led's transition parameter (software).
+#
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ Chauvet SlimPAR H6 USB — 6-Channel DMX Personality                 │
+# │ Source: RGBAW+UV, 6× 10W hex-color LEDs, 23° beam / 41° field      │
+# ├─────┬──────────────┬────────────────────────────────────────────────┤
+# │ Ch  │ Function     │ Values                                         │
+# ├─────┼──────────────┼────────────────────────────────────────────────┤
+# │  1  │ Red          │ 0–255                                          │
+# │  2  │ Green        │ 0–255                                          │
+# │  3  │ Blue         │ 0–255                                          │
+# │  4  │ Amber        │ 0–255                                          │
+# │  5  │ White        │ 0–255                                          │
+# │  6  │ UV           │ 0–255                                          │
+# └─────┴──────────────┴────────────────────────────────────────────────┘
+#
+# Design notes:
+#   - No master dimmer channel in 6ch mode. To dim the fixture, scale
+#     all color values proportionally in the scene definition.
+#   - No hardware dimmer speed channel. Fading between scenes is done
+#     via ha-artnet-led's transition parameter (seconds) on service
+#     calls, e.g.: light.turn_on with transition: 3
+#   - Fixture 1 starts at d001, Fixture 2 at d007.
+
+light:
+  - platform: artnet_led
+    host: 192.168.1.181
+    node_type: sacn
+    universes:
+      1:
+        send_partial_universe: true
+        devices:
+          # ── Stage Uplight 1 — DMX d001–d006 ──
+          - channel: 1
+            name: stage_uplight_1_red
+            type: dimmer
+          - channel: 2
+            name: stage_uplight_1_green
+            type: dimmer
+          - channel: 3
+            name: stage_uplight_1_blue
+            type: dimmer
+          - channel: 4
+            name: stage_uplight_1_amber
+            type: dimmer
+          - channel: 5
+            name: stage_uplight_1_white
+            type: dimmer
+          - channel: 6
+            name: stage_uplight_1_uv
+            type: dimmer
+
+          # ── Stage Uplight 2 — DMX d007–d012 ──
+          - channel: 7
+            name: stage_uplight_2_red
+            type: dimmer
+          - channel: 8
+            name: stage_uplight_2_green
+            type: dimmer
+          - channel: 9
+            name: stage_uplight_2_blue
+            type: dimmer
+          - channel: 10
+            name: stage_uplight_2_amber
+            type: dimmer
+          - channel: 11
+            name: stage_uplight_2_white
+            type: dimmer
+          - channel: 12
+            name: stage_uplight_2_uv
+            type: dimmer
