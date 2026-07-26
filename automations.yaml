@@ -124,6 +124,258 @@
       linked_entity:
       - light.kitchen_perimeter_toe_kick
       - light.living_room_middle_walkway
+- id: '1762232087131'
+  alias: Bedroom Scene Big Button Toggle
+  description: ''
+  triggers:
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '005'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 005
+    trigger: device
+    value: 0
+    id: scene5_single
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '005'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 005
+    trigger: device
+    value: 3
+    id: scene5_double
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: a3b5fe0375bdbf750114e6a0eeffbc22
+        entity_id: 2af22a0e4681b240d8d574752be6b078
+        domain: light
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_off
+      - choose:
+        - conditions:
+          - condition: trigger
+            id:
+            - scene5_double
+          sequence:
+          - action: scene.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+              - scene.theater_off
+              - scene.master_bath_off
+    - conditions: []
+      sequence:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id:
+            - scene5_single
+          sequence:
+          - action: scene.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+              - scene.bedroom_2
+        - conditions:
+          - condition: trigger
+            id:
+            - scene5_double
+          sequence:
+          - action: scene.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: scene.bedroom_bright
+  mode: single
+- id: '1762234260245'
+  alias: Bedroom Scene Buttons
+  description: ''
+  triggers:
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '001'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 001
+    trigger: device
+    value: 0
+    id: scene1_single
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '002'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 002
+    trigger: device
+    value: 0
+    id: scene2_single
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '003'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 003
+    trigger: device
+    value: 0
+    id: scene3_single
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '004'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 004
+    trigger: device
+    value: 0
+    id: scene4_single
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - scene1_single
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_bright
+    - conditions:
+      - condition: trigger
+        id:
+        - scene2_single
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.bedroom_2
+    - conditions:
+      - condition: trigger
+        id:
+        - scene3_single
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.bedroom_3
+    - conditions:
+      - condition: trigger
+        id:
+        - scene4_single
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.bedroom_4
+  mode: single
+- id: '1762234639580'
+  alias: Bedroom Scene Controller LEDs
+  description: ''
+  triggers:
+  - type: changed_states
+    device_id: a3b5fe0375bdbf750114e6a0eeffbc22
+    entity_id: 2af22a0e4681b240d8d574752be6b078
+    domain: light
+    trigger: device
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '001'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 001
+    trigger: device
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '002'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 002
+    trigger: device
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '003'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 003
+    trigger: device
+  - device_id: 64eea79d6d1f951d25d7b88e71619ea9
+    domain: zwave_js
+    type: event.value_notification.central_scene
+    property: scene
+    property_key: '004'
+    endpoint: 0
+    command_class: 91
+    subtype: Endpoint 0 Scene 004
+    trigger: device
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: a3b5fe0375bdbf750114e6a0eeffbc22
+        entity_id: 2af22a0e4681b240d8d574752be6b078
+        domain: light
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - switch.scene_controller_0x46_button_4_indication_binary
+          - switch.scene_controller_0x47_button_5_indication_binary
+          - switch.scene_controller_0x44_button_2_indication_binary
+          - switch.scene_controller_0x45_button_3_indication_binary
+          - switch.scene_controller_0x43_button_1_indication_binary
+    default:
+    - action: switch.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id:
+        - switch.scene_controller_0x46_button_4_indication_binary
+        - switch.scene_controller_0x47_button_5_indication_binary
+        - switch.scene_controller_0x44_button_2_indication_binary
+        - switch.scene_controller_0x45_button_3_indication_binary
+        - switch.scene_controller_0x43_button_1_indication_binary
+  mode: queued
+  max: 10
 - id: '1762495960126'
   alias: Towel Heater On at 6am
   description: ''
@@ -311,6 +563,86 @@
   - action: script.hood_light_turn_off
     data: {}
   mode: single
+- id: '1763263699031'
+  alias: Bedroom Pico Actions
+  description: ''
+  use_blueprint:
+    path: richardberg/lutron_pico_scene_actions.yaml
+    input:
+      pico_1: 12f4d2359499333aef507027fa2a53c9
+      pico_2: de5c1327a586176f74d1717458cc5560
+      button4_doubleclick_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.master_bath_off
+          - scene.bedroom_off
+          - scene.theater_off
+      button4_press_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_off
+      button4_hold_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.all_off
+          - scene.bedroom_off
+      - action: script.hood_light_turn_off
+        metadata: {}
+        data: {}
+      button1_hold_action: []
+      button1_press_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_bright
+      button2_press_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_2
+      button3_press_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_5
+      button3_hold_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_4
+      button3_doubleclick_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_twilight
+      button2_hold_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: scene.bedroom_3
+      button1_doubleclick_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.bedroom_bright
+          - scene.theater_bright
+          - scene.master_bath_bright
 - id: '1763531858926'
   alias: Master Bath Paddle Pico Actions
   description: ''
