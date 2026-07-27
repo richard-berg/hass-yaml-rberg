@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "input_number",
+  "data": {
+    "items": [
+      {
+        "id": "stage_uplights_brightness",
+        "name": "Stage Uplights Brightness",
+        "icon": "mdi:brightness-6",
+        "min": 0.0,
+        "max": 100.0,
+        "step": 1.0,
+        "unit_of_measurement": "%",
+        "mode": "slider"
+      },
+      {
+        "id": "stage_uplight_1_brightness",
+        "name": "Stage Uplight 1 Brightness",
+        "icon": "mdi:brightness-5",
+        "min": 0.0,
+        "max": 100.0,
+        "step": 1.0,
+        "unit_of_measurement": "%",
+        "mode": "slider"
+      },
+      {
+        "id": "stage_uplight_2_brightness",
+        "name": "Stage Uplight 2 Brightness",
+        "icon": "mdi:brightness-5",
+        "min": 0.0,
+        "max": 100.0,
+        "step": 1.0,
+        "unit_of_measurement": "%",
+        "mode": "slider"
+      }
+    ]
+  }
+}

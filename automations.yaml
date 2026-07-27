@@ -1331,3 +1331,225 @@
       device: '82707702'
       command: PowerToggle
   mode: single
+- id: '1785125142066'
+  alias: Stage Uplights — master preset fan-out
+  description: When the master preset changes, apply it to both fixture presets. Fixtures
+    can then be independently overridden.
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_select.stage_uplights_preset
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    target:
+      entity_id:
+      - input_select.stage_uplight_1_preset
+      - input_select.stage_uplight_2_preset
+    data:
+      option: '{{ trigger.to_state.state }}'
+  mode: restart
+- id: '1785125142070'
+  alias: Stage Uplights — master brightness fan-out
+  description: When the master brightness changes, apply it to both fixture brightness
+    sliders. Fixtures can then be independently overridden.
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_number.stage_uplights_brightness
+  conditions: []
+  actions:
+  - action: input_number.set_value
+    target:
+      entity_id:
+      - input_number.stage_uplight_1_brightness
+      - input_number.stage_uplight_2_brightness
+    data:
+      value: '{{ trigger.to_state.state | float }}'
+  mode: restart
+- id: '1785125169568'
+  alias: Stage Uplight 2 — apply preset & brightness
+  description: Reads input_select.stage_uplight_2_preset + input_number.stage_uplight_2_brightness
+    and writes the 6 DMX channels. Preset recipes are the canonical color source-of-truth;
+    brightness scales them uniformly.
+  triggers:
+  - entity_id:
+    - input_select.stage_uplight_2_preset
+    - input_number.stage_uplight_2_brightness
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - variables:
+      presets:
+        Jazz Gold:
+          r: 210
+          g: 95
+          b: 0
+          a: 255
+          w: 25
+          uv: 0
+        Midnight Blue:
+          r: 0
+          g: 0
+          b: 255
+          a: 0
+          w: 0
+          uv: 90
+        Velvet Purple:
+          r: 170
+          g: 0
+          b: 220
+          a: 0
+          w: 0
+          uv: 110
+        Slow Burn:
+          r: 255
+          g: 0
+          b: 0
+          a: 130
+          w: 0
+          uv: 0
+        Cool Jazz:
+          r: 0
+          g: 110
+          b: 200
+          a: 0
+          w: 25
+          uv: 0
+        Intermission:
+          r: 60
+          g: 25
+          b: 0
+          a: 200
+          w: 255
+          uv: 0
+        'Off':
+          r: 0
+          g: 0
+          b: 0
+          a: 0
+          w: 0
+          uv: 0
+      preset_name: '{{ states(''input_select.stage_uplight_2_preset'') }}'
+      brightness_pct: '{{ states(''input_number.stage_uplight_2_brightness'') | float(0)
+        }}'
+      mix: '{{ presets.get(preset_name, presets[''Off'']) }}'
+      scale: '{{ brightness_pct / 100 }}'
+  - action: scene.apply
+    data:
+      entities:
+        light.stage_uplight_2_red:
+          brightness: '{{ (mix.r * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.r * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_2_green:
+          brightness: '{{ (mix.g * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.g * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_2_blue:
+          brightness: '{{ (mix.b * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.b * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_2_amber:
+          brightness: '{{ (mix.a * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.a * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_2_white:
+          brightness: '{{ (mix.w * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.w * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_2_uv:
+          brightness: '{{ (mix.uv * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.uv * scale) | round(0) | int > 0 else ''off''
+            }}'
+  mode: restart
+- id: '1785125169564'
+  alias: Stage Uplight 1 — apply preset & brightness
+  description: Reads input_select.stage_uplight_1_preset + input_number.stage_uplight_1_brightness
+    and writes the 6 DMX channels. Preset recipes are the canonical color source-of-truth;
+    brightness scales them uniformly.
+  triggers:
+  - entity_id:
+    - input_select.stage_uplight_1_preset
+    - input_number.stage_uplight_1_brightness
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - variables:
+      presets:
+        Jazz Gold:
+          r: 210
+          g: 95
+          b: 0
+          a: 255
+          w: 25
+          uv: 0
+        Midnight Blue:
+          r: 0
+          g: 0
+          b: 255
+          a: 0
+          w: 0
+          uv: 90
+        Velvet Purple:
+          r: 170
+          g: 0
+          b: 220
+          a: 0
+          w: 0
+          uv: 110
+        Slow Burn:
+          r: 255
+          g: 0
+          b: 0
+          a: 130
+          w: 0
+          uv: 0
+        Cool Jazz:
+          r: 0
+          g: 110
+          b: 200
+          a: 0
+          w: 25
+          uv: 0
+        Intermission:
+          r: 60
+          g: 25
+          b: 0
+          a: 200
+          w: 255
+          uv: 0
+        'Off':
+          r: 0
+          g: 0
+          b: 0
+          a: 0
+          w: 0
+          uv: 0
+      preset_name: '{{ states(''input_select.stage_uplight_1_preset'') }}'
+      brightness_pct: '{{ states(''input_number.stage_uplight_1_brightness'') | float(0)
+        }}'
+      mix: '{{ presets.get(preset_name, presets[''Off'']) }}'
+      scale: '{{ brightness_pct / 100 }}'
+  - action: scene.apply
+    data:
+      entities:
+        light.stage_uplight_1_red:
+          brightness: '{{ (mix.r * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.r * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_1_green:
+          brightness: '{{ (mix.g * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.g * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_1_blue:
+          brightness: '{{ (mix.b * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.b * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_1_amber:
+          brightness: '{{ (mix.a * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.a * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_1_white:
+          brightness: '{{ (mix.w * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.w * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_1_uv:
+          brightness: '{{ (mix.uv * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.uv * scale) | round(0) | int > 0 else ''off''
+            }}'
+  mode: restart

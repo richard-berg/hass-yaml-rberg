@@ -49,6 +49,7 @@ harmony_*.conf
 # UI-configured helpers
 !.storage/input_boolean
 !.storage/input_button
+!.storage/input_number
 !.storage/input_select
 !.storage/timer
 # Other safe state

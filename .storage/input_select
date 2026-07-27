@@ -13,6 +13,48 @@
           "On",
           "Off"
         ]
+      },
+      {
+        "id": "stage_uplights_preset",
+        "name": "Stage Uplights Preset",
+        "icon": "mdi:palette",
+        "options": [
+          "Jazz Gold",
+          "Midnight Blue",
+          "Velvet Purple",
+          "Slow Burn",
+          "Cool Jazz",
+          "Intermission",
+          "Off"
+        ]
+      },
+      {
+        "id": "stage_uplight_1_preset",
+        "name": "Stage Uplight 1 Preset",
+        "icon": "mdi:palette-outline",
+        "options": [
+          "Jazz Gold",
+          "Midnight Blue",
+          "Velvet Purple",
+          "Slow Burn",
+          "Cool Jazz",
+          "Intermission",
+          "Off"
+        ]
+      },
+      {
+        "id": "stage_uplight_2_preset",
+        "name": "Stage Uplight 2 Preset",
+        "icon": "mdi:palette-outline",
+        "options": [
+          "Jazz Gold",
+          "Midnight Blue",
+          "Velvet Purple",
+          "Slow Burn",
+          "Cool Jazz",
+          "Intermission",
+          "Off"
+        ]
       }
     ]
   }
