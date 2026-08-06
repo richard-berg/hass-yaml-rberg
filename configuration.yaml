@@ -217,7 +217,7 @@ switch:
     payload_on: 1
     payload_off: 2
   - platform: snmp
-    name: AP7901 Outlet 4 -
+    name: AP7901 Outlet 4 - TP-Link 8-Port Unmanaged Switch
     #unique_id: 00:C0:B7:F5:A2:A6.outlet.4
     host: 192.168.1.28
     community: wfycnfkxtewd
@@ -249,7 +249,7 @@ switch:
     payload_on: 1
     payload_off: 2
   - platform: snmp
-    name: AP7901 Outlet 8 - TP-Link 8-Port Unmanaged Switch
+    name: AP7901 Outlet 8 -
     #unique_id: 00:C0:B7:F5:A2:A6.outlet.8
     host: 192.168.1.28
     community: wfycnfkxtewd
