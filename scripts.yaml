@@ -1017,4 +1017,10 @@ open_area_lights_off:
       - scene.living_room_off
       - scene.kitchen_off
     data: {}
+  - action: input_number.set_value
+    metadata: {}
+    target:
+      entity_id: input_number.stage_uplights_brightness
+    data:
+      value: 0
   mode: single
