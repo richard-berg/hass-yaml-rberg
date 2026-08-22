@@ -536,6 +536,20 @@
             "should_expose": false
           }
         }
+      },
+      "switch.ap7901_outlet_4_tp_link_8_port_unmanaged_switch": {
+        "assistants": {
+          "conversation": {
+            "should_expose": true
+          }
+        }
+      },
+      "switch.ap7901_outlet_8": {
+        "assistants": {
+          "conversation": {
+            "should_expose": true
+          }
+        }
       }
     }
   }
