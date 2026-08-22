@@ -27,7 +27,7 @@
                 },
                 {
                   "type": "custom:mushroom-light-card",
-                  "entity": "light.master_bedroom_cove_lights_2",
+                  "entity": "light.master_bedroom_cove_lights",
                   "icon": "mdi:led-strip",
                   "show_brightness_control": true,
                   "use_light_color": true

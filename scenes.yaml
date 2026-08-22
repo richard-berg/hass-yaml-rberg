@@ -31,7 +31,7 @@
       friendly_name: Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -242,7 +242,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -287,7 +287,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -332,7 +332,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -377,7 +377,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'on'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -415,7 +415,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'off'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode: brightness
@@ -453,7 +453,7 @@
       friendly_name: Bedroom Pendant
       supported_features: 36
       state: 'off'
-    light.master_bedroom_cove_lights_2:
+    light.master_bedroom_cove_lights:
       supported_color_modes:
       - brightness
       color_mode:

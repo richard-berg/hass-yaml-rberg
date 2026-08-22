@@ -225,7 +225,7 @@
     input:
       linked_entity:
       - light.kitchen_perimeter_toe_kick
-      - light.living_room_middle_walkway
+      - light.kitchen_island_toe_kick
 - id: '1762232087131'
   alias: Bedroom Scene Big Button Toggle
   description: ''
@@ -899,14 +899,14 @@
             data: {}
             target:
               entity_id:
-              - scene.pantry_smart_bridge_master_bath_night_mode
+              - scene.master_bath_night_mode
         default:
         - action: scene.turn_on
           metadata: {}
           data: {}
           target:
             entity_id:
-            - scene.pantry_smart_bridge_master_bath_normal
+            - scene.master_bath_normal
       short_click_action_off:
       - action: scene.turn_on
         metadata: {}
@@ -927,7 +927,7 @@
         data: {}
         target:
           entity_id:
-          - scene.pantry_smart_bridge_master_bath_night_mode
+          - scene.master_bath_night_mode
       delay_hold: 750
       delay_click: 300
       double_click_action_on:

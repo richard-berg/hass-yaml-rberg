@@ -1013,7 +1013,7 @@ open_area_lights_off:
     target:
       entity_id:
       - scene.dining_off
-      - scene.stage_off
+      - scene.stage_etc_off
       - scene.living_room_off
       - scene.kitchen_off
     data: {}
