@@ -53,6 +53,20 @@ You'll need to re-run this script whenever you add a new file to git.
 - The setup script is **idempotent** — it can be safely rerun anytime without breaking existing links or losing data in existing files.
 - If you add any dirs/files to this repo that are *not* intended to live in the HA `/config` filesystem, add them to `.symlink_ignore`
 
+## Tools
+
+### Export inferred Lutron scene contents
+
+Lutron bridge scenes are opaque to Home Assistant, so `tools/export_lutron_scene_contents.py` infers their light memberships by sampling Lutron light states before and after each scene is activated from off and on baselines. The output is intentionally compact Markdown with a machine-readable YAML block for AI/human design sessions.
+
+From a Home Assistant add-on shell, run:
+
+```
+python3 tools/export_lutron_scene_contents.py
+```
+
+The default output is `docs/lutron-scene-contents.md`. Use `--dry-run` to list the selected Lutron scenes and lights without changing anything.
+
 ### 💡 Path info
 Home Assistant >= 2022.3 can consume file symlinks transparently, as if they were normal files. However, it cannot traverse into directory symlinks. So at present, we must symlink every file individually, rather than entire dirs such as `blueprints/automation/richardberg`.  This is why you have to re-run the sync each time you create a blueprint (or any other new file).
 

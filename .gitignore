@@ -13,6 +13,10 @@ image/
 .cache/
 .cloud/
 
+# --- Python artifacts ---
+__pycache__/
+*.pyc
+
 # --- Misc assets I might wanna version someday, but not here ---
 custom_components/
 media/
