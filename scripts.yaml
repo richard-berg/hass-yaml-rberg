@@ -295,7 +295,8 @@ all_lights_off:
   - action: switch.turn_off
     metadata: {}
     target:
-      device_id: 31b79d077da12dfdff693d3c22926c20
+      device_id:
+      - 31b79d077da12dfdff693d3c22926c20
     data: {}
   alias: All Lights Off
   description: ''
@@ -347,7 +348,8 @@ all_lights_on:
   - action: switch.turn_on
     metadata: {}
     target:
-      device_id: 31b79d077da12dfdff693d3c22926c20
+      device_id:
+      - 31b79d077da12dfdff693d3c22926c20
     data: {}
   alias: All Lights On
   description: ''
