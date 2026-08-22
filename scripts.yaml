@@ -1001,3 +1001,20 @@ fix_lumagen_memb:
       command: MemB
   alias: Fix Lumagen (MemB)
   description: ''
+open_area_lights_off:
+  alias: Open Area Lights Off
+  description: 'Turns off lights in the open-floor-plan meta-area: Kitchen, Foyer,
+    Dining, Stage, and Living. Uses Lutron bridge scenes where available; Stage Etc
+    Off is the canonical Stage scene and supersedes Stage Off.'
+  icon: mdi:floor-plan
+  sequence:
+  - action: scene.turn_on
+    metadata: {}
+    target:
+      entity_id:
+      - scene.dining_off
+      - scene.stage_off
+      - scene.living_room_off
+      - scene.kitchen_off
+    data: {}
+  mode: single

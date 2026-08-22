@@ -1553,3 +1553,107 @@
           state: '{{ ''on'' if (mix.uv * scale) | round(0) | int > 0 else ''off''
             }}'
   mode: restart
+- id: '1787375078127'
+  alias: Open Area Picos Bottom Double Click -> Lights Off
+  description: Bottom/off double-click on any Pico in the Kitchen, Dining, Living,
+    Foyer, and Stage open-floor-plan meta-area turns off all open-area lights. Bathrooms,
+    bedroom, and theater are intentionally separate.
+  triggers:
+  - trigger: device
+    device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: 71d5577f22453b64c6a4338f05625de4
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: 03f508a85f939b44da3e0ad0ca79ac84
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: 4fcf0a73682740a4779a67f1c86b983c
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: d544f522d60e6d7ed7806a6f1a4cd338
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: dc309e52227cea159ee8df1cd7095033
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: f3d4e7bb9bf4801526b01ca7e0a90379
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  - trigger: device
+    device_id: a112ee9fb703377cbc93993dcbdf61ef
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: open_area_bottom_pressed
+  conditions: []
+  actions:
+  - wait_for_trigger:
+    - trigger: device
+      device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: 71d5577f22453b64c6a4338f05625de4
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: 03f508a85f939b44da3e0ad0ca79ac84
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: 4fcf0a73682740a4779a67f1c86b983c
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: d544f522d60e6d7ed7806a6f1a4cd338
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: dc309e52227cea159ee8df1cd7095033
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: f3d4e7bb9bf4801526b01ca7e0a90379
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    - trigger: device
+      device_id: a112ee9fb703377cbc93993dcbdf61ef
+      domain: lutron_caseta
+      type: press
+      subtype: 'off'
+    timeout:
+      milliseconds: 300
+    continue_on_timeout: false
+  - action: script.open_area_lights_off
+    metadata: {}
+    data: {}
+  mode: single
