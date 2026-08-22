@@ -133,6 +133,11 @@
         "id": "8d7ab811bc324589bf9860950a22f6a9",
         "url": "/local/community/custom-brand-icons/custom-brand-icons.js",
         "type": "module"
+      },
+      {
+        "id": "eb7b862a2abc475bb9b159761ebe3a8d",
+        "url": "/local/foyer-dashboard/foyer-dashboard-card.js?v=20260822-6",
+        "type": "module"
       }
     ]
   }

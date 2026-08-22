@@ -55,6 +55,18 @@
           "Intermission",
           "Off"
         ]
+      },
+      {
+        "id": "foyer_dashboard_lighting_intensity",
+        "name": "Foyer Dashboard Lighting Intensity",
+        "icon": "mdi:brightness-6",
+        "options": [
+          "Bright",
+          "Everyday",
+          "Evening",
+          "Mood",
+          "Off"
+        ]
       }
     ]
   }

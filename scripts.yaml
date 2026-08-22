@@ -1027,6 +1027,93 @@ open_area_lights_off:
     data:
       value: 0
   mode: single
+foyer_dashboard_open_area_everyday:
+  alias: Foyer Dashboard Open Area Everyday
+  description: Set Kitchen, Dining, and Foyer to everyday/normal lighting in parallel;
+    Kitchen runs through its behavior script so the Hood Light follows, and Living
+    Room is included when the foyer dashboard helper is on.
+  icon: mdi:lightbulb-group
+  mode: restart
+  sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: Everyday
+  - parallel:
+    - sequence:
+      - action: script.kitchen_normal
+    - sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.dining_normal
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.foyer_dashboard_include_living
+          state: 'on'
+        then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_normal
+foyer_dashboard_open_area_off:
+  alias: Foyer Dashboard Open Area Off
+  description: Turn off Kitchen, Dining, and Foyer lighting in parallel; Kitchen runs
+    through its behavior script so the Hood Light follows, and Living Room is included
+    when the foyer dashboard helper is on.
+  icon: mdi:lightbulb-group-off
+  mode: restart
+  sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: 'Off'
+  - parallel:
+    - sequence:
+      - action: script.kitchen_off
+    - sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.dining_off
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.foyer_dashboard_include_living
+          state: 'on'
+        then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_off
+foyer_dashboard_open_area_mood:
+  alias: Foyer Dashboard Open Area Mood
+  description: Set Kitchen, Dining, and Foyer to mood lighting in parallel; Kitchen
+    runs through its behavior script so the Hood Light follows, and Living Room is
+    included when the foyer dashboard helper is on.
+  icon: mdi:string-lights
+  mode: restart
+  sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: Mood
+  - parallel:
+    - sequence:
+      - action: script.kitchen_mood
+    - sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.dining_mood
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.foyer_dashboard_include_living
+          state: 'on'
+        then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_mood
 kitchen_bright:
   alias: Kitchen Bright
   description: 'Kitchen button-1 behavior: activate Smart Bridge Kitchen Bright and
@@ -1077,3 +1164,60 @@ kitchen_off:
       entity_id: scene.kitchen_off
   - action: script.hood_light_turn_off
     data: {}
+foyer_dashboard_open_area_bright:
+  alias: Foyer Dashboard Open Area Bright
+  description: Set Kitchen, Dining, and Foyer to bright lighting in parallel; Kitchen
+    runs through its behavior script so the Hood Light follows, and Living Room is
+    included when the foyer dashboard helper is on.
+  icon: mdi:brightness-7
+  mode: restart
+  sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: Bright
+  - parallel:
+    - sequence:
+      - action: script.kitchen_bright
+    - sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.dining_bright
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.foyer_dashboard_include_living
+          state: 'on'
+        then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_bright
+foyer_dashboard_open_area_evening:
+  alias: Foyer Dashboard Open Area Evening
+  description: Set Kitchen/Foyer normal, Dining mood, and optional Living Room mood
+    in parallel; Kitchen runs through its behavior script so the Hood Light follows.
+  icon: mdi:weather-sunset
+  mode: restart
+  sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: Evening
+  - parallel:
+    - sequence:
+      - action: script.kitchen_normal
+    - sequence:
+      - action: scene.turn_on
+        target:
+          entity_id: scene.dining_mood
+    - sequence:
+      - if:
+        - condition: state
+          entity_id: input_boolean.foyer_dashboard_include_living
+          state: 'on'
+        then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_mood

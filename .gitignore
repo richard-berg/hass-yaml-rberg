@@ -21,7 +21,9 @@ __pycache__/
 custom_components/
 media/
 tts/
-www/
+www/*
+!www/foyer-dashboard/
+!www/foyer-dashboard/**
 
 # --- Other git repos hosted on this filesystem ---
 blueprints/**/alexdelprete

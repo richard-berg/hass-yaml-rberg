@@ -33,6 +33,11 @@
         "id": "trinnov_keepalive",
         "name": "Trinnov Manual Keepalive",
         "icon": "mdi:equalizer"
+      },
+      {
+        "id": "foyer_dashboard_include_living",
+        "name": "Foyer Dashboard Include Living",
+        "icon": "mdi:sofa"
       }
     ]
   }
