@@ -381,6 +381,69 @@
         "domain": "hacs",
         "is_persistent": false,
         "issue_id": "restart_required_1289599380_tags/v1.2.3"
+      },
+      {
+        "created": "2026-08-01T15:59:54.898293+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v3.2.0"
+      },
+      {
+        "created": "2026-08-01T15:59:55.130470+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.2.8"
+      },
+      {
+        "created": "2026-08-06T02:31:34.324785+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1073082321_tags/v1.1.0"
+      },
+      {
+        "created": "2026-08-06T02:31:34.631513+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1289599380_tags/v1.3.1"
+      },
+      {
+        "created": "2026-08-22T03:11:26.109489+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v3.2.1"
+      },
+      {
+        "created": "2026-08-22T03:11:26.115268+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1073082321_tags/v1.1.1"
+      },
+      {
+        "created": "2026-08-22T03:11:26.229244+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1289599380_tags/v2.0.0"
+      },
+      {
+        "created": "2026-08-22T03:11:26.369747+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_784997417_tags/v2.2.10"
+      },
+      {
+        "created": "2026-08-22T03:13:29.416380+00:00",
+        "dismissed_version": null,
+        "domain": "http",
+        "is_persistent": false,
+        "issue_id": "deprecated_yaml"
       }
     ]
   }
