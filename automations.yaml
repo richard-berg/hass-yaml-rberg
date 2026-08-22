@@ -597,73 +597,85 @@
       entity_id: switch.master_bathroom_exhaust_fan
   mode: single
 - id: '1762714084180'
-  alias: Kitchen Picos Button 1 = Hood 100%
-  description: ''
+  alias: Kitchen Picos Scene Buttons
+  description: Run Kitchen behavior scripts for buttons 1-4 so Hood Light behavior
+    is centralized in the kitchen_* scripts.
   triggers:
   - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
     domain: lutron_caseta
     type: press
     subtype: button_1
     trigger: device
+    id: kitchen_bright
   - device_id: 71d5577f22453b64c6a4338f05625de4
     domain: lutron_caseta
     type: press
     subtype: button_1
     trigger: device
-  conditions: []
-  actions:
-  - action: script.hood_light_turn_on
-    data:
-      brightness: 100
-  mode: single
-- id: '1762714140165'
-  alias: Kitchen Picos Button 2 = Hood 20%
-  description: ''
-  triggers:
+    id: kitchen_bright
   - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
     domain: lutron_caseta
     type: press
     subtype: button_2
     trigger: device
+    id: kitchen_normal
   - device_id: 71d5577f22453b64c6a4338f05625de4
     domain: lutron_caseta
     type: press
     subtype: button_2
     trigger: device
-  conditions: []
-  actions:
-  - action: script.hood_light_turn_on
-    data:
-      brightness: 20
-  mode: single
-- id: '1762714197327'
-  alias: Kitchen Picos Button 3/4 = Hood Off
-  description: ''
-  triggers:
+    id: kitchen_normal
   - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
     domain: lutron_caseta
     type: press
     subtype: button_3
     trigger: device
+    id: kitchen_mood
   - device_id: 71d5577f22453b64c6a4338f05625de4
     domain: lutron_caseta
     type: press
     subtype: button_3
     trigger: device
+    id: kitchen_mood
   - device_id: 4f8e4c8f2197505c7d5815c5a0fc7bcd
     domain: lutron_caseta
     type: press
     subtype: 'off'
     trigger: device
+    id: kitchen_off
   - device_id: 71d5577f22453b64c6a4338f05625de4
     domain: lutron_caseta
     type: press
     subtype: 'off'
     trigger: device
+    id: kitchen_off
   conditions: []
   actions:
-  - action: script.hood_light_turn_off
-    data: {}
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: kitchen_bright
+      sequence:
+      - action: script.kitchen_bright
+        data: {}
+    - conditions:
+      - condition: trigger
+        id: kitchen_normal
+      sequence:
+      - action: script.kitchen_normal
+        data: {}
+    - conditions:
+      - condition: trigger
+        id: kitchen_mood
+      sequence:
+      - action: script.kitchen_mood
+        data: {}
+    - conditions:
+      - condition: trigger
+        id: kitchen_off
+      sequence:
+      - action: script.kitchen_off
+        data: {}
   mode: single
 - id: '1762717512497'
   alias: Sonos -> Shower Speaker On

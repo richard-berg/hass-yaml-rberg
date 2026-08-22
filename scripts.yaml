@@ -1004,19 +1004,22 @@ fix_lumagen_memb:
 open_area_lights_off:
   alias: Open Area Lights Off
   description: 'Turns off lights in the open-floor-plan meta-area: Kitchen, Foyer,
-    Dining, Stage, and Living. Uses Lutron bridge scenes where available; Stage Etc
-    Off is the canonical Stage scene and supersedes Stage Off.'
+    Dining, Stage, and Living. Kitchen runs through script.kitchen_off so Hood Light
+    behavior stays centralized; Stage Etc Off is the canonical Stage scene and supersedes
+    Stage Off.'
   icon: mdi:floor-plan
   sequence:
-  - action: scene.turn_on
-    metadata: {}
-    target:
-      entity_id:
-      - scene.dining_off
-      - scene.stage_etc_off
-      - scene.living_room_off
-      - scene.kitchen_off
-    data: {}
+  - parallel:
+    - action: script.kitchen_off
+      data: {}
+    - action: scene.turn_on
+      metadata: {}
+      target:
+        entity_id:
+        - scene.dining_off
+        - scene.stage_etc_off
+        - scene.living_room_off
+      data: {}
   - action: input_number.set_value
     metadata: {}
     target:
@@ -1024,3 +1027,53 @@ open_area_lights_off:
     data:
       value: 0
   mode: single
+kitchen_bright:
+  alias: Kitchen Bright
+  description: 'Kitchen button-1 behavior: activate Smart Bridge Kitchen Bright and
+    set the Hood Light to 100%.'
+  icon: mdi:ceiling-light
+  mode: restart
+  sequence:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.kitchen_bright
+  - action: script.hood_light_turn_on
+    data:
+      brightness: 100
+kitchen_normal:
+  alias: Kitchen Normal
+  description: 'Kitchen button-2 behavior: activate Smart Bridge Kitchen Normal and
+    set the Hood Light to 20%.'
+  icon: mdi:ceiling-light-multiple
+  mode: restart
+  sequence:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.kitchen_normal
+  - action: script.hood_light_turn_on
+    data:
+      brightness: 20
+kitchen_mood:
+  alias: Kitchen Mood
+  description: 'Kitchen button-3 behavior: activate Smart Bridge Kitchen Mood and
+    turn the Hood Light off.'
+  icon: mdi:string-lights
+  mode: restart
+  sequence:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.kitchen_mood
+  - action: script.hood_light_turn_off
+    data: {}
+kitchen_off:
+  alias: Kitchen Off
+  description: 'Kitchen button-4 behavior: activate Smart Bridge Kitchen Off and turn
+    the Hood Light off.'
+  icon: mdi:lightbulb-group-off
+  mode: restart
+  sequence:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.kitchen_off
+  - action: script.hood_light_turn_off
+    data: {}
