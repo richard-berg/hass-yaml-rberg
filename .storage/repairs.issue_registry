@@ -437,13 +437,6 @@
         "domain": "hacs",
         "is_persistent": false,
         "issue_id": "restart_required_784997417_tags/v2.2.10"
-      },
-      {
-        "created": "2026-08-22T03:13:29.416380+00:00",
-        "dismissed_version": null,
-        "domain": "http",
-        "is_persistent": false,
-        "issue_id": "deprecated_yaml"
       }
     ]
   }
