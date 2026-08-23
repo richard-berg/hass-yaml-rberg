@@ -139,7 +139,12 @@ Content:
 
 - Small clock and date.
 - Weather summary from `weather.forecast_home`, with stronger iconography and color than the first mockup.
-- Hour-by-hour precipitation forecast plus one probability for any precipitation in the next 18 hours.
+- Hour-by-hour precipitation strip across the rolling 24-hour window, with the window inferred from the x-axis labels instead of stated in the copy.
+- Keep the top weather readout strictly about current state: current temperature, feels-like temperature, wind, and the short condition sentence.
+- Show forward-looking temperature as a second series on the strip rather than as a separate H/L text readout.
+- The strip should use blue for precipitation and a separate warm line for temperature, with split legend placement and left/right scale labels to make the approximate high/low and precipitation scale legible.
+- Current temperature, feels-like, and wind readouts should include units.
+- Keep the weather widget to a headline and strip for now; revisit a separate precipitation summary only if the card feels too bare.
 - Wind can be small and can be paired with feels-like temperature.
 - No separate temperature or air-quality sensors in v1; weather is enough.
 - Transit status grouped here because it is status/decision support, not a control surface.
@@ -151,6 +156,7 @@ Content:
 Behavior:
 
 - Most status cards are read-only or open detail popups.
+- Weather should be complete in the main pane and should not show a drill-in chevron.
 - Alerts should be small in normal state and visually stronger only when active.
 
 ### Transit Panel
