@@ -1,9 +1,21 @@
+const TRANSIT_UPTOWN = "Uptown/Queens/Bronx";
+const TRANSIT_DOWNTOWN = "Downtown/Brooklyn";
+const TRANSIT_ARRIVAL_SLOTS = ["next_arrival", "second_arrival", "third_arrival"];
+
+const mtaSource = (line, prefix) => ({
+  line,
+  arrival_entities: TRANSIT_ARRIVAL_SLOTS.map((slot) => `${prefix}_${slot}`),
+  destination_entities: TRANSIT_ARRIVAL_SLOTS.map((slot) => `${prefix}_${slot}_destination`),
+  route_entities: TRANSIT_ARRIVAL_SLOTS.map((slot) => `${prefix}_${slot}_route`)
+});
+
 const DEFAULT_CONFIG = {
   image: "/api/image/serve/7abddc82be6cd368867697a7e0ac5a3c/original",
   entities: {
     weather: "weather.forecast_home",
     includeLiving: "input_boolean.foyer_dashboard_include_living",
     lightingIntensity: "input_select.foyer_dashboard_lighting_intensity",
+    transitDirection: "input_select.foyer_dashboard_transit_direction",
     richard: "person.richard_berg",
     allison: "person.allison_bishop",
     mediaPlayer: "media_player.living_room"
@@ -17,11 +29,86 @@ const DEFAULT_CONFIG = {
     mood: "script.foyer_dashboard_open_area_mood",
     off: "script.foyer_dashboard_open_area_off"
   },
-  transit: [
-    { lines: [{ label: "4", className: "green" }, { label: "5", className: "green" }], station: "Fulton", next: "6, 14, 23", minutes: 18, best: true },
-    { lines: [{ label: "R", className: "yellow" }, { label: "W", className: "yellow" }], station: "Cortlandt", next: "10, 18, 31", minutes: 24 },
-    { lines: [{ label: "2", className: "red" }, { label: "3", className: "red" }], station: "Park Pl", next: "12, 22, 32", minutes: 27 }
-  ]
+  transit: {
+    staleAfterMinutes: 4,
+    routeGroups: [
+      {
+        id: "45-fulton",
+        label: "4/5",
+        lines: [{ label: "4", className: "green" }, { label: "5", className: "green" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("4", "sensor.4_fulton_st_n_direction"), mtaSource("5", "sensor.5_fulton_st_n_direction")], alert_entities: [] },
+          [TRANSIT_DOWNTOWN]: { direction: "S", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("4", "sensor.4_fulton_st_s_direction"), mtaSource("5", "sensor.5_fulton_st_s_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "ac-fulton",
+        label: "A/C",
+        lines: [{ label: "A", className: "blue" }, { label: "C", className: "blue" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("A", "sensor.a_fulton_st_n_direction"), mtaSource("C", "sensor.c_fulton_st_n_direction")], alert_entities: [] },
+          [TRANSIT_DOWNTOWN]: { direction: "S", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("A", "sensor.a_fulton_st_s_direction"), mtaSource("C", "sensor.c_fulton_st_s_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "rw-cortlandt",
+        label: "R/W",
+        lines: [{ label: "R", className: "yellow" }, { label: "W", className: "yellow" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "Cortlandt St", walk_minutes: 6, sources: [mtaSource("R", "sensor.r_cortlandt_st_n_direction"), mtaSource("W", "sensor.w_cortlandt_st_n_direction")], alert_entities: [] },
+          [TRANSIT_DOWNTOWN]: { direction: "S", station: "Cortlandt St", walk_minutes: 6, sources: [mtaSource("R", "sensor.r_cortlandt_st_s_direction"), mtaSource("W", "sensor.w_cortlandt_st_s_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "jz-fulton",
+        label: "J/Z",
+        lines: [{ label: "J", className: "brown" }, { label: "Z", className: "brown" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("J", "sensor.j_fulton_st_n_direction"), mtaSource("Z", "sensor.z_fulton_st_n_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "e-wtc",
+        label: "E",
+        lines: [{ label: "E", className: "blue" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "World Trade Center", walk_minutes: 6, sources: [mtaSource("E", "sensor.e_world_trade_center_n_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "1-wtc",
+        label: "1",
+        lines: [{ label: "1", className: "red" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "WTC Cortlandt", walk_minutes: 6, sources: [mtaSource("1", "sensor.1_wtc_cortlandt_n_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "23-seventh",
+        label: "2/3",
+        lines: [{ label: "2", className: "red" }, { label: "3", className: "red" }],
+        data_source: "mta",
+        directions: {
+          [TRANSIT_UPTOWN]: { direction: "N", station: "Park Pl", walk_minutes: 6, sources: [mtaSource("2", "sensor.2_park_place_n_direction"), mtaSource("3", "sensor.3_park_place_n_direction")], alert_entities: [] },
+          [TRANSIT_DOWNTOWN]: { direction: "S", station: "Fulton St", walk_minutes: 5, sources: [mtaSource("2", "sensor.2_fulton_st_s_direction"), mtaSource("3", "sensor.3_fulton_st_s_direction")], alert_entities: [] }
+        }
+      },
+      {
+        id: "path-wtc",
+        label: "PATH",
+        lines: [{ label: "PATH", className: "path" }],
+        data_source: "path",
+        enabled: false,
+        directions: {}
+      }
+    ]
+  }
 };
 
 class FoyerDashboardCard extends HTMLElement {
@@ -36,6 +123,7 @@ class FoyerDashboardCard extends HTMLElement {
     this._optimisticIntensity = null;
     this._optimisticTimer = null;
     this._lightingModalOpen = false;
+    this._transitModal = null;
     this._forecastCache = { entityId: null, hourly: [], updatedAt: 0 };
     this._forecastPromise = null;
     this._forecastTimer = null;
@@ -83,7 +171,17 @@ class FoyerDashboardCard extends HTMLElement {
       ...override,
       entities: { ...base.entities, ...(override.entities || {}) },
       scripts: { ...base.scripts, ...(override.scripts || {}) },
-      transit: override.transit || base.transit
+      transit: this._mergeTransitConfig(base.transit, override.transit)
+    };
+  }
+
+  _mergeTransitConfig(baseTransit, overrideTransit) {
+    if (!overrideTransit) return baseTransit;
+    if (Array.isArray(overrideTransit)) return { ...baseTransit, routeGroups: overrideTransit };
+    return {
+      ...baseTransit,
+      ...overrideTransit,
+      routeGroups: overrideTransit.routeGroups || baseTransit.routeGroups
     };
   }
 
@@ -403,6 +501,7 @@ class FoyerDashboardCard extends HTMLElement {
   _handleClick(event) {
     if (event.target.classList?.contains("modal-backdrop")) {
       this._lightingModalOpen = false;
+      this._transitModal = null;
       this._render();
       return;
     }
@@ -447,6 +546,26 @@ class FoyerDashboardCard extends HTMLElement {
 
     if (action === "close-lighting-modal") {
       this._lightingModalOpen = false;
+      this._render();
+      return;
+    }
+
+    if (action === "set-transit-direction") {
+      const option = target.dataset.direction;
+      const entityId = this._config.entities.transitDirection;
+      this._press(`transit-${option}`);
+      if (option && entityId) this._hass.callService("input_select", "select_option", { entity_id: entityId, option });
+      return;
+    }
+
+    if (action === "open-transit-route") {
+      this._transitModal = { routeId: target.dataset.route };
+      this._render();
+      return;
+    }
+
+    if (action === "open-transit-alerts") {
+      this._transitModal = { focus: "alerts" };
       this._render();
       return;
     }
@@ -545,6 +664,301 @@ class FoyerDashboardCard extends HTMLElement {
     `).join("");
   }
 
+  _transitDirections() {
+    return [
+      { option: TRANSIT_UPTOWN, label: "Uptown" },
+      { option: TRANSIT_DOWNTOWN, label: "Downtown" }
+    ];
+  }
+
+  _currentTransitDirection() {
+    const state = this._state(this._config.entities.transitDirection)?.state;
+    const directions = this._transitDirections();
+    return directions.some((direction) => direction.option === state) ? state : directions[0].option;
+  }
+
+  _escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  _transitConfig() {
+    const transit = this._config.transit;
+    if (Array.isArray(transit)) return { ...DEFAULT_CONFIG.transit, routeGroups: transit };
+    return {
+      ...DEFAULT_CONFIG.transit,
+      ...(transit || {}),
+      routeGroups: transit?.routeGroups || DEFAULT_CONFIG.transit.routeGroups
+    };
+  }
+
+  _transitGroups() {
+    return (this._transitConfig().routeGroups || []).filter((group) => group.enabled !== false);
+  }
+
+  _validTransitValue(value) {
+    const state = String(value ?? "").trim();
+    return state && !["unknown", "unavailable", "none", "null"].includes(state.toLowerCase());
+  }
+
+  _stateUpdatedAt(state) {
+    const stamp = state?.last_reported || state?.last_updated || state?.last_changed;
+    const timestamp = Date.parse(stamp);
+    return Number.isFinite(timestamp) ? timestamp : null;
+  }
+
+  _transitArrivalModel(source, arrivalEntity, index, directionConfig, now, staleAfterMs) {
+    const entity = this._state(arrivalEntity);
+    const value = entity?.state;
+    const destinationState = this._state(source.destination_entities?.[index]);
+    const routeState = this._state(source.route_entities?.[index]);
+    const updatedAt = this._stateUpdatedAt(entity);
+    const arrivalTime = Date.parse(value);
+    const missing = !entity || !this._validTransitValue(value);
+    const stale = missing || (updatedAt !== null && now - updatedAt > staleAfterMs);
+    const validTime = Number.isFinite(arrivalTime) && arrivalTime >= now - 60 * 1000;
+    const valid = !stale && validTime;
+    const trainMinutes = valid ? Math.max(0, Math.ceil((arrivalTime - now) / 60000)) : null;
+    const walkMinutes = Number(source.walk_minutes ?? directionConfig.walk_minutes ?? 0);
+
+    return {
+      arrivalEntity,
+      line: source.line,
+      route: this._validTransitValue(routeState?.state) ? routeState.state : source.line,
+      destination: this._validTransitValue(destinationState?.state) ? destinationState.state : "",
+      station: source.station || directionConfig.station,
+      walkMinutes,
+      updatedAt,
+      arrivalTime: validTime ? arrivalTime : null,
+      trainMinutes,
+      leaveMinutes: valid ? trainMinutes - walkMinutes : null,
+      valid,
+      stale,
+      missing
+    };
+  }
+
+  _transitDirectionModel(group, directionOption, now = Date.now()) {
+    const directionConfig = group.directions?.[directionOption];
+    if (!directionConfig || directionConfig.enabled === false) return null;
+
+    const staleAfterMs = Number(this._transitConfig().staleAfterMinutes || 4) * 60 * 1000;
+    const sources = (directionConfig.sources || []).map((source) => {
+      const arrivals = (source.arrival_entities || []).map((arrivalEntity, index) => this._transitArrivalModel(source, arrivalEntity, index, directionConfig, now, staleAfterMs));
+      return {
+        ...source,
+        station: source.station || directionConfig.station,
+        walkMinutes: Number(source.walk_minutes ?? directionConfig.walk_minutes ?? 0),
+        arrivals
+      };
+    });
+    const arrivals = sources.flatMap((source) => source.arrivals);
+    const validArrivals = arrivals.filter((arrival) => arrival.valid).sort((a, b) => a.arrivalTime - b.arrivalTime);
+    const catchableArrivals = validArrivals
+      .filter((arrival) => Number.isFinite(arrival.leaveMinutes) && arrival.leaveMinutes > 0)
+      .sort((a, b) => a.leaveMinutes - b.leaveMinutes || a.arrivalTime - b.arrivalTime);
+    const nextArrival = validArrivals[0] || null;
+    const leaveArrival = catchableArrivals[0] || null;
+    const configured = sources.some((source) => source.arrivals.length);
+    const lastUpdatedAt = Math.max(0, ...arrivals.map((arrival) => arrival.updatedAt || 0));
+
+    return {
+      groupId: group.id,
+      label: group.label,
+      lines: group.lines || [],
+      directionOption,
+      direction: directionConfig.direction,
+      station: directionConfig.station,
+      walkMinutes: Number(directionConfig.walk_minutes ?? leaveArrival?.walkMinutes ?? nextArrival?.walkMinutes ?? 0),
+      sources,
+      arrivals,
+      nextArrival,
+      leaveArrival,
+      leaveMinutes: leaveArrival?.leaveMinutes ?? null,
+      countdownMinutes: nextArrival?.trainMinutes ?? null,
+      lastUpdatedAt,
+      status: nextArrival ? "live" : configured ? "offline" : "not-configured",
+      alert_entities: [...(group.alert_entities || []), ...(directionConfig.alert_entities || [])]
+    };
+  }
+
+  _transitRows() {
+    const currentDirection = this._currentTransitDirection();
+    return this._transitGroups()
+      .map((group) => this._transitDirectionModel(group, currentDirection))
+      .filter(Boolean);
+  }
+
+  _activeTransitAlerts(groups = this._transitGroups()) {
+    const alertIds = new Set();
+    groups.forEach((group) => {
+      (group.alert_entities || []).forEach((entityId) => alertIds.add(entityId));
+      Object.values(group.directions || {}).forEach((direction) => (direction.alert_entities || []).forEach((entityId) => alertIds.add(entityId)));
+    });
+
+    return [...alertIds].map((entityId) => {
+      const state = this._state(entityId);
+      return { entityId, state };
+    }).filter(({ state }) => {
+      const value = String(state?.state || "").toLowerCase();
+      return state && !["off", "clear", "none", "ok", "unknown", "unavailable"].includes(value);
+    });
+  }
+
+  _formatTransitUpdated(updatedAt) {
+    if (!updatedAt) return "No update";
+    const minutes = Math.max(0, Math.round((Date.now() - updatedAt) / 60000));
+    if (minutes < 1) return "Updated now";
+    if (minutes === 1) return "Updated 1 min ago";
+    return `Updated ${minutes} min ago`;
+  }
+
+  _lineClass(line) {
+    return {
+      "1": "red",
+      "2": "red",
+      "3": "red",
+      "4": "green",
+      "5": "green",
+      A: "blue",
+      C: "blue",
+      E: "blue",
+      R: "yellow",
+      W: "yellow",
+      J: "brown",
+      Z: "brown",
+      PATH: "path"
+    }[String(line).toUpperCase()] || "";
+  }
+
+  _renderLineBadges(lines) {
+    return lines.map((line) => this._renderLineBadge(line)).join("");
+  }
+
+  _renderLineBadge(line, extraClass = "") {
+    const label = typeof line === "object" ? line.label : line;
+    const className = typeof line === "object" ? line.className || this._lineClass(line.label) : this._lineClass(line);
+    return `<span class="line ${this._escapeHtml(className)} ${this._escapeHtml(extraClass)}">${this._escapeHtml(label)}</span>`;
+  }
+
+  _renderTransitRow(row) {
+    const hasArrival = Number.isFinite(row.countdownMinutes);
+    const timeLabel = hasArrival ? row.countdownMinutes : "--";
+    const unitLabel = hasArrival ? "min" : "offline";
+    const ariaTime = hasArrival ? `next train in ${row.countdownMinutes} minutes` : "offline";
+    return `
+      <button class="route-card ${hasArrival ? "" : "stale"}" data-action="open-transit-route" data-route="${this._escapeHtml(row.groupId)}" aria-label="${this._escapeHtml(`${row.label} at ${row.station}, ${ariaTime}`)}">
+        <div class="line-badges">${this._renderLineBadges(row.lines)}</div>
+        <div class="route-main"><div class="route-place">${this._escapeHtml(row.station)}</div></div>
+        <div class="route-time ${hasArrival ? "" : "offline"}">${timeLabel}<span>${unitLabel}</span></div>
+      </button>
+    `;
+  }
+
+  _renderTransitArrival(arrival, highlighted = false) {
+    const valid = arrival.valid;
+    const time = valid ? `${arrival.trainMinutes}` : "--";
+    const detail = valid
+      ? `${this._renderLineBadge(arrival.route, "arrival-line")}<span class="arrival-destination">to ${this._escapeHtml(arrival.destination || "destination pending")}</span>`
+      : this._escapeHtml(arrival.stale ? "Data stale" : "Offline");
+    const due = valid && arrival.arrivalTime ? new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date(arrival.arrivalTime)) : "";
+    return `
+      <div class="arrival-row ${valid ? "" : "offline"} ${highlighted ? "catchable" : ""}">
+        <span class="arrival-time"><strong>${time}</strong><span>${valid ? "min" : ""}</span></span>
+        <span class="arrival-detail">${detail}</span>
+        <span class="arrival-due">${this._escapeHtml(due)}</span>
+      </div>
+    `;
+  }
+
+  _renderTransitArrivalList(model) {
+    const arrivals = [...(model.arrivals || [])]
+      .filter((arrival) => arrival.valid)
+      .sort((a, b) => a.trainMinutes - b.trainMinutes || String(a.route).localeCompare(String(b.route)));
+
+    return `
+      <div class="arrival-list combined-arrivals">
+        ${arrivals.map((arrival) => this._renderTransitArrival(arrival, model.leaveArrival?.arrivalEntity === arrival.arrivalEntity)).join("")}
+      </div>
+    `;
+  }
+
+  _renderTransitDirectionDetail(model, active) {
+    const hasLiveArrival = Number.isFinite(model.countdownMinutes);
+    const hasLeaveArrival = Number.isFinite(model.leaveMinutes);
+    const walkMinutes = Number.isFinite(model.leaveArrival?.walkMinutes) ? model.leaveArrival.walkMinutes : model.walkMinutes;
+    const walkLabel = Number.isFinite(walkMinutes) ? ` (${walkMinutes} min walk)` : "";
+    const leaveLabel = hasLeaveArrival ? `Leave in ${model.leaveMinutes} minute${model.leaveMinutes === 1 ? "" : "s"}${walkLabel}` : hasLiveArrival ? "No catchable train" : "offline";
+    return `
+      <section class="direction-detail ${active ? "selected" : ""} ${hasLiveArrival ? "" : "offline"}">
+        <header class="direction-detail-head">
+          <span>${this._escapeHtml(this._transitDirections().find((direction) => direction.option === model.directionOption)?.label || model.directionOption)}</span>
+          <span>${this._escapeHtml(leaveLabel)}</span>
+        </header>
+        <div class="transit-sources">${this._renderTransitArrivalList(model)}</div>
+        <footer class="transit-updated">${this._escapeHtml(this._formatTransitUpdated(model.lastUpdatedAt))}${hasLiveArrival ? "" : " / check source"}</footer>
+      </section>
+    `;
+  }
+
+  _renderTransitAlertFocus(alerts) {
+    return `
+      <div class="transit-detail-body alerts-only">
+        <section class="direction-detail selected">
+          <header class="direction-detail-head">
+            <span>Advisories</span>
+            <span>${alerts.length}</span>
+          </header>
+          <div class="arrival-list">
+            ${alerts.map(({ entityId, state }) => `
+              <div class="arrival-row alert-row">
+                <span class="arrival-time"><strong>!</strong></span>
+                <span class="arrival-detail">${this._escapeHtml(state?.attributes?.friendly_name || entityId)}</span>
+                <span class="arrival-due">${this._escapeHtml(state?.state || "")}</span>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  _renderTransitModal() {
+    if (!this._transitModal) return "";
+    const currentDirection = this._currentTransitDirection();
+    const groups = this._transitGroups();
+    const alerts = this._activeTransitAlerts(groups);
+    if (this._transitModal.focus === "alerts" && alerts.length) {
+      return `
+        <div class="modal-backdrop" role="presentation">
+          <section class="lightbox transit-lightbox" role="dialog" aria-modal="true" aria-label="Transit advisories">
+            ${this._renderTransitAlertFocus(alerts)}
+          </section>
+        </div>
+      `;
+    }
+
+    const group = groups.find((candidate) => candidate.id === this._transitModal.routeId) || groups[0];
+    if (!group) return "";
+    const directionOptions = [currentDirection, ...this._transitDirections().map((direction) => direction.option).filter((option) => option !== currentDirection)];
+    const directionModels = directionOptions.map((option) => this._transitDirectionModel(group, option)).filter(Boolean);
+
+    return `
+      <div class="modal-backdrop" role="presentation">
+        <section class="lightbox transit-lightbox" role="dialog" aria-modal="true" aria-label="Transit details">
+          <div class="transit-detail-body">
+            ${directionModels.map((model) => this._renderTransitDirectionDetail(model, model.directionOption === currentDirection)).join("")}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
   _renderWeather() {
     const weather = this._weatherModel();
     return `
@@ -589,23 +1003,24 @@ class FoyerDashboardCard extends HTMLElement {
   }
 
   _renderTransit() {
+    const currentDirection = this._currentTransitDirection();
+    const rows = this._transitRows();
+    const alerts = this._activeTransitAlerts();
+    const hasLiveRows = rows.some((row) => row.status === "live");
     return `
-      <section class="panel transit-card" aria-label="Uptown transit status">
+      <section class="panel no-drill transit-card" aria-label="${currentDirection} transit status">
         <div class="transit-head">
-          <div class="transit-title">
-            <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M12 4v16M6 10l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            Uptown
+          <div class="direction-switch" role="group" aria-label="Transit direction">
+            ${this._transitDirections().map((direction) => {
+              const active = direction.option === currentDirection;
+              const pressed = this._pressedKey === `transit-${direction.option}`;
+              return `<button class="control-chip direction-option ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="set-transit-direction" data-direction="${direction.option}" aria-label="Show ${direction.option} transit" aria-pressed="${active}">${direction.label}</button>`;
+            }).join("")}
           </div>
-          <span class="control-chip tiny-alert">1 advisory</span>
+          ${alerts.length ? `<button class="control-chip tiny-alert" data-action="open-transit-alerts">${alerts.length} advisory${alerts.length === 1 ? "" : "ies"}</button>` : `<span class="transit-pulse ${hasLiveRows ? "live" : "offline"}" title="${hasLiveRows ? "MTA live" : "Transit data offline"}"></span>`}
         </div>
         <div class="route-list">
-          ${this._config.transit.map((route) => `
-            <article class="route-card ${route.best ? "best" : ""}">
-              <div class="line-badges">${route.lines.map((line) => `<span class="line ${line.className}">${line.label}</span>`).join("")}</div>
-              <div class="route-main"><div class="route-place">${route.station}</div><div class="route-next">${route.next}</div></div>
-              <div class="route-time">${route.minutes}<span>min</span></div>
-            </article>
-          `).join("")}
+          ${rows.length ? rows.map((row) => this._renderTransitRow(row)).join("") : `<div class="route-empty">No configured ${this._escapeHtml(currentDirection)} routes</div>`}
         </div>
       </section>
     `;
@@ -621,20 +1036,19 @@ class FoyerDashboardCard extends HTMLElement {
       ${this._styles()}
       <main class="foyer-dashboard" aria-label="Foyer dashboard">
         <aside class="rail" aria-label="Status and transit">
-          <section class="panel no-drill status-top" aria-label="Current time and people status">
+          <section class="panel no-drill status-top" aria-label="Current time, alerts, and people status">
             <div>
               <div class="time">${this._formatClock()}</div>
               <div class="date">${this._formatDate()}</div>
+            </div>
+            <div class="status-alerts" aria-label="Alert status">
+              <span class="status-icon" title="No alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
             </div>
             <div class="status-icons" aria-label="People status">${this._renderPeople()}</div>
           </section>
 
           ${this._renderWeather()}
           ${this._renderTransit()}
-
-          <section class="panel no-drill micro-status" aria-label="Compact status">
-            <span class="status-icon" title="No alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
-          </section>
         </aside>
 
         <section class="controls" aria-label="Controls and detail surfaces">
@@ -696,6 +1110,7 @@ class FoyerDashboardCard extends HTMLElement {
         </section>
       </main>
       ${this._renderLightingModal(includeLiving)}
+      ${this._renderTransitModal()}
     `;
   }
 
@@ -818,13 +1233,14 @@ class FoyerDashboardCard extends HTMLElement {
         .no-drill::after,
         .nav::after { display: none; }
         .rail, .controls { position: relative; z-index: 1; min-width: 0; }
-        .rail { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; }
+        .rail { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px; }
         .controls { display: grid; grid-template-rows: minmax(0, 1fr); gap: 14px; }
 
-        .status-top { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; padding: 12px 14px; }
+        .status-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; }
         .time { font-family: var(--font-serif); font-size: 34px; line-height: 1; font-weight: 650; }
         .date { color: var(--ink-450); font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 8px; }
+        .status-alerts, .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 8px; }
+        .status-top .status-alerts { justify-self: center; }
         .status-top .status-icons { justify-self: end; }
 
         .person-icon, .status-icon, .mode-icon, .nav-item {
@@ -911,22 +1327,32 @@ class FoyerDashboardCard extends HTMLElement {
 
         .transit-card { padding: 12px; }
         .transit-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
-        .transit-title { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; }
+        .direction-switch { display: inline-flex; align-items: center; gap: 2px; min-height: 38px; padding: 3px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: 999px; background: rgba(255, 255, 255, 0.5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+        .direction-option { min-height: 30px; padding: 0 10px; border-color: transparent; border-radius: 999px; background: transparent; color: var(--ink-450); box-shadow: none; font-size: 11px; text-transform: uppercase; }
+        .direction-option.active { border-color: var(--control-active-border); background: var(--control-active-bg); color: var(--stone-50); box-shadow: var(--control-active-shadow); }
         .tiny-alert { min-height: 32px; padding: 0 10px; color: var(--ink-450); font-size: 11px; }
+        .transit-pulse { display: block; width: 12px; height: 12px; margin-right: 8px; border-radius: 999px; background: var(--green-500); box-shadow: 0 0 0 5px rgba(47, 114, 82, 0.12); }
+        .transit-pulse.offline { background: var(--red-500); box-shadow: 0 0 0 5px rgba(162, 67, 53, 0.12); }
         .route-list { display: grid; gap: 7px; }
-        .route-card { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; min-height: 58px; padding: 9px 26px 9px 10px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: linear-gradient(145deg, rgba(255, 255, 255, 0.66), rgba(239, 230, 214, 0.62)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72); }
-        .route-card.best { border-color: rgba(185, 129, 53, 0.58); background: linear-gradient(145deg, rgba(255, 248, 235, 0.92), rgba(237, 219, 188, 0.76)); }
+        .route-card { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 58px; padding: 9px 26px 9px 10px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: linear-gradient(145deg, rgba(255, 255, 255, 0.66), rgba(239, 230, 214, 0.62)); color: inherit; font: inherit; text-align: left; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease; }
+        .route-card:active { transform: translateY(1px); }
+        .route-card.stale { opacity: 0.76; }
         .line-badges { display: flex; align-items: center; gap: 5px; }
         .line { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; color: white; font-size: 15px; font-weight: 900; line-height: 1; }
         .line.green { background: #00933c; }
+        .line.blue { background: #0039a6; }
         .line.yellow { background: #fccc0a; color: #16120b; }
         .line.red { background: #ee352e; }
+        .line.brown { background: #996633; }
+        .line.path { width: auto; min-width: 42px; padding: 0 8px; background: #1f8f5f; font-size: 10px; }
+        .line.arrival-line { flex: 0 0 auto; width: 22px; height: 22px; font-size: 12px; }
+        .line.path.arrival-line { width: auto; min-width: 36px; height: 22px; font-size: 9px; }
         .route-main { min-width: 0; }
         .route-place { color: var(--ink-760); font-size: 15px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .route-next { margin-top: 2px; color: var(--ink-450); font-size: 12px; font-weight: 800; }
         .route-time { color: var(--ink-900); font-size: 26px; font-weight: 950; line-height: 1; text-align: right; }
         .route-time span { display: block; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        .micro-status { display: flex; align-items: center; justify-content: flex-start; justify-self: start; gap: 8px; padding: 8px; }
+        .route-time.offline { color: var(--ink-450); }
+        .route-empty { min-height: 120px; display: grid; place-items: center; color: var(--ink-450); font-size: 13px; font-weight: 850; }
 
         .control-layout { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; align-content: start; gap: 14px; min-width: 0; }
         .lighting-panel { display: grid; align-content: start; min-height: 0; padding: 18px; }
@@ -998,6 +1424,31 @@ class FoyerDashboardCard extends HTMLElement {
         .lightbox p { margin: 8px 0 0; color: var(--ink-450); font-size: 13px; font-weight: 900; text-transform: uppercase; }
         .lightbox-close { background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); }
         .lightbox-empty { margin: 22px 24px 24px; border: 1px dashed rgba(20, 19, 17, 0.18); border-radius: 8px; background: repeating-linear-gradient(135deg, rgba(20, 19, 17, 0.026) 0, rgba(20, 19, 17, 0.026) 1px, transparent 1px, transparent 12px); }
+        .transit-lightbox { grid-template-rows: 1fr; width: min(680px, calc(100vw - 88px)); height: min(430px, calc(100vh - 88px)); min-height: 0; }
+        .transit-detail-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; padding: 18px 20px 22px; overflow: auto; }
+        .transit-detail-body.alerts-only { grid-template-columns: minmax(0, 1fr); }
+        .direction-detail { display: grid; align-content: start; gap: 12px; padding: 14px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.48); }
+        .direction-detail.selected { border-color: rgba(185, 129, 53, 0.48); background: rgba(255, 248, 235, 0.82); }
+        .direction-detail.offline { opacity: 0.78; }
+        .direction-detail-head, .arrival-row { display: grid; align-items: center; gap: 10px; }
+        .direction-detail-head { grid-template-columns: 1fr auto; color: var(--ink-900); font-size: 14px; font-weight: 950; }
+        .direction-detail-head span:last-child { color: var(--ink-450); font-size: 12px; }
+        .transit-sources { display: grid; gap: 10px; }
+        .arrival-list { display: grid; gap: 5px; }
+        .arrival-row { grid-template-columns: 58px minmax(0, 1fr) auto; min-height: 34px; padding: 6px 8px; border: 1px solid rgba(20, 19, 17, 0.08); border-radius: 7px; background: rgba(255, 255, 255, 0.46); }
+        .arrival-row.catchable { border-color: rgba(185, 129, 53, 0.46); background: rgba(255, 248, 235, 0.86); box-shadow: inset 3px 0 0 rgba(185, 129, 53, 0.72); }
+        .arrival-row.alert-row { border-color: rgba(162, 67, 53, 0.24); background: rgba(255, 241, 235, 0.68); }
+        .arrival-row.offline { color: var(--ink-450); }
+        .arrival-time { display: flex; align-items: baseline; gap: 3px; color: var(--ink-900); }
+        .arrival-row.offline .arrival-time { color: var(--ink-450); }
+        .arrival-time strong { font-size: 18px; line-height: 1; }
+        .arrival-time span, .arrival-due { color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .arrival-detail { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; color: var(--ink-760); font-size: 12px; font-weight: 850; white-space: nowrap; }
+        .arrival-destination { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .arrival-row.catchable .arrival-time strong,
+        .arrival-row.catchable .arrival-detail,
+        .arrival-row.catchable .arrival-due { color: var(--ink-900); font-weight: 950; }
+        .transit-updated { color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
 
         @media (max-width: 920px) {
           :host { height: auto; min-height: 980px; }

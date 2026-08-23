@@ -67,6 +67,15 @@
           "Mood",
           "Off"
         ]
+      },
+      {
+        "id": "foyer_dashboard_transit_direction",
+        "name": "Foyer Dashboard Transit Direction",
+        "icon": "mdi:train",
+        "options": [
+          "Uptown/Queens/Bronx",
+          "Downtown/Brooklyn"
+        ]
       }
     ]
   }
