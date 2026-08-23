@@ -422,7 +422,10 @@ class FoyerDashboardCard extends HTMLElement {
     const state = media?.state || "unknown";
     const title = media?.attributes?.media_title || media?.attributes?.media_artist || "Morning playlist";
     const label = state === "playing" ? `Playing - ${title}` : state === "paused" ? `Paused - ${title}` : this._titleCase(state);
-    return { state, label };
+    const volume = Number(media?.attributes?.volume_level);
+    const volumeLabel = Number.isFinite(volume) ? `${Math.round(volume * 100)}%` : "Vol";
+    const muted = Boolean(media?.attributes?.is_volume_muted);
+    return { state, label, volumeLabel, muted };
   }
 
   _levelBars(level) {
@@ -573,6 +576,25 @@ class FoyerDashboardCard extends HTMLElement {
     if (action === "sonos-play") {
       this._press("sonos-play");
       this._hass.callService("media_player", "media_play", { entity_id: this._config.entities.mediaPlayer });
+      return;
+    }
+
+    if (action === "sonos-volume-down") {
+      this._press("sonos-volume-down");
+      this._hass.callService("media_player", "volume_down", { entity_id: this._config.entities.mediaPlayer });
+      return;
+    }
+
+    if (action === "sonos-volume-up") {
+      this._press("sonos-volume-up");
+      this._hass.callService("media_player", "volume_up", { entity_id: this._config.entities.mediaPlayer });
+      return;
+    }
+
+    if (action === "sonos-mute") {
+      const entityId = this._config.entities.mediaPlayer;
+      this._press("sonos-mute");
+      this._hass.callService("media_player", "volume_mute", { entity_id: entityId, is_volume_muted: !this._mediaModel().muted });
       return;
     }
 
@@ -1036,13 +1058,10 @@ class FoyerDashboardCard extends HTMLElement {
       ${this._styles()}
       <main class="foyer-dashboard" aria-label="Foyer dashboard">
         <aside class="rail" aria-label="Status and transit">
-          <section class="panel no-drill status-top" aria-label="Current time, alerts, and people status">
+          <section class="panel no-drill status-top" aria-label="Current time and people status">
             <div>
               <div class="time">${this._formatClock()}</div>
               <div class="date">${this._formatDate()}</div>
-            </div>
-            <div class="status-alerts" aria-label="Alert status">
-              <span class="status-icon" title="No alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
             </div>
             <div class="status-icons" aria-label="People status">${this._renderPeople()}</div>
           </section>
@@ -1070,39 +1089,46 @@ class FoyerDashboardCard extends HTMLElement {
               </div>
             </section>
 
-            <section class="panel art-card" aria-label="Dog art/photo and Sonos">
-              <div class="art-mat">
-                <div class="media-mini" aria-label="Living Room Sonos compact control">
-                  <strong>Sonos</strong>
-                  <span>${media.label}</span>
-                  <div class="media-actions">
-                    <button class="control-chip small-button ${this._pressedKey === "sonos-play" ? "is-pressed" : ""}" data-action="sonos-play">Play</button>
-                    <button class="control-chip small-button ${this._pressedKey === "sonos-off" ? "is-pressed" : ""}" data-action="sonos-off">Off</button>
-                  </div>
+            <section class="panel no-drill dog-card" aria-label="Dog photo">
+              <img src="${this._config.image}" alt="Dog photo used on the current Foyer dashboard" decoding="async">
+            </section>
+
+            <section class="panel no-drill mode-dock" aria-label="House mode shortcuts">
+              <div class="mode-block">
+                <div class="mode-icons" aria-label="Reserved mode toggles">
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-guest" ? "is-pressed" : ""}" data-action="reserved" data-mode="guest" title="Guest" aria-label="Guest mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h10v14M14 11h6v9M9 12h.01"></path></svg><span>Guest</span></button>
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-party" ? "is-pressed" : ""}" data-action="reserved" data-mode="party" title="Party" aria-label="Party mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg><span>Party</span></button>
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-performance" ? "is-pressed" : ""}" data-action="reserved" data-mode="performance" title="Concert" aria-label="Concert mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10M12 16v4M5 4h14l-2 12H7L5 4Z"></path></svg><span>Concert</span></button>
                 </div>
-                <figure class="print-frame" aria-label="Framed processed dog photo from the current Foyer dashboard">
-                  <div class="photo-window"><img src="${this._config.image}" alt="Dog photo used on the current Foyer dashboard" decoding="async"></div>
-                </figure>
+              </div>
+            </section>
+
+            <section class="panel no-drill media-panel" aria-label="Living Room Sonos compact control">
+              <strong>Sonos</strong>
+              <span class="media-label">${media.label}</span>
+              <div class="volume-controls" aria-label="Sonos volume controls">
+                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-down" ? "is-pressed" : ""}" data-action="sonos-volume-down" title="Volume down" aria-label="Volume down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path></svg></button>
+                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-up" ? "is-pressed" : ""}" data-action="sonos-volume-up" title="Volume up" aria-label="Volume up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path><path d="M19 6a9 9 0 0 1 0 12"></path></svg></button>
+                <span class="volume-level ${media.muted ? "muted" : ""}">${media.muted ? "Mute" : media.volumeLabel}</span>
+                <button class="control-chip volume-button ${media.muted ? "active" : ""} ${this._pressedKey === "sonos-mute" ? "is-pressed" : ""}" data-action="sonos-mute" title="${media.muted ? "Unmute" : "Mute"}" aria-label="${media.muted ? "Unmute" : "Mute"}" aria-pressed="${media.muted}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="m16 9 5 5M21 9l-5 5"></path></svg></button>
+              </div>
+              <div class="media-actions">
+                <button class="control-chip small-button ${this._pressedKey === "sonos-play" ? "is-pressed" : ""}" data-action="sonos-play">Play</button>
+                <button class="control-chip small-button ${this._pressedKey === "sonos-off" ? "is-pressed" : ""}" data-action="sonos-off">Off</button>
               </div>
             </section>
 
             <div class="bottom-dock">
-              <section class="panel no-drill mode-dock" aria-label="House mode shortcuts">
-                <div class="mode-block">
-                  <div class="mode-icons" aria-label="Reserved mode toggles">
-                    <button class="control-chip mode-icon ${this._pressedKey === "reserved-guest" ? "is-pressed" : ""}" data-action="reserved" data-mode="guest" title="Guest" aria-label="Guest mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h10v14M14 11h6v9M9 12h.01"></path></svg><span>Guest</span></button>
-                    <button class="control-chip mode-icon ${this._pressedKey === "reserved-party" ? "is-pressed" : ""}" data-action="reserved" data-mode="party" title="Party" aria-label="Party mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg><span>Party</span></button>
-                    <button class="control-chip mode-icon ${this._pressedKey === "reserved-performance" ? "is-pressed" : ""}" data-action="reserved" data-mode="performance" title="Performance" aria-label="Performance mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10M12 16v4M5 4h14l-2 12H7L5 4Z"></path></svg><span>Perf</span></button>
-                  </div>
-                </div>
-              </section>
-
               <nav class="panel no-drill nav" aria-label="Dashboard tabs">
                 <div class="nav-items">
                   <span class="control-chip nav-item active"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9H5v-9"></path></svg>Home</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 18V9m5 9V5m5 13v-6"></path></svg>Power</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M6 9h12M8 15h8"></path></svg>Climate</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7zM17 10h2v4h-2"></path></svg>Health</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Lists</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h16v14M9 20V9h6v11M4 12h5M15 12h5"></path></svg>Rooms</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg>Show</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 8h4M18 16h4"></path></svg>Mixer</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"></path></svg>Energy</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7zM4 10h3M4 14h3M17 10h3M17 14h3M10 4v3M14 4v3M10 17v3M14 17v3"></path></svg>System</span>
+                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6ZM9 4v14M15 6v14"></path></svg>Map</span>
                 </div>
               </nav>
             </div>
@@ -1236,14 +1262,13 @@ class FoyerDashboardCard extends HTMLElement {
         .rail { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px; }
         .controls { display: grid; grid-template-rows: minmax(0, 1fr); gap: 14px; }
 
-        .status-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; }
+        .status-top { display: grid; grid-template-columns: auto auto; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; }
         .time { font-family: var(--font-serif); font-size: 34px; line-height: 1; font-weight: 650; }
         .date { color: var(--ink-450); font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        .status-alerts, .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 8px; }
-        .status-top .status-alerts { justify-self: center; }
+        .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 8px; }
         .status-top .status-icons { justify-self: end; }
 
-        .person-icon, .status-icon, .mode-icon, .nav-item {
+        .person-icon, .mode-icon, .nav-item {
           display: grid;
           place-items: center;
           border: 1px solid var(--control-border);
@@ -1280,9 +1305,9 @@ class FoyerDashboardCard extends HTMLElement {
           box-shadow: var(--control-active-shadow);
         }
 
-        .person-icon, .status-icon { position: relative; width: 34px; height: 34px; border-radius: 999px; font-size: 13px; font-weight: 900; }
+        .person-icon { position: relative; width: 34px; height: 34px; border-radius: 999px; font-size: 13px; font-weight: 900; }
         .person-icon { background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); }
-        .person-icon::after, .status-icon::after {
+        .person-icon::after {
           content: "";
           position: absolute;
           right: 0;
@@ -1354,8 +1379,8 @@ class FoyerDashboardCard extends HTMLElement {
         .route-time.offline { color: var(--ink-450); }
         .route-empty { min-height: 120px; display: grid; place-items: center; color: var(--ink-450); font-size: 13px; font-weight: 850; }
 
-        .control-layout { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; align-content: start; gap: 14px; min-width: 0; }
-        .lighting-panel { display: grid; align-content: start; min-height: 0; padding: 18px; }
+        .control-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(136px, 0.26fr); grid-template-rows: auto auto minmax(220px, 1fr) auto; gap: 14px; min-width: 0; min-height: 0; }
+        .lighting-panel { grid-column: 1 / -1; display: grid; align-content: start; min-height: 0; padding: 18px; }
         .lighting-panel::after { display: none; }
         .lighting-shell { position: relative; display: grid; grid-template-rows: auto auto; align-content: start; gap: 8px; }
         .power-buttons { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; gap: 10px; padding-right: 52px; }
@@ -1363,7 +1388,7 @@ class FoyerDashboardCard extends HTMLElement {
         .power-icon { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 999px; background: linear-gradient(145deg, #2d2923, #151310); color: #f1bd69; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 28px rgba(39, 31, 20, 0.18); }
         .power-icon.off { color: rgba(238, 229, 214, 0.78); }
         .power-icon svg { width: 44px; height: 44px; }
-        .power-icon svg, .mode-icon svg, .status-icon svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .power-icon svg, .mode-icon svg, .volume-button svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .power-icon .slash { stroke-width: 2.5; }
         .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: 13px; font-weight: 950; white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
         .scope-toggle.on { border-color: rgba(185, 129, 53, 0.48); background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
@@ -1391,30 +1416,29 @@ class FoyerDashboardCard extends HTMLElement {
         .scene-button.active { background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); border-color: rgba(185, 129, 53, 0.48); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
         .details-button { position: absolute; right: 0; bottom: 0; padding: 0; transition: transform 140ms ease, box-shadow 140ms ease; }
 
-        .art-card { position: relative; display: grid; min-height: 300px; padding: 14px; background: linear-gradient(145deg, rgba(255, 253, 247, 0.95), rgba(226, 216, 199, 0.82)), repeating-linear-gradient(135deg, rgba(20, 19, 17, 0.03) 0, rgba(20, 19, 17, 0.03) 1px, transparent 1px, transparent 13px), var(--panel-solid); }
-        .art-mat { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; min-height: 100%; padding: 14px 18px; border: 1px solid rgba(20, 19, 17, 0.13); border-radius: 7px; background: radial-gradient(circle at 50% 38%, rgba(255, 251, 243, 0.9), transparent 45%), linear-gradient(145deg, rgba(248, 243, 235, 0.88), rgba(203, 187, 164, 0.42)), repeating-linear-gradient(135deg, rgba(20, 19, 17, 0.032) 0, rgba(20, 19, 17, 0.032) 1px, transparent 1px, transparent 12px); overflow: hidden; }
-        .art-mat::before { content: ""; position: absolute; inset: 22px; border: 1px solid rgba(20, 19, 17, 0.08); border-radius: 6px; pointer-events: none; }
-        .print-frame { position: relative; width: 168px; aspect-ratio: 4 / 5; padding: 10px; border-radius: 6px; background: linear-gradient(145deg, #11100e, #3c3328 54%, #15130f); box-shadow: 0 22px 42px rgba(34, 29, 21, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.46); }
-        .print-frame::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(185, 129, 53, 0.48); border-radius: 3px; pointer-events: none; z-index: 2; }
-        .photo-window { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 3px; background: #d8c8ad; }
-        .photo-window img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 47%; filter: grayscale(0.72) sepia(0.28) saturate(0.82) contrast(1.1) brightness(1.04); transform: scale(1.03); }
-        .photo-window::before, .photo-window::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-        .photo-window::before { background: linear-gradient(145deg, rgba(255, 245, 224, 0.26), rgba(53, 43, 31, 0.18)), radial-gradient(circle at 50% 35%, transparent 35%, rgba(22, 19, 14, 0.28) 100%); mix-blend-mode: multiply; }
-        .photo-window::after { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28), inset 0 0 34px rgba(20, 19, 17, 0.28); background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0, rgba(255, 255, 255, 0.045) 1px, transparent 1px, transparent 5px); opacity: 0.58; }
-        .media-mini { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid rgba(20, 19, 17, 0.1); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.5); color: var(--ink-600); font-size: 13px; font-weight: 850; }
-        .media-mini strong { color: var(--ink-900); font-size: 15px; }
-        .media-actions { display: flex; gap: 7px; }
-        .small-button { min-width: 64px; }
+        .dog-card { grid-column: 1; grid-row: 2 / 4; position: relative; min-height: 0; padding: 16px; border: 2px solid rgba(15, 13, 11, 0.96); background: linear-gradient(145deg, #090807, #3b332b 24%, #81705d 36%, #1a1713 55%, #4a3c2d 78%, #0d0b09); box-shadow: 0 26px 54px rgba(22, 18, 13, 0.34), inset 0 2px 0 rgba(255, 255, 255, 0.28), inset 0 -3px 0 rgba(0, 0, 0, 0.54), inset 0 0 0 6px rgba(185, 129, 53, 0.22); }
+        .dog-card::before { content: ""; position: absolute; inset: 8px; z-index: 2; pointer-events: none; border: 2px solid rgba(240, 190, 108, 0.48); border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), inset 0 0 34px rgba(0, 0, 0, 0.28); background: linear-gradient(130deg, rgba(255, 255, 255, 0.28) 0 11%, transparent 12% 55%, rgba(255, 255, 255, 0.12) 56%, transparent 68%); }
+        .dog-card img { position: relative; z-index: 1; width: 100%; height: 100%; min-height: 280px; display: block; object-fit: cover; object-position: 50% 47%; border: 1px solid rgba(255, 244, 221, 0.5); border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(20, 19, 17, 0.28), 0 12px 22px rgba(0, 0, 0, 0.34); filter: contrast(1.06) saturate(1.08); }
+        .media-panel { grid-column: 2; grid-row: 3; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; align-items: start; gap: 12px; min-width: 0; padding: 12px 14px; color: var(--ink-600); font-size: 13px; font-weight: 850; }
+        .media-panel strong { color: var(--ink-900); font-size: 15px; }
+        .media-label { min-width: 0; line-height: 1.2; white-space: normal; overflow-wrap: anywhere; }
+        .volume-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; }
+        .volume-button { width: 100%; min-width: 0; padding: 0; }
+        .volume-button svg { width: 19px; height: 19px; }
+        .volume-level { display: grid; place-items: center; min-height: 40px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.38); color: var(--ink-760); font-size: 12px; font-weight: 950; line-height: 1; box-shadow: var(--control-shadow); }
+        .volume-level.muted { color: var(--brass-500); }
+        .media-actions { display: grid; gap: 7px; width: 100%; }
+        .small-button { width: 100%; min-width: 0; }
 
-        .bottom-dock { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
-        .mode-dock { display: grid; grid-template-columns: 1fr; align-content: start; flex: 0 1 auto; padding: 6px; }
-        .mode-block { display: flex; align-items: center; }
-        .mode-icons { gap: 8px; flex-wrap: nowrap; }
-        .mode-icon { position: relative; min-width: 84px; padding: 0 12px; font-size: 12px; }
+        .bottom-dock { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .mode-dock { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr; align-content: start; padding: 6px; }
+        .mode-block { display: grid; align-items: center; }
+        .mode-icons { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .mode-icon { position: relative; justify-content: flex-start; width: 100%; min-width: 0; padding: 0 10px; font-size: 12px; text-align: left; }
         .mode-icon svg { width: 20px; height: 20px; }
-        .nav { flex: 0 0 auto; width: auto; padding: 6px; }
-        .nav-items { justify-content: flex-end; gap: 6px; }
-        .nav-item { min-width: 76px; padding: 0 12px; color: var(--ink-600); font-size: 12px; }
+        .nav { flex: 1 1 auto; width: 100%; padding: 6px; }
+        .nav-items { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; width: 100%; }
+        .nav-item { min-width: 0; padding: 0 8px; color: var(--ink-600); font-size: 11px; }
         .nav-item svg { width: 16px; height: 16px; }
 
         .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 44px; background: rgba(20, 19, 17, 0.42); }
@@ -1453,7 +1477,8 @@ class FoyerDashboardCard extends HTMLElement {
         @media (max-width: 920px) {
           :host { height: auto; min-height: 980px; }
           .foyer-dashboard { grid-template-columns: 1fr; min-height: 980px; overflow-y: auto; }
-          .control-layout { grid-template-rows: auto; }
+          .control-layout { grid-template-columns: 1fr; grid-template-rows: auto; }
+          .lighting-panel, .media-panel, .dog-card, .bottom-dock { grid-column: auto; grid-row: auto; }
           .lighting-panel { min-height: auto; }
           .power-buttons, .intensity-buttons { padding-right: 0; }
           .power-buttons, .intensity-row { grid-template-columns: 1fr; }

@@ -56,7 +56,7 @@
       },
       {
         "id": "af95ca00644c4ac981aad02ffceccf13",
-        "url": "/hacsfiles/material-you-utilities/material-you-utilities.min.js?hacstag=9677371532124",
+        "url": "/hacsfiles/material-you-utilities/material-you-utilities.min.js?hacstag=9677371532125",
         "type": "module"
       },
       {
@@ -136,7 +136,7 @@
       },
       {
         "id": "eb7b862a2abc475bb9b159761ebe3a8d",
-        "url": "/local/foyer-dashboard/foyer-dashboard-card.js?v=20260823-52",
+        "url": "/local/foyer-dashboard/foyer-dashboard-card.js?v=20260823-61",
         "type": "module"
       }
     ]
