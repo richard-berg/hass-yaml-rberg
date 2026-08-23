@@ -1028,8 +1028,8 @@ open_area_lights_off:
       value: 0
   mode: single
 foyer_dashboard_open_area_everyday:
-  alias: Foyer Dashboard Open Area Everyday
-  description: Set Kitchen, Dining, and Foyer to everyday/normal lighting in parallel;
+  alias: Foyer Dashboard Open Area Daytime
+  description: Set Kitchen, Dining, and Foyer to daytime/normal lighting in parallel;
     Kitchen runs through its behavior script so the Hood Light follows, and Living
     Room is included when the foyer dashboard helper is on.
   icon: mdi:lightbulb-group
@@ -1039,7 +1039,7 @@ foyer_dashboard_open_area_everyday:
     target:
       entity_id: input_select.foyer_dashboard_lighting_intensity
     data:
-      option: Everyday
+      option: Daytime
   - parallel:
     - sequence:
       - action: script.kitchen_normal
@@ -1239,3 +1239,23 @@ kitchen_evening:
     - action: script.hood_light_turn_on
       data:
         brightness: 10
+foyer_dashboard_open_area_on:
+  alias: Foyer Dashboard Open Area On
+  description: Turn the open area on using Evening lighting from 5 PM through overnight,
+    otherwise Daytime lighting.
+  icon: mdi:lightbulb-on
+  mode: restart
+  sequence:
+  - choose:
+    - conditions:
+      - condition: time
+        after: '17:00:00'
+      sequence:
+      - action: script.foyer_dashboard_open_area_evening
+    - conditions:
+      - condition: time
+        before: 05:00:00
+      sequence:
+      - action: script.foyer_dashboard_open_area_evening
+    default:
+    - action: script.foyer_dashboard_open_area_everyday

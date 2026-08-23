@@ -112,8 +112,9 @@ Proposed layout:
 | Weather now + brief today   | 4/5 vs R/W, manual/status shell for v1              |
 | Temp/air brief              |                                                     |
 | People chips                | Open Area Lighting                                  |
-| Active media chip           | [Include Living toggle] [Normal] [Mood] [Off]       |
+| Active media chip           | [+ Living Room] [Off] [On]                          |
 | Exception/alert chips       |                                                     |
+|                             | [Mood] [Evening] [Daytime] [Bright]                 |
 |                             | House Modes                                         |
 |                             | [Guest] [Party]                                     |
 |                             |                                                     |
@@ -201,12 +202,14 @@ Default scope:
 
 Main-screen control:
 
-- A boolean-style `+ Living Room` control.
+- Primary `On` and `Off` buttons, with a compact boolean-style `+ Living Room` scope control at the left edge of the same row.
+- `On` chooses `Daytime` before evening hours and `Evening` from evening through overnight. The button previews the target intensity with two or three bars beside the `On` label and is active only when that target intensity is currently selected.
+- `+ Living Room` renders as a narrow two-column badge: a vertically centered `+` beside stacked `Living` / `Room` text.
 - `+ Living Room` means include Living Room in future grouped lighting actions. Turning it on also immediately applies the current intensity to Living Room; turning it off does not turn Living Room off.
-- Track the current selected intensity in `input_select.foyer_dashboard_lighting_intensity` with options `Bright`, `Everyday`, `Evening`, `Mood`, `Off`.
-- Instant intensity buttons: `Everyday`, `Off`, plus smaller `Bright`, `Evening`, `Mood` buttons. These apply immediately to the current scope and update the intensity helper.
+- Track the current selected intensity in `input_select.foyer_dashboard_lighting_intensity` with options `Bright`, `Daytime`, `Evening`, `Mood`, `Off`.
+- Instant intensity buttons: `Mood`, `Evening`, `Daytime`, and `Bright` in ascending order. These apply immediately to the current scope and update the intensity helper.
 - Avoid a separate confirmation for these lighting controls.
-- Use a large lightbulb icon for context instead of static room labels; the tablet mount location makes the default Kitchen/Dining/Foyer scope clear enough.
+- Use large lightbulb icons inside the `On` and `Off` buttons instead of a standalone static lighting icon; the tablet mount location makes the default Kitchen/Dining/Foyer scope clear enough.
 - Avoid ambiguous jargon such as `Core` and avoid `K/D/F` abbreviations.
 - Active intensity must be visually selected, and all lighting buttons should have tangible tap feedback.
 - The lower-right details affordance opens a dismissable `Light Controls` modal/lightbox. Granular controls can be added there later.
@@ -217,17 +220,18 @@ Known Open Area entities/scenes:
 - Existing reusable script: `script.open_area_lights_off`.
 - Foyer light: `light.front_foyer_main_lights` currently appears assigned to Kitchen.
 - Existing all-off scene: `scene.all_off` controls a broad set and includes some bathroom/bedroom/theater entries; evaluate before making it a prominent button.
-- Kitchen scenes include foyer lighting: `scene.kitchen_bright`, `scene.kitchen_normal`, `scene.kitchen_mood`, `scene.kitchen_off`.
-- Dining scenes include dining plus adjacent accent lighting: `scene.dining_bright`, `scene.dining_normal`, `scene.dining_mood`, `scene.dining_off`.
-- Living scenes: `scene.living_room_bright`, `scene.living_room_normal`, `scene.living_room_mood`, `scene.living_room_off`.
+- Kitchen scenes include foyer lighting: `scene.kitchen_bright`, `scene.kitchen_normal`, `scene.pantry_smart_bridge_kitchen_evening`, `scene.kitchen_mood`, `scene.kitchen_off`.
+- Dining scenes include dining plus adjacent accent lighting: `scene.dining_bright`, `scene.dining_normal`, `scene.pantry_smart_bridge_dining_evening`, `scene.dining_mood`, `scene.dining_off`.
+- Living scenes: `scene.living_room_bright`, `scene.living_room_normal`, `scene.pantry_smart_bridge_living_room_evening`, `scene.living_room_mood`, `scene.living_room_off`.
 - Stage scenes should live in popup/detail only unless later promoted.
 
 Implementation implication:
 
-- Use explicit scripts for each intensity: `script.foyer_dashboard_open_area_bright`, `script.foyer_dashboard_open_area_everyday`, `script.foyer_dashboard_open_area_evening`, `script.foyer_dashboard_open_area_mood`, and `script.foyer_dashboard_open_area_off`.
-- The UI label `Everyday` maps to the existing `normal` scenes behind the scenes.
+- Use explicit scripts for each intensity: `script.foyer_dashboard_open_area_bright`, `script.foyer_dashboard_open_area_everyday` as the Daytime/normal implementation, `script.foyer_dashboard_open_area_evening`, `script.foyer_dashboard_open_area_mood`, and `script.foyer_dashboard_open_area_off`.
+- Use `script.foyer_dashboard_open_area_on` for the primary `On` button; it delegates to Daytime/normal or Evening based on time.
+- The UI label `Daytime` maps to the existing `normal` scenes behind the scenes.
 - Use `input_boolean.foyer_dashboard_include_living` for the `+ Living Room` toggle.
-- Foyer dashboard scripts must call `script.kitchen_bright`, `script.kitchen_normal`, `script.kitchen_mood`, or `script.kitchen_off` rather than raw `scene.kitchen_*` scenes, because those kitchen behavior scripts also update the Hood Light.
+- Foyer dashboard scripts must call `script.kitchen_bright`, `script.kitchen_normal`, `script.kitchen_evening`, `script.kitchen_mood`, or `script.kitchen_off` rather than raw `scene.kitchen_*` scenes, because those kitchen behavior scripts also update the Hood Light.
 - After setting the active intensity helper, run Kitchen, Dining, and optional Living Room changes as parallel branches so Kitchen/Hood Light delays do not postpone Living Room.
 
 ### House Modes

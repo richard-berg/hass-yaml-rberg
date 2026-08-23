@@ -9,7 +9,9 @@ const DEFAULT_CONFIG = {
     mediaPlayer: "media_player.living_room"
   },
   scripts: {
+    on: "script.foyer_dashboard_open_area_on",
     bright: "script.foyer_dashboard_open_area_bright",
+    daytime: "script.foyer_dashboard_open_area_everyday",
     everyday: "script.foyer_dashboard_open_area_everyday",
     evening: "script.foyer_dashboard_open_area_evening",
     mood: "script.foyer_dashboard_open_area_mood",
@@ -325,26 +327,53 @@ class FoyerDashboardCard extends HTMLElement {
     return { state, label };
   }
 
-  _intensities() {
+  _levelBars(level) {
+    return [8, 14, 20, 26].slice(0, level);
+  }
+
+  _lightingModes() {
     return [
-      { key: "bright", label: "Bright", script: "bright", livingScene: "scene.living_room_bright", bars: [6, 11, 16, 21], size: "secondary" },
-      { key: "everyday", label: "Everyday", script: "everyday", livingScene: "scene.living_room_normal", bars: [18, 25, 32], size: "primary" },
-      { key: "evening", label: "Evening", script: "evening", livingScene: "scene.pantry_smart_bridge_living_room_evening", bars: [12, 23], size: "secondary" },
-      { key: "mood", label: "Mood", script: "mood", livingScene: "scene.living_room_mood", bars: [16], size: "secondary" },
-      { key: "off", label: "Off", script: "off", livingScene: "scene.living_room_off", bars: [4], size: "primary", off: true }
+      { key: "bright", label: "Bright", script: "bright", livingScene: "scene.living_room_bright", level: 4 },
+      { key: "daytime", label: "Daytime", script: "daytime", livingScene: "scene.living_room_normal", level: 3 },
+      { key: "evening", label: "Evening", script: "evening", livingScene: "scene.pantry_smart_bridge_living_room_evening", level: 2 },
+      { key: "mood", label: "Mood", script: "mood", livingScene: "scene.living_room_mood", level: 1 },
+      { key: "off", label: "Off", script: "off", livingScene: "scene.living_room_off", level: 0, off: true }
     ];
   }
 
+  _intensities() {
+    return this._lightingModes().filter((intensity) => !intensity.off);
+  }
+
+  _normalizeIntensityKey(value) {
+    const normalized = String(value || "Daytime").toLowerCase().replace(/\s+/g, "-");
+    if (normalized === "everyday" || normalized === "normal") return "daytime";
+    return normalized;
+  }
+
+  _onIntensityKey(date = new Date()) {
+    const hour = date.getHours();
+    return hour >= 17 || hour < 5 ? "evening" : "daytime";
+  }
+
+  _modeForKey(key) {
+    const normalized = this._normalizeIntensityKey(key);
+    return this._lightingModes().find((intensity) => intensity.key === normalized) || this._lightingModes()[1];
+  }
+
+  _scriptId(scriptKey) {
+    return this._config.scripts[scriptKey] || (scriptKey === "daytime" ? this._config.scripts.everyday : undefined);
+  }
+
   _currentIntensityKey() {
-    if (this._optimisticIntensity) return this._optimisticIntensity;
-    const state = this._state(this._config.entities.lightingIntensity)?.state || "Everyday";
-    const normalized = state.toLowerCase().replace(/\s+/g, "-");
-    return this._intensities().some((intensity) => intensity.key === normalized) ? normalized : "everyday";
+    if (this._optimisticIntensity) return this._normalizeIntensityKey(this._optimisticIntensity);
+    const state = this._state(this._config.entities.lightingIntensity)?.state || "Daytime";
+    const normalized = this._normalizeIntensityKey(state);
+    return this._lightingModes().some((intensity) => intensity.key === normalized) ? normalized : "daytime";
   }
 
   _currentIntensity() {
-    const key = this._currentIntensityKey();
-    return this._intensities().find((intensity) => intensity.key === key) || this._intensities()[1];
+    return this._modeForKey(this._currentIntensityKey());
   }
 
   _press(key) {
@@ -392,9 +421,18 @@ class FoyerDashboardCard extends HTMLElement {
     }
 
     if (action === "script") {
-      const scriptId = this._config.scripts[target.dataset.script];
-      const intensity = target.dataset.intensity;
+      const scriptId = this._scriptId(target.dataset.script);
+      const intensity = this._normalizeIntensityKey(target.dataset.intensity);
       this._press(`intensity-${intensity}`);
+      this._setOptimisticIntensity(intensity);
+      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
+      return;
+    }
+
+    if (action === "smart-on") {
+      const intensity = this._onIntensityKey();
+      const scriptId = this._scriptId("on") || this._scriptId(intensity);
+      this._press("power-on");
       this._setOptimisticIntensity(intensity);
       if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
       return;
@@ -439,9 +477,43 @@ class FoyerDashboardCard extends HTMLElement {
     const active = this._currentIntensityKey() === intensity.key;
     const pressed = this._pressedKey === `intensity-${intensity.key}`;
     return `
-      <button class="scene-button ${intensity.size} ${active ? "active" : ""} ${pressed ? "is-pressed" : ""} ${intensity.off ? "off" : ""}" data-action="script" data-script="${intensity.script}" data-intensity="${intensity.key}" aria-pressed="${active}">
+      <button class="scene-button intensity ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="script" data-script="${intensity.script}" data-intensity="${intensity.key}" aria-pressed="${active}">
         <strong>${intensity.label}</strong>
-        <span class="scene-level">${intensity.bars.map((height) => `<i style="height: ${height}px;"></i>`).join("")}</span>
+        <span class="scene-level">${this._levelBars(intensity.level).map((height) => `<i style="height: ${height}px;"></i>`).join("")}</span>
+      </button>
+    `;
+  }
+
+  _renderBulbIcon(off = false) {
+    return `
+      <span class="power-icon ${off ? "off" : ""}" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M8 14c-1.4-1.2-2-2.7-2-4.5A6 6 0 0 1 18 9.5c0 1.8-.7 3.3-2 4.5-.8.7-1 1.4-1 2H9c0-.6-.2-1.3-1-2Z"></path>${off ? `<path class="slash" d="M5 5l14 14"></path>` : ""}</svg>
+      </span>
+    `;
+  }
+
+  _renderOnButton() {
+    const targetIntensity = this._modeForKey(this._onIntensityKey());
+    const active = this._currentIntensityKey() === targetIntensity.key;
+    const pressed = this._pressedKey === "power-on";
+    return `
+      <button class="scene-button power on ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="smart-on" data-intensity="${targetIntensity.key}" aria-label="Turn lights on to ${targetIntensity.label}" aria-pressed="${active}">
+        <span class="power-icon-cell">${this._renderBulbIcon(false)}</span>
+        <span class="power-label"><strong>On</strong></span>
+        <span class="power-meter"><span class="scene-level">${this._levelBars(targetIntensity.level).map((height) => `<i style="height: ${height}px;"></i>`).join("")}</span></span>
+      </button>
+    `;
+  }
+
+  _renderOffButton() {
+    const intensity = this._modeForKey("off");
+    const active = this._currentIntensityKey() === intensity.key;
+    const pressed = this._pressedKey === `intensity-${intensity.key}`;
+    return `
+      <button class="scene-button power off ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="script" data-script="${intensity.script}" data-intensity="${intensity.key}" aria-label="Turn lights off" aria-pressed="${active}">
+        <span class="power-icon-cell">${this._renderBulbIcon(true)}</span>
+        <span class="power-label"><strong>${intensity.label}</strong></span>
+        <span class="power-meter" aria-hidden="true"></span>
       </button>
     `;
   }
@@ -543,9 +615,7 @@ class FoyerDashboardCard extends HTMLElement {
     if (!this.shadowRoot) return;
     const includeLiving = this._state(this._config.entities.includeLiving)?.state === "on";
     const media = this._mediaModel();
-    const intensities = this._intensities();
-    const primaryIntensities = intensities.filter((intensity) => intensity.size === "primary");
-    const secondaryIntensities = intensities.filter((intensity) => intensity.size === "secondary");
+    const intensities = [...this._intensities()].reverse();
 
     this.shadowRoot.innerHTML = `
       ${this._styles()}
@@ -571,17 +641,16 @@ class FoyerDashboardCard extends HTMLElement {
           <section class="control-layout">
             <section class="panel lighting-panel" aria-label="Open Area lighting controls">
               <div class="lighting-shell">
-                <div class="scope-strip">
-                  <div class="scope-left">
-                    <span class="lighting-icon" title="Lighting" aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M8 14c-1.4-1.2-2-2.7-2-4.5A6 6 0 0 1 18 9.5c0 1.8-.7 3.3-2 4.5-.8.7-1 1.4-1 2H9c0-.6-.2-1.3-1-2Z"></path></svg>
-                    </span>
-                  </div>
-                  <button class="control-chip scope-toggle ${includeLiving ? "on" : ""} ${this._pressedKey === "living" ? "is-pressed" : ""}" data-action="toggle-living" aria-pressed="${includeLiving}">+ Living Room</button>
+                <div class="power-buttons">
+                  <button class="control-chip scope-toggle ${includeLiving ? "on" : ""} ${this._pressedKey === "living" ? "is-pressed" : ""}" data-action="toggle-living" aria-pressed="${includeLiving}">
+                    <span class="scope-plus">+</span>
+                    <span class="scope-label"><span>Living</span><span>Room</span></span>
+                  </button>
+                  ${this._renderOffButton()}
+                  ${this._renderOnButton()}
                 </div>
                 <div class="intensity-buttons">
-                  <div class="primary-intensities">${primaryIntensities.map((intensity) => this._renderIntensityButton(intensity)).join("")}</div>
-                  <div class="secondary-intensities">${secondaryIntensities.map((intensity) => this._renderIntensityButton(intensity)).join("")}</div>
+                  <div class="intensity-row">${intensities.map((intensity) => this._renderIntensityButton(intensity)).join("")}</div>
                 </div>
                 <button class="details-button ${this._pressedKey === "details" ? "is-pressed" : ""}" data-action="open-lighting-modal" aria-label="Open light controls">›</button>
               </div>
@@ -859,32 +928,41 @@ class FoyerDashboardCard extends HTMLElement {
         .route-time span { display: block; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
         .micro-status { display: flex; align-items: center; justify-content: flex-start; justify-self: start; gap: 8px; padding: 8px; }
 
-        .control-layout { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 14px; height: 100%; min-width: 0; }
-        .lighting-panel { display: grid; align-content: stretch; min-height: 344px; padding: 18px; }
+        .control-layout { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto; align-content: start; gap: 14px; min-width: 0; }
+        .lighting-panel { display: grid; align-content: start; min-height: 0; padding: 18px; }
         .lighting-panel::after { display: none; }
-        .lighting-shell { position: relative; display: grid; grid-template-rows: auto 1fr; gap: 14px; height: 100%; }
-        .scope-strip { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-right: 52px; }
-        .scope-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-        .lighting-icon { display: grid; place-items: center; flex: 0 0 auto; width: 96px; height: 96px; border-radius: 999px; background: linear-gradient(145deg, #2d2923, #151310); color: #f1bd69; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 28px rgba(39, 31, 20, 0.18); }
-        .lighting-icon svg { width: 54px; height: 54px; }
-        .lighting-icon svg, .mode-icon svg, .status-icon svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .scope-toggle { min-height: 48px; padding: 9px 15px; font-size: 16px; font-weight: 950; }
+        .lighting-shell { position: relative; display: grid; grid-template-rows: auto auto; align-content: start; gap: 8px; }
+        .power-buttons { display: grid; grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; gap: 10px; padding-right: 52px; }
+        .power-icon-cell { display: grid; place-items: center; width: 70px; height: 70px; }
+        .power-icon { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 999px; background: linear-gradient(145deg, #2d2923, #151310); color: #f1bd69; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 28px rgba(39, 31, 20, 0.18); }
+        .power-icon.off { color: rgba(238, 229, 214, 0.78); }
+        .power-icon svg { width: 44px; height: 44px; }
+        .power-icon svg, .mode-icon svg, .status-icon svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .power-icon .slash { stroke-width: 2.5; }
+        .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: 13px; font-weight: 950; white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
+        .scope-toggle.on { border-color: rgba(185, 129, 53, 0.48); background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
+        .scope-plus { color: var(--brass-500); font-size: 22px; line-height: 1; }
+        .scope-toggle.on .scope-plus { color: #f1bd69; }
+        .scope-label { display: grid; gap: 1px; line-height: 0.95; text-align: left; text-transform: uppercase; }
         .control-chip.is-pressed, .scene-button.is-pressed, .details-button.is-pressed { transform: translateY(1px) scale(0.985); box-shadow: inset 0 2px 8px rgba(20, 19, 17, 0.24); }
-        .intensity-buttons { display: grid; align-content: end; gap: 10px; padding-right: 52px; }
-        .primary-intensities { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .secondary-intensities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-        .scene-button { display: grid; align-content: space-between; border: 1px solid rgba(20, 19, 17, 0.14); border-radius: var(--radius-control); background: linear-gradient(150deg, rgba(255, 255, 255, 0.78), rgba(232, 222, 205, 0.7)); color: var(--ink-900); font: inherit; text-align: left; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
-        .scene-button.primary { min-height: 118px; padding: 16px; }
-        .scene-button.secondary { min-height: 74px; padding: 11px 12px; }
+        .intensity-buttons { display: grid; align-content: start; gap: 10px; padding-right: 52px; }
+        .intensity-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+        .scene-button { display: grid; align-content: space-between; border: 1px solid rgba(20, 19, 17, 0.14); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font: inherit; text-align: left; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
+        .scene-button.power { display: grid; grid-template-columns: minmax(76px, 1fr) auto minmax(76px, 1fr); grid-template-rows: 1fr; align-items: center; column-gap: 6px; min-height: 142px; padding: 16px; }
+        .scene-button.intensity { min-height: 78px; padding: 12px 17px 11px; }
         .scene-button strong { font-size: 28px; line-height: 1.15; font-weight: 950; white-space: nowrap; }
-        .scene-button.secondary strong { font-size: 18px; }
-        .scene-level { display: flex; gap: 4px; align-items: end; height: 32px; }
+        .scene-button.power strong { font-size: 40px; line-height: 1; }
+        .scene-button.intensity strong { font-size: 17px; }
+        .power-icon-cell { grid-column: 1; grid-row: 1; justify-self: center; z-index: 1; }
+        .power-label { grid-column: 2; grid-row: 1; display: grid; place-items: center; min-width: 0; }
+        .power-meter { grid-column: 3; grid-row: 1; display: grid; align-items: center; justify-items: start; min-width: 0; }
+        .scene-button.on .power-meter { padding-left: 6px; }
+        .scene-level { display: flex; gap: 4px; align-items: end; height: 30px; }
         .scene-level i { display: block; width: 8px; border-radius: 999px 999px 2px 2px; background: var(--brass-500); }
-        .scene-button.secondary .scene-level { height: 24px; }
-        .scene-button.secondary .scene-level i { width: 5px; }
-        .scene-button.active { background: linear-gradient(150deg, #211e19, #3f3527); color: var(--stone-50); border-color: rgba(185, 129, 53, 0.48); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
-        .scene-button.off strong { color: var(--red-500); }
-        .scene-button.off.active strong { color: #f0b3a8; }
+        .scene-button.power .scene-level { height: 30px; }
+        .scene-button.intensity .scene-level { height: 26px; }
+        .scene-button.intensity .scene-level i { width: 6px; }
+        .scene-button.active { background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); border-color: rgba(185, 129, 53, 0.48); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
         .details-button { position: absolute; right: 0; bottom: 0; padding: 0; transition: transform 140ms ease, box-shadow 140ms ease; }
 
         .art-card { position: relative; display: grid; min-height: 300px; padding: 14px; background: linear-gradient(145deg, rgba(255, 253, 247, 0.95), rgba(226, 216, 199, 0.82)), repeating-linear-gradient(135deg, rgba(20, 19, 17, 0.03) 0, rgba(20, 19, 17, 0.03) 1px, transparent 1px, transparent 13px), var(--panel-solid); }
@@ -902,7 +980,7 @@ class FoyerDashboardCard extends HTMLElement {
         .media-actions { display: flex; gap: 7px; }
         .small-button { min-width: 64px; }
 
-        .bottom-dock { display: flex; align-items: center; justify-content: space-between; gap: 10px; grid-row: 4; min-width: 0; }
+        .bottom-dock { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
         .mode-dock { display: grid; grid-template-columns: 1fr; align-content: start; flex: 0 1 auto; padding: 6px; }
         .mode-block { display: flex; align-items: center; }
         .mode-icons { gap: 8px; flex-wrap: nowrap; }
@@ -926,8 +1004,8 @@ class FoyerDashboardCard extends HTMLElement {
           .foyer-dashboard { grid-template-columns: 1fr; min-height: 980px; overflow-y: auto; }
           .control-layout { grid-template-rows: auto; }
           .lighting-panel { min-height: auto; }
-          .intensity-buttons { padding-right: 0; }
-          .primary-intensities, .secondary-intensities { grid-template-columns: 1fr; }
+          .power-buttons, .intensity-buttons { padding-right: 0; }
+          .power-buttons, .intensity-row { grid-template-columns: 1fr; }
           .details-button { position: static; justify-self: end; margin-top: 8px; }
           .bottom-dock { flex-wrap: wrap; }
         }

@@ -62,7 +62,7 @@
         "icon": "mdi:brightness-6",
         "options": [
           "Bright",
-          "Everyday",
+          "Daytime",
           "Evening",
           "Mood",
           "Off"
