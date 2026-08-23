@@ -1,0 +1,803 @@
+blueprint:
+  name: Link 7 Pico 4-Button Scene Controllers
+  domain: automation
+  description: >
+    Tie seven Lutron Pico 4-button scene controllers to the same set of actions.
+    Each button (press, double-click, long press) triggers the same action
+    regardless of which Pico device was pressed.
+
+    Seven-device variant of "Link 2 Pico 4-Button Scene Controllers". Logic is
+    identical; only the device count differs. All seven Pico inputs are
+    required -- a device trigger cannot take an empty device_id, so there is no
+    way to leave a slot unused.
+
+    The double-click window is measured from button RELEASE, not press, so the
+    effective press-to-press tolerance is the hold duration plus
+    time_before_double_click. Short-press actions are deliberately withheld
+    until the double-click window closes, so a double-click never fires the
+    single-press action first.
+  author: Richard Berg
+  homeassistant:
+    min_version: 2025.5.0
+
+  input:
+    picos:
+      name: Pico Devices
+      icon: mdi:remote
+      input:
+        pico_1:
+          name: Pico Device 1
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_2:
+          name: Pico Device 2
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_3:
+          name: Pico Device 3
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_4:
+          name: Pico Device 4
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_5:
+          name: Pico Device 5
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_6:
+          name: Pico Device 6
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+        pico_7:
+          name: Pico Device 7
+          selector:
+            device:
+              filter:
+                - integration: lutron_caseta
+                  model: PJ2-4B-GXX-X31
+
+    button1:
+      name: Top Button
+      icon: mdi:numeric-1-box
+      input:
+        button1_press_action:
+          name: Top Button, Short Press
+          default: []
+          selector: { action: {} }
+        button1_doubleclick_action:
+          name: Top Button, Double Click
+          default: []
+          selector: { action: {} }
+        button1_hold_action:
+          name: Top Button, Long Press
+          default: []
+          selector: { action: {} }
+
+    button2:
+      name: 2nd Button
+      icon: mdi:numeric-2-box
+      input:
+        button2_press_action:
+          name: 2nd Button, Short Press
+          default: []
+          selector: { action: {} }
+        button2_doubleclick_action:
+          name: 2nd Button, Double Click
+          default: []
+          selector: { action: {} }
+        button2_hold_action:
+          name: 2nd Button, Long Press
+          default: []
+          selector: { action: {} }
+
+    button3:
+      name: 3rd Button
+      icon: mdi:numeric-3-box
+      input:
+        button3_press_action:
+          name: 3rd Button, Short Press
+          default: []
+          selector: { action: {} }
+        button3_doubleclick_action:
+          name: 3rd Button, Double Click
+          default: []
+          selector: { action: {} }
+        button3_hold_action:
+          name: 3rd Button, Long Press
+          default: []
+          selector: { action: {} }
+
+    button4:
+      name: Bottom Button
+      icon: mdi:numeric-4-box
+      input:
+        button4_press_action:
+          name: Bottom Button, Short Press
+          default: []
+          selector: { action: {} }
+        button4_doubleclick_action:
+          name: Bottom Button, Double Click
+          default: []
+          selector: { action: {} }
+        button4_hold_action:
+          name: Bottom Button, Long Press
+          default: []
+          selector: { action: {} }
+
+    timing:
+      name: Timing
+      icon: mdi:timer-outline
+      collapsed: true
+      input:
+        time_before_double_click:
+          name: Time before double-click
+          description: >
+            Measured from button release, not press. Raise this if double-clicks
+            on a given Pico are being seen as two short presses.
+          default: 300
+          selector:
+            number:
+              min: 100
+              max: 1000
+              unit_of_measurement: milliseconds
+              step: 10
+              mode: slider
+
+        time_before_long_press:
+          name: Time before long press
+          default: 0.75
+          selector:
+            number:
+              min: 0.25
+              max: 10.0
+              step: 0.25
+              unit_of_measurement: seconds
+              mode: slider
+
+mode: single
+# The 2nd press of every double-click also fires the automation trigger and is
+# correctly dropped by mode:single; silence the resulting warning.
+max_exceeded: silent
+
+# ============================
+# TRIGGERS
+# ============================
+trigger:
+  # ---------------- Pico 1 ----------------
+  - platform: device
+    device_id: !input pico_1
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_1_button_1_pressed
+  - platform: device
+    device_id: !input pico_1
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_1_button_2_pressed
+  - platform: device
+    device_id: !input pico_1
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_1_button_3_pressed
+  - platform: device
+    device_id: !input pico_1
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_1_button_4_pressed
+
+  # ---------------- Pico 2 ----------------
+  - platform: device
+    device_id: !input pico_2
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_2_button_1_pressed
+  - platform: device
+    device_id: !input pico_2
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_2_button_2_pressed
+  - platform: device
+    device_id: !input pico_2
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_2_button_3_pressed
+  - platform: device
+    device_id: !input pico_2
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_2_button_4_pressed
+
+  # ---------------- Pico 3 ----------------
+  - platform: device
+    device_id: !input pico_3
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_3_button_1_pressed
+  - platform: device
+    device_id: !input pico_3
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_3_button_2_pressed
+  - platform: device
+    device_id: !input pico_3
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_3_button_3_pressed
+  - platform: device
+    device_id: !input pico_3
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_3_button_4_pressed
+
+  # ---------------- Pico 4 ----------------
+  - platform: device
+    device_id: !input pico_4
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_4_button_1_pressed
+  - platform: device
+    device_id: !input pico_4
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_4_button_2_pressed
+  - platform: device
+    device_id: !input pico_4
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_4_button_3_pressed
+  - platform: device
+    device_id: !input pico_4
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_4_button_4_pressed
+
+  # ---------------- Pico 5 ----------------
+  - platform: device
+    device_id: !input pico_5
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_5_button_1_pressed
+  - platform: device
+    device_id: !input pico_5
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_5_button_2_pressed
+  - platform: device
+    device_id: !input pico_5
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_5_button_3_pressed
+  - platform: device
+    device_id: !input pico_5
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_5_button_4_pressed
+
+  # ---------------- Pico 6 ----------------
+  - platform: device
+    device_id: !input pico_6
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_6_button_1_pressed
+  - platform: device
+    device_id: !input pico_6
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_6_button_2_pressed
+  - platform: device
+    device_id: !input pico_6
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_6_button_3_pressed
+  - platform: device
+    device_id: !input pico_6
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_6_button_4_pressed
+
+  # ---------------- Pico 7 ----------------
+  - platform: device
+    device_id: !input pico_7
+    domain: lutron_caseta
+    type: press
+    subtype: button_1
+    id: pico_7_button_1_pressed
+  - platform: device
+    device_id: !input pico_7
+    domain: lutron_caseta
+    type: press
+    subtype: button_2
+    id: pico_7_button_2_pressed
+  - platform: device
+    device_id: !input pico_7
+    domain: lutron_caseta
+    type: press
+    subtype: button_3
+    id: pico_7_button_3_pressed
+  - platform: device
+    device_id: !input pico_7
+    domain: lutron_caseta
+    type: press
+    subtype: 'off'
+    id: pico_7_button_4_pressed
+
+# ============================
+# ACTIONS
+# ============================
+action:
+  - choose:
+
+      # ---------------- Button 1 ----------------
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: pico_1_button_1_pressed
+              - condition: trigger
+                id: pico_2_button_1_pressed
+              - condition: trigger
+                id: pico_3_button_1_pressed
+              - condition: trigger
+                id: pico_4_button_1_pressed
+              - condition: trigger
+                id: pico_5_button_1_pressed
+              - condition: trigger
+                id: pico_6_button_1_pressed
+              - condition: trigger
+                id: pico_7_button_1_pressed
+        sequence:
+          - wait_for_trigger:
+              - platform: device
+                device_id: !input pico_1
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_2
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_3
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_4
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_5
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_6
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+              - platform: device
+                device_id: !input pico_7
+                domain: lutron_caseta
+                type: release
+                subtype: button_1
+            timeout:
+              seconds: !input time_before_long_press
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ wait.trigger == none }}"
+                sequence: !input button1_hold_action
+            default:
+              - wait_for_trigger:
+                  - platform: device
+                    device_id: !input pico_1
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_2
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_3
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_4
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_5
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_6
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                  - platform: device
+                    device_id: !input pico_7
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_1
+                timeout:
+                  milliseconds: !input time_before_double_click
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ wait.trigger == none }}"
+                    sequence: !input button1_press_action
+                default: !input button1_doubleclick_action
+
+      # ---------------- Button 2 ----------------
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: pico_1_button_2_pressed
+              - condition: trigger
+                id: pico_2_button_2_pressed
+              - condition: trigger
+                id: pico_3_button_2_pressed
+              - condition: trigger
+                id: pico_4_button_2_pressed
+              - condition: trigger
+                id: pico_5_button_2_pressed
+              - condition: trigger
+                id: pico_6_button_2_pressed
+              - condition: trigger
+                id: pico_7_button_2_pressed
+        sequence:
+          - wait_for_trigger:
+              - platform: device
+                device_id: !input pico_1
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_2
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_3
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_4
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_5
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_6
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+              - platform: device
+                device_id: !input pico_7
+                domain: lutron_caseta
+                type: release
+                subtype: button_2
+            timeout:
+              seconds: !input time_before_long_press
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ wait.trigger == none }}"
+                sequence: !input button2_hold_action
+            default:
+              - wait_for_trigger:
+                  - platform: device
+                    device_id: !input pico_1
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_2
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_3
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_4
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_5
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_6
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                  - platform: device
+                    device_id: !input pico_7
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_2
+                timeout:
+                  milliseconds: !input time_before_double_click
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ wait.trigger == none }}"
+                    sequence: !input button2_press_action
+                default: !input button2_doubleclick_action
+
+      # ---------------- Button 3 ----------------
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: pico_1_button_3_pressed
+              - condition: trigger
+                id: pico_2_button_3_pressed
+              - condition: trigger
+                id: pico_3_button_3_pressed
+              - condition: trigger
+                id: pico_4_button_3_pressed
+              - condition: trigger
+                id: pico_5_button_3_pressed
+              - condition: trigger
+                id: pico_6_button_3_pressed
+              - condition: trigger
+                id: pico_7_button_3_pressed
+        sequence:
+          - wait_for_trigger:
+              - platform: device
+                device_id: !input pico_1
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_2
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_3
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_4
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_5
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_6
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+              - platform: device
+                device_id: !input pico_7
+                domain: lutron_caseta
+                type: release
+                subtype: button_3
+            timeout:
+              seconds: !input time_before_long_press
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ wait.trigger == none }}"
+                sequence: !input button3_hold_action
+            default:
+              - wait_for_trigger:
+                  - platform: device
+                    device_id: !input pico_1
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_2
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_3
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_4
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_5
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_6
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                  - platform: device
+                    device_id: !input pico_7
+                    domain: lutron_caseta
+                    type: press
+                    subtype: button_3
+                timeout:
+                  milliseconds: !input time_before_double_click
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ wait.trigger == none }}"
+                    sequence: !input button3_press_action
+                default: !input button3_doubleclick_action
+
+      # ---------------- Button 4 ----------------
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: pico_1_button_4_pressed
+              - condition: trigger
+                id: pico_2_button_4_pressed
+              - condition: trigger
+                id: pico_3_button_4_pressed
+              - condition: trigger
+                id: pico_4_button_4_pressed
+              - condition: trigger
+                id: pico_5_button_4_pressed
+              - condition: trigger
+                id: pico_6_button_4_pressed
+              - condition: trigger
+                id: pico_7_button_4_pressed
+        sequence:
+          - wait_for_trigger:
+              - platform: device
+                device_id: !input pico_1
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_2
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_3
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_4
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_5
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_6
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+              - platform: device
+                device_id: !input pico_7
+                domain: lutron_caseta
+                type: release
+                subtype: 'off'
+            timeout:
+              seconds: !input time_before_long_press
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ wait.trigger == none }}"
+                sequence: !input button4_hold_action
+            default:
+              - wait_for_trigger:
+                  - platform: device
+                    device_id: !input pico_1
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_2
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_3
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_4
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_5
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_6
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                  - platform: device
+                    device_id: !input pico_7
+                    domain: lutron_caseta
+                    type: press
+                    subtype: 'off'
+                timeout:
+                  milliseconds: !input time_before_double_click
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ wait.trigger == none }}"
+                    sequence: !input button4_press_action
+                default: !input button4_doubleclick_action
