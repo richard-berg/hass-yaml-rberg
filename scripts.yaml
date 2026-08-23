@@ -1121,12 +1121,13 @@ kitchen_bright:
   icon: mdi:ceiling-light
   mode: restart
   sequence:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.kitchen_bright
-  - action: script.hood_light_turn_on
-    data:
-      brightness: 100
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.kitchen_bright
+    - action: script.hood_light_turn_on
+      data:
+        brightness: 100
 kitchen_normal:
   alias: Kitchen Normal
   description: 'Kitchen button-2 behavior: activate Smart Bridge Kitchen Normal and
@@ -1134,12 +1135,13 @@ kitchen_normal:
   icon: mdi:ceiling-light-multiple
   mode: restart
   sequence:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.kitchen_normal
-  - action: script.hood_light_turn_on
-    data:
-      brightness: 20
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.kitchen_normal
+    - action: script.hood_light_turn_on
+      data:
+        brightness: 20
 kitchen_mood:
   alias: Kitchen Mood
   description: 'Kitchen button-3 behavior: activate Smart Bridge Kitchen Mood and
@@ -1147,11 +1149,12 @@ kitchen_mood:
   icon: mdi:string-lights
   mode: restart
   sequence:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.kitchen_mood
-  - action: script.hood_light_turn_off
-    data: {}
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.kitchen_mood
+    - action: script.hood_light_turn_off
+      data: {}
 kitchen_off:
   alias: Kitchen Off
   description: 'Kitchen button-4 behavior: activate Smart Bridge Kitchen Off and turn
@@ -1159,11 +1162,12 @@ kitchen_off:
   icon: mdi:lightbulb-group-off
   mode: restart
   sequence:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.kitchen_off
-  - action: script.hood_light_turn_off
-    data: {}
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.kitchen_off
+    - action: script.hood_light_turn_off
+      data: {}
 foyer_dashboard_open_area_bright:
   alias: Foyer Dashboard Open Area Bright
   description: Set Kitchen, Dining, and Foyer to bright lighting in parallel; Kitchen
@@ -1195,7 +1199,7 @@ foyer_dashboard_open_area_bright:
             entity_id: scene.living_room_bright
 foyer_dashboard_open_area_evening:
   alias: Foyer Dashboard Open Area Evening
-  description: Set Kitchen/Foyer normal, Dining mood, and optional Living Room mood
+  description: Set Kitchen, Dining, and optional Living Room to Evening Lutron scenes
     in parallel; Kitchen runs through its behavior script so the Hood Light follows.
   icon: mdi:weather-sunset
   mode: restart
@@ -1207,11 +1211,11 @@ foyer_dashboard_open_area_evening:
       option: Evening
   - parallel:
     - sequence:
-      - action: script.kitchen_normal
+      - action: script.kitchen_evening
     - sequence:
       - action: scene.turn_on
         target:
-          entity_id: scene.dining_mood
+          entity_id: scene.pantry_smart_bridge_dining_evening
     - sequence:
       - if:
         - condition: state
@@ -1220,4 +1224,18 @@ foyer_dashboard_open_area_evening:
         then:
         - action: scene.turn_on
           target:
-            entity_id: scene.living_room_mood
+            entity_id: scene.pantry_smart_bridge_living_room_evening
+kitchen_evening:
+  alias: Kitchen Evening
+  description: 'Kitchen Evening behavior: activate Smart Bridge Kitchen Evening and
+    set the Hood Light to 10%.'
+  icon: mdi:weather-sunset
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.pantry_smart_bridge_kitchen_evening
+    - action: script.hood_light_turn_on
+      data:
+        brightness: 10

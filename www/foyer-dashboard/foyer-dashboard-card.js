@@ -329,7 +329,7 @@ class FoyerDashboardCard extends HTMLElement {
     return [
       { key: "bright", label: "Bright", script: "bright", livingScene: "scene.living_room_bright", bars: [6, 11, 16, 21], size: "secondary" },
       { key: "everyday", label: "Everyday", script: "everyday", livingScene: "scene.living_room_normal", bars: [18, 25, 32], size: "primary" },
-      { key: "evening", label: "Evening", script: "evening", livingScene: "scene.living_room_mood", bars: [12, 23], size: "secondary" },
+      { key: "evening", label: "Evening", script: "evening", livingScene: "scene.pantry_smart_bridge_living_room_evening", bars: [12, 23], size: "secondary" },
       { key: "mood", label: "Mood", script: "mood", livingScene: "scene.living_room_mood", bars: [16], size: "secondary" },
       { key: "off", label: "Off", script: "off", livingScene: "scene.living_room_off", bars: [4], size: "primary", off: true }
     ];
