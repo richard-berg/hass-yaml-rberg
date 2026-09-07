@@ -447,8 +447,9 @@ class FoyerDashboardCard extends HTMLElement {
   }
 
   _normalizeIntensityKey(value) {
-    const normalized = String(value || "Daytime").toLowerCase().replace(/\s+/g, "-");
+    const normalized = String(value || "Custom").toLowerCase().replace(/\s+/g, "-");
     if (normalized === "everyday" || normalized === "normal") return "daytime";
+    if (normalized === "none" || normalized === "unmatched") return "custom";
     return normalized;
   }
 
@@ -459,7 +460,7 @@ class FoyerDashboardCard extends HTMLElement {
 
   _modeForKey(key) {
     const normalized = this._normalizeIntensityKey(key);
-    return this._lightingModes().find((intensity) => intensity.key === normalized) || this._lightingModes()[1];
+    return this._lightingModes().find((intensity) => intensity.key === normalized) || null;
   }
 
   _scriptId(scriptKey) {
@@ -468,13 +469,13 @@ class FoyerDashboardCard extends HTMLElement {
 
   _currentIntensityKey() {
     if (this._optimisticIntensity) return this._normalizeIntensityKey(this._optimisticIntensity);
-    const state = this._state(this._config.entities.lightingIntensity)?.state || "Daytime";
+    const state = this._state(this._config.entities.lightingIntensity)?.state || "Custom";
     const normalized = this._normalizeIntensityKey(state);
-    return this._lightingModes().some((intensity) => intensity.key === normalized) ? normalized : "daytime";
+    return this._lightingModes().some((intensity) => intensity.key === normalized) ? normalized : "custom";
   }
 
   _currentIntensity() {
-    return this._modeForKey(this._currentIntensityKey());
+    return this._modeForKey(this._currentIntensityKey()) || { key: "custom", label: "Custom", level: 0, custom: true };
   }
 
   _press(key) {

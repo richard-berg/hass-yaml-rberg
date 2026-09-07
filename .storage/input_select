@@ -65,7 +65,8 @@
           "Daytime",
           "Evening",
           "Mood",
-          "Off"
+          "Off",
+          "Custom"
         ]
       },
       {

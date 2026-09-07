@@ -1603,3 +1603,149 @@
       pico_7: f3d4e7bb9bf4801526b01ca7e0a90379
       time_before_double_click: 500
     path: richardberg/lutron_pico_scene_actions_7.yaml
+- id: '1787469198024'
+  alias: Foyer Dashboard Sync Lighting Intensity
+  description: Keep the Foyer dashboard lighting intensity helper aligned from actual
+    open-area light states. Bright, Daytime, Evening, Mood, and Off are exact state
+    matches from the exported Lutron scene definitions, with and without Living Room;
+    Custom means no dashboard lighting button is active.
+  triggers:
+  - trigger: state
+    entity_id:
+    - light.front_foyer_main_lights
+    - light.kitchen_island_lights
+    - light.kitchen_island_toe_kick
+    - light.kitchen_main_lights
+    - light.kitchen_perimeter_toe_kick
+    - light.kitchen_under_cabinet
+    - light.dining_room_beer_shelf
+    - light.dining_room_main_lights
+    - light.dining_room_pendant
+    - light.dining_room_piano_lamp
+    - light.living_room_stage_perimeter
+    - light.living_room_allisons_desk_lamp
+    - light.living_room_book_shelf
+    - light.living_room_floor_lamp
+    - light.living_room_holiday_lights
+    - light.living_room_main_lights
+    - light.living_room_painting
+    - light.living_room_stage_spot_lights
+    - light.living_room_walkway
+    id: open_area_light_state
+  - trigger: state
+    entity_id:
+    - light.front_foyer_main_lights
+    - light.kitchen_island_lights
+    - light.kitchen_island_toe_kick
+    - light.kitchen_main_lights
+    - light.kitchen_perimeter_toe_kick
+    - light.kitchen_under_cabinet
+    - light.dining_room_beer_shelf
+    - light.dining_room_main_lights
+    - light.dining_room_pendant
+    - light.dining_room_piano_lamp
+    - light.living_room_stage_perimeter
+    - light.living_room_allisons_desk_lamp
+    - light.living_room_book_shelf
+    - light.living_room_floor_lamp
+    - light.living_room_holiday_lights
+    - light.living_room_main_lights
+    - light.living_room_painting
+    - light.living_room_stage_spot_lights
+    - light.living_room_walkway
+    attribute: brightness
+    id: open_area_light_brightness
+  actions:
+  - delay:
+      seconds: 2
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.foyer_dashboard_lighting_intensity
+    data:
+      option: "{%- set variants = {\n  'Bright': [\n    {\n      'light.front_foyer_main_lights':
+        255,\n      'light.kitchen_island_lights': 255,\n      'light.kitchen_island_toe_kick':
+        255,\n      'light.kitchen_main_lights': 255,\n      'light.kitchen_perimeter_toe_kick':
+        255,\n      'light.kitchen_under_cabinet': 255,\n      'light.dining_room_beer_shelf':
+        255,\n      'light.dining_room_main_lights': 255,\n      'light.dining_room_pendant':
+        255,\n      'light.dining_room_piano_lamp': 255,\n      'light.living_room_stage_perimeter':
+        255\n    },\n    {\n      'light.front_foyer_main_lights': 255,\n      'light.kitchen_island_lights':
+        255,\n      'light.kitchen_island_toe_kick': 255,\n      'light.kitchen_main_lights':
+        255,\n      'light.kitchen_perimeter_toe_kick': 255,\n      'light.kitchen_under_cabinet':
+        255,\n      'light.dining_room_beer_shelf': 255,\n      'light.dining_room_main_lights':
+        255,\n      'light.dining_room_pendant': 255,\n      'light.dining_room_piano_lamp':
+        255,\n      'light.living_room_allisons_desk_lamp': 255,\n      'light.living_room_book_shelf':
+        255,\n      'light.living_room_floor_lamp': 255,\n      'light.living_room_holiday_lights':
+        255,\n      'light.living_room_main_lights': 255,\n      'light.living_room_painting':
+        255,\n      'light.living_room_stage_perimeter': 255,\n      'light.living_room_walkway':
+        255\n    }\n  ],\n  'Daytime': [\n    {\n      'light.front_foyer_main_lights':
+        191,\n      'light.kitchen_island_lights': 191,\n      'light.kitchen_island_toe_kick':
+        165,\n      'light.kitchen_main_lights': 127,\n      'light.kitchen_perimeter_toe_kick':
+        165,\n      'light.kitchen_under_cabinet': 102,\n      'light.dining_room_beer_shelf':
+        119,\n      'light.dining_room_main_lights': 25,\n      'light.dining_room_pendant':
+        127,\n      'light.dining_room_piano_lamp': 114,\n      'light.living_room_stage_perimeter':
+        255\n    },\n    {\n      'light.front_foyer_main_lights': 191,\n      'light.kitchen_island_lights':
+        191,\n      'light.kitchen_island_toe_kick': 165,\n      'light.kitchen_main_lights':
+        127,\n      'light.kitchen_perimeter_toe_kick': 165,\n      'light.kitchen_under_cabinet':
+        102,\n      'light.dining_room_beer_shelf': 119,\n      'light.dining_room_main_lights':
+        25,\n      'light.dining_room_pendant': 127,\n      'light.dining_room_piano_lamp':
+        114,\n      'light.living_room_allisons_desk_lamp': 183,\n      'light.living_room_book_shelf':
+        114,\n      'light.living_room_floor_lamp': 204,\n      'light.living_room_holiday_lights':
+        255,\n      'light.living_room_main_lights': 38,\n      'light.living_room_painting':
+        153,\n      'light.living_room_stage_perimeter': 186,\n      'light.living_room_walkway':
+        20\n    }\n  ],\n  'Evening': [\n    {\n      'light.front_foyer_main_lights':
+        12,\n      'light.kitchen_island_lights': 66,\n      'light.kitchen_island_toe_kick':
+        153,\n      'light.kitchen_main_lights': 25,\n      'light.kitchen_perimeter_toe_kick':
+        153,\n      'light.kitchen_under_cabinet': 61,\n      'light.dining_room_beer_shelf':
+        153,\n      'light.dining_room_main_lights': 'off',\n      'light.dining_room_pendant':
+        71,\n      'light.dining_room_piano_lamp': 165,\n      'light.living_room_stage_perimeter':
+        186\n    },\n    {\n      'light.front_foyer_main_lights': 12,\n      'light.kitchen_island_lights':
+        66,\n      'light.kitchen_island_toe_kick': 153,\n      'light.kitchen_main_lights':
+        25,\n      'light.kitchen_perimeter_toe_kick': 153,\n      'light.kitchen_under_cabinet':
+        61,\n      'light.dining_room_beer_shelf': 153,\n      'light.dining_room_main_lights':
+        'off',\n      'light.dining_room_pendant': 71,\n      'light.dining_room_piano_lamp':
+        165,\n      'light.living_room_allisons_desk_lamp': 127,\n      'light.living_room_book_shelf':
+        102,\n      'light.living_room_floor_lamp': 178,\n      'light.living_room_holiday_lights':
+        173,\n      'light.living_room_main_lights': 'off',\n      'light.living_room_painting':
+        76,\n      'light.living_room_stage_perimeter': 186,\n      'light.living_room_walkway':
+        'off'\n    }\n  ],\n  'Mood': [\n    {\n      'light.front_foyer_main_lights':
+        'off',\n      'light.kitchen_island_lights': 'off',\n      'light.kitchen_island_toe_kick':
+        38,\n      'light.kitchen_main_lights': 'off',\n      'light.kitchen_perimeter_toe_kick':
+        38,\n      'light.kitchen_under_cabinet': 'off',\n      'light.dining_room_beer_shelf':
+        30,\n      'light.dining_room_main_lights': 'off',\n      'light.dining_room_pendant':
+        12,\n      'light.dining_room_piano_lamp': 43,\n      'light.living_room_stage_perimeter':
+        114\n    },\n    {\n      'light.front_foyer_main_lights': 'off',\n      'light.kitchen_island_lights':
+        'off',\n      'light.kitchen_island_toe_kick': 38,\n      'light.kitchen_main_lights':
+        'off',\n      'light.kitchen_perimeter_toe_kick': 38,\n      'light.kitchen_under_cabinet':
+        'off',\n      'light.dining_room_beer_shelf': 30,\n      'light.dining_room_main_lights':
+        'off',\n      'light.dining_room_pendant': 12,\n      'light.dining_room_piano_lamp':
+        43,\n      'light.living_room_allisons_desk_lamp': 51,\n      'light.living_room_book_shelf':
+        25,\n      'light.living_room_floor_lamp': 51,\n      'light.living_room_holiday_lights':
+        117,\n      'light.living_room_main_lights': 'off',\n      'light.living_room_painting':
+        'off',\n      'light.living_room_stage_perimeter': 114,\n      'light.living_room_walkway':
+        'off'\n    }\n  ],\n  'Off': [\n    {\n      'light.front_foyer_main_lights':
+        'off',\n      'light.kitchen_island_lights': 'off',\n      'light.kitchen_island_toe_kick':
+        'off',\n      'light.kitchen_main_lights': 'off',\n      'light.kitchen_perimeter_toe_kick':
+        'off',\n      'light.kitchen_under_cabinet': 'off',\n      'light.dining_room_beer_shelf':
+        'off',\n      'light.dining_room_main_lights': 'off',\n      'light.dining_room_pendant':
+        'off',\n      'light.dining_room_piano_lamp': 'off',\n      'light.living_room_stage_perimeter':
+        'off'\n    },\n    {\n      'light.front_foyer_main_lights': 'off',\n      'light.kitchen_island_lights':
+        'off',\n      'light.kitchen_island_toe_kick': 'off',\n      'light.kitchen_main_lights':
+        'off',\n      'light.kitchen_perimeter_toe_kick': 'off',\n      'light.kitchen_under_cabinet':
+        'off',\n      'light.dining_room_beer_shelf': 'off',\n      'light.dining_room_main_lights':
+        'off',\n      'light.dining_room_pendant': 'off',\n      'light.dining_room_piano_lamp':
+        'off',\n      'light.living_room_allisons_desk_lamp': 'off',\n      'light.living_room_book_shelf':
+        'off',\n      'light.living_room_floor_lamp': 'off',\n      'light.living_room_holiday_lights':
+        'off',\n      'light.living_room_main_lights': 'off',\n      'light.living_room_painting':
+        'off',\n      'light.living_room_stage_perimeter': 'off',\n      'light.living_room_stage_spot_lights':
+        'off',\n      'light.living_room_walkway': 'off'\n    }\n  ]\n} -%}\n{%- set
+        ns = namespace(option='Custom') -%}\n{%- for option, definitions in variants.items()
+        -%}\n  {%- if ns.option == 'Custom' -%}\n    {%- for definition in definitions
+        -%}\n      {%- set check = namespace(ok=true) -%}\n      {%- for entity, expected
+        in definition.items() -%}\n        {%- if expected == 'off' -%}\n          {%-
+        if not is_state(entity, 'off') -%}{%- set check.ok = false -%}{%- endif -%}\n
+        \       {%- else -%}\n          {%- if not is_state(entity, 'on') or (state_attr(entity,
+        'brightness') | int(-1)) != expected -%}{%- set check.ok = false -%}{%- endif
+        -%}\n        {%- endif -%}\n      {%- endfor -%}\n      {%- if check.ok -%}{%-
+        set ns.option = option -%}{%- endif -%}\n    {%- endfor -%}\n  {%- endif -%}\n{%-
+        endfor -%}\n{{- ns.option -}}"
+  mode: restart
