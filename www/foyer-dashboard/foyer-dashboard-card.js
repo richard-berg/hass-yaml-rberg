@@ -1,6 +1,17 @@
 const TRANSIT_UPTOWN = "Uptown/Queens/Bronx";
 const TRANSIT_DOWNTOWN = "Downtown/Brooklyn";
 const TRANSIT_ARRIVAL_SLOTS = ["next_arrival", "second_arrival", "third_arrival"];
+const ALL_LIGHTS_OFF_ENTITIES = [
+  "light.dining_room_beer_shelf", "light.dining_room_main_lights", "light.dining_room_pendant", "light.dining_room_piano_lamp",
+  "light.front_foyer_main_lights", "light.guest_bathroom_main_lights",
+  "light.kitchen_island_lights", "light.kitchen_island_toe_kick", "light.kitchen_main_lights", "light.kitchen_perimeter_toe_kick", "light.kitchen_under_cabinet",
+  "light.living_room_allisons_desk_lamp", "light.living_room_book_shelf", "light.living_room_floor_lamp", "light.living_room_holiday_lights", "light.living_room_main_lights", "light.living_room_painting", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights", "light.living_room_walkway",
+  "light.master_bathroom_commode", "light.master_bathroom_main_lights", "light.master_bathroom_shower_lights", "light.master_bathroom_shower_niche", "light.master_bathroom_vanity_lights", "light.master_bedroom_cove_lights",
+  "light.theater_clouds_front", "light.theater_clouds_rear", "light.theater_desk_lamp", "light.theater_downlight_front", "light.theater_downlight_rear", "light.theater_dresser_left", "light.theater_dresser_right",
+  "light.hood_light_light_0", "light.pendant",
+  "light.stage_uplight_1_red", "light.stage_uplight_1_green", "light.stage_uplight_1_blue", "light.stage_uplight_1_amber", "light.stage_uplight_1_white", "light.stage_uplight_1_uv",
+  "light.stage_uplight_2_red", "light.stage_uplight_2_green", "light.stage_uplight_2_blue", "light.stage_uplight_2_amber", "light.stage_uplight_2_white", "light.stage_uplight_2_uv"
+];
 
 const mtaSource = (line, prefix) => ({
   line,
@@ -29,6 +40,55 @@ const DEFAULT_CONFIG = {
     mood: "script.foyer_dashboard_open_area_mood",
     off: "script.foyer_dashboard_open_area_off"
   },
+  lightingAreas: [
+    {
+      key: "kitchen",
+      label: "Kitchen",
+      presets: [
+        { label: "Bright", entity: "script.kitchen_bright" },
+        { label: "Day", entity: "script.kitchen_normal" },
+        { label: "Evening", entity: "script.kitchen_evening" },
+        { label: "Mood", entity: "script.kitchen_mood" },
+        { label: "Off", entity: "script.kitchen_off", off: true }
+      ]
+    },
+    {
+      key: "dining",
+      label: "Dining",
+      presets: [
+        { label: "Bright", entity: "scene.dining_bright" },
+        { label: "Day", entity: "scene.dining_normal" },
+        { label: "Evening", entity: "scene.pantry_smart_bridge_dining_evening" },
+        { label: "Mood", entity: "scene.dining_mood" },
+        { label: "Off", entity: "scene.dining_off", off: true }
+      ]
+    },
+    {
+      key: "stage",
+      label: "Stage",
+      presets: [
+        { label: "Bright", entity: "scene.stage_etc_bright" },
+        { label: "Focus", entity: "scene.stage_etc_focus" },
+        { label: "Mood", entity: "scene.stage_etc_mood" },
+        { label: "Off", entity: "scene.stage_etc_off", off: true }
+      ]
+    },
+    {
+      key: "living",
+      label: "Living",
+      presets: [
+        { label: "Bright", entity: "scene.living_room_bright" },
+        { label: "Day", entity: "scene.living_room_normal" },
+        { label: "Evening", entity: "scene.pantry_smart_bridge_living_room_evening" },
+        { label: "Mood", entity: "scene.living_room_mood" },
+        { label: "Off", entity: "scene.living_room_off", off: true }
+      ]
+    }
+  ],
+  wholeHouseLighting: [
+    { key: "off", label: "Off", entity: "script.all_lights_off", level: 0, off: true, wide: true, expected: Object.fromEntries(ALL_LIGHTS_OFF_ENTITIES.map((entityId) => [entityId, "off"])), expectedStates: { "switch.guest_bath_vanity_switch": "off" } },
+    { key: "pathway", label: "Pathway to Shower", entity: "scene.pantry_smart_bridge_pathway_to_shower", emoji: "💩", wide: true, expected: { "light.master_bathroom_shower_lights": 76, "light.master_bathroom_shower_niche": 76, "light.theater_downlight_front": 12 } }
+  ],
   transit: {
     staleAfterMinutes: 4,
     routeGroups: [
@@ -123,11 +183,19 @@ class FoyerDashboardCard extends HTMLElement {
     this._optimisticIntensity = null;
     this._optimisticTimer = null;
     this._lightingModalOpen = false;
+    this._expandedLightingAreas = new Set();
+    this._lightSliderActive = false;
+    this._optimisticLightBrightness = new Map();
     this._transitModal = null;
     this._forecastCache = { entityId: null, hourly: [], updatedAt: 0 };
     this._forecastPromise = null;
     this._forecastTimer = null;
     this._handleClick = this._handleClick.bind(this);
+    this._handleLightPointerDown = this._handleLightPointerDown.bind(this);
+    this._handleLightPointerUp = this._handleLightPointerUp.bind(this);
+    this._handleLightPointerCancel = this._handleLightPointerCancel.bind(this);
+    this._handleLightInput = this._handleLightInput.bind(this);
+    this._handleLightChange = this._handleLightChange.bind(this);
   }
 
   setConfig(config) {
@@ -138,12 +206,27 @@ class FoyerDashboardCard extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+    for (const [entityId, optimistic] of this._optimisticLightBrightness) {
+      const state = hass.states[entityId];
+      const brightness = state?.state === "on" && Number.isFinite(Number(state.attributes?.brightness))
+        ? Math.round(Number(state.attributes.brightness) / 2.55)
+        : 0;
+      if (Math.abs(brightness - optimistic.brightness) <= 1) {
+        window.clearTimeout(optimistic.timer);
+        this._optimisticLightBrightness.delete(entityId);
+      }
+    }
     this._refreshWeatherForecasts();
     this._render();
   }
 
   connectedCallback() {
     this.shadowRoot.addEventListener("click", this._handleClick);
+    this.shadowRoot.addEventListener("pointerdown", this._handleLightPointerDown);
+    this.shadowRoot.addEventListener("pointerup", this._handleLightPointerUp);
+    this.shadowRoot.addEventListener("pointercancel", this._handleLightPointerCancel);
+    this.shadowRoot.addEventListener("input", this._handleLightInput);
+    this.shadowRoot.addEventListener("change", this._handleLightChange);
     this._timer = window.setInterval(() => this._render(), 30000);
     this._forecastTimer = window.setInterval(() => this._refreshWeatherForecasts(true), 15 * 60 * 1000);
     this._refreshWeatherForecasts();
@@ -152,12 +235,19 @@ class FoyerDashboardCard extends HTMLElement {
 
   disconnectedCallback() {
     this.shadowRoot.removeEventListener("click", this._handleClick);
+    this.shadowRoot.removeEventListener("pointerdown", this._handleLightPointerDown);
+    this.shadowRoot.removeEventListener("pointerup", this._handleLightPointerUp);
+    this.shadowRoot.removeEventListener("pointercancel", this._handleLightPointerCancel);
+    this.shadowRoot.removeEventListener("input", this._handleLightInput);
+    this.shadowRoot.removeEventListener("change", this._handleLightChange);
     if (this._timer) {
       window.clearInterval(this._timer);
       this._timer = null;
     }
     if (this._pressedTimer) window.clearTimeout(this._pressedTimer);
     if (this._optimisticTimer) window.clearTimeout(this._optimisticTimer);
+    for (const optimistic of this._optimisticLightBrightness.values()) window.clearTimeout(optimistic.timer);
+    this._optimisticLightBrightness.clear();
     if (this._forecastTimer) window.clearInterval(this._forecastTimer);
   }
 
@@ -171,6 +261,8 @@ class FoyerDashboardCard extends HTMLElement {
       ...override,
       entities: { ...base.entities, ...(override.entities || {}) },
       scripts: { ...base.scripts, ...(override.scripts || {}) },
+      lightingAreas: override.lightingAreas || base.lightingAreas,
+      wholeHouseLighting: override.wholeHouseLighting || base.wholeHouseLighting,
       transit: this._mergeTransitConfig(base.transit, override.transit)
     };
   }
@@ -442,6 +534,72 @@ class FoyerDashboardCard extends HTMLElement {
     ];
   }
 
+  _lightingAreas() {
+    const kitchen = {
+      key: "kitchen", label: "Kitchen", members: ["light.front_foyer_main_lights", "light.kitchen_island_lights", "light.kitchen_island_toe_kick", "light.kitchen_main_lights", "light.kitchen_perimeter_toe_kick", "light.kitchen_under_cabinet", "light.hood_light_light_0"],
+      presets: [
+        { key: "off", label: "Off", entity: "script.kitchen_off", level: 0, expected: { "light.front_foyer_main_lights": "off", "light.kitchen_island_lights": "off", "light.kitchen_island_toe_kick": "off", "light.kitchen_main_lights": "off", "light.kitchen_perimeter_toe_kick": "off", "light.kitchen_under_cabinet": "off", "light.hood_light_light_0": "off" } },
+        { key: "mood", label: "Mood", entity: "script.kitchen_mood", level: 1, expected: { "light.front_foyer_main_lights": "off", "light.kitchen_island_lights": "off", "light.kitchen_island_toe_kick": 38, "light.kitchen_main_lights": "off", "light.kitchen_perimeter_toe_kick": 38, "light.kitchen_under_cabinet": "off", "light.hood_light_light_0": "off" } },
+        { key: "evening", label: "Evening", entity: "script.kitchen_evening", level: 2, expected: { "light.front_foyer_main_lights": 12, "light.kitchen_island_lights": 66, "light.kitchen_island_toe_kick": 153, "light.kitchen_main_lights": 25, "light.kitchen_perimeter_toe_kick": 153, "light.kitchen_under_cabinet": 61, "light.hood_light_light_0": 26 } },
+        { key: "daytime", label: "Day", entity: "script.kitchen_normal", level: 3, expected: { "light.front_foyer_main_lights": 191, "light.kitchen_island_lights": 191, "light.kitchen_island_toe_kick": 165, "light.kitchen_main_lights": 127, "light.kitchen_perimeter_toe_kick": 165, "light.kitchen_under_cabinet": 102, "light.hood_light_light_0": 51 } },
+        { key: "bright", label: "Bright", entity: "script.kitchen_bright", level: 4, expected: { "light.front_foyer_main_lights": 255, "light.kitchen_island_lights": 255, "light.kitchen_island_toe_kick": 255, "light.kitchen_main_lights": 255, "light.kitchen_perimeter_toe_kick": 255, "light.kitchen_under_cabinet": 255, "light.hood_light_light_0": 255 } }
+      ]
+    };
+    const dining = {
+      key: "dining", label: "Dining", members: ["light.dining_room_beer_shelf", "light.dining_room_main_lights", "light.dining_room_pendant", "light.dining_room_piano_lamp", "light.living_room_stage_perimeter"],
+      presets: [
+        { key: "off", label: "Off", entity: "scene.dining_off", level: 0, expected: { "light.dining_room_beer_shelf": "off", "light.dining_room_main_lights": "off", "light.dining_room_pendant": "off", "light.dining_room_piano_lamp": "off", "light.living_room_stage_perimeter": "off" } },
+        { key: "mood", label: "Mood", entity: "scene.dining_mood", level: 1, expected: { "light.dining_room_beer_shelf": 30, "light.dining_room_main_lights": "off", "light.dining_room_pendant": 12, "light.dining_room_piano_lamp": 43, "light.living_room_stage_perimeter": 114 } },
+        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_dining_evening", level: 2, expected: { "light.dining_room_beer_shelf": 153, "light.dining_room_main_lights": "off", "light.dining_room_pendant": 71, "light.dining_room_piano_lamp": 165, "light.living_room_stage_perimeter": 186 } },
+        { key: "daytime", label: "Day", entity: "scene.dining_normal", level: 3, expected: { "light.dining_room_beer_shelf": 119, "light.dining_room_main_lights": 25, "light.dining_room_pendant": 127, "light.dining_room_piano_lamp": 114, "light.living_room_stage_perimeter": 255 } },
+        { key: "bright", label: "Bright", entity: "scene.dining_bright", level: 4, expected: { "light.dining_room_beer_shelf": 255, "light.dining_room_main_lights": 255, "light.dining_room_pendant": 255, "light.dining_room_piano_lamp": 255, "light.living_room_stage_perimeter": 255 } }
+      ]
+    };
+    const living = {
+      key: "living", label: "Living", members: ["light.living_room_allisons_desk_lamp", "light.living_room_book_shelf", "light.living_room_floor_lamp", "light.living_room_holiday_lights", "light.living_room_main_lights", "light.living_room_painting", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights", "light.living_room_walkway"],
+      presets: [
+        { key: "off", label: "Off", entity: "scene.living_room_off", level: 0, expected: { "light.living_room_allisons_desk_lamp": "off", "light.living_room_book_shelf": "off", "light.living_room_floor_lamp": "off", "light.living_room_holiday_lights": "off", "light.living_room_main_lights": "off", "light.living_room_painting": "off", "light.living_room_stage_perimeter": "off", "light.living_room_stage_spot_lights": "off", "light.living_room_walkway": "off" } },
+        { key: "mood", label: "Mood", entity: "scene.living_room_mood", level: 1, expected: { "light.living_room_allisons_desk_lamp": 51, "light.living_room_book_shelf": 25, "light.living_room_floor_lamp": 51, "light.living_room_holiday_lights": 117, "light.living_room_main_lights": "off", "light.living_room_painting": "off", "light.living_room_stage_perimeter": 114, "light.living_room_walkway": "off" } },
+        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_living_room_evening", level: 2, expected: { "light.living_room_allisons_desk_lamp": 127, "light.living_room_book_shelf": 102, "light.living_room_floor_lamp": 178, "light.living_room_holiday_lights": 173, "light.living_room_main_lights": "off", "light.living_room_painting": 76, "light.living_room_stage_perimeter": 186, "light.living_room_walkway": "off" } },
+        { key: "daytime", label: "Day", entity: "scene.living_room_normal", level: 3, expected: { "light.living_room_allisons_desk_lamp": 183, "light.living_room_book_shelf": 114, "light.living_room_floor_lamp": 204, "light.living_room_holiday_lights": 255, "light.living_room_main_lights": 38, "light.living_room_painting": 153, "light.living_room_stage_perimeter": 186, "light.living_room_walkway": 20 } },
+        { key: "bright", label: "Bright", entity: "scene.living_room_bright", level: 4, expected: { "light.living_room_allisons_desk_lamp": 255, "light.living_room_book_shelf": 255, "light.living_room_floor_lamp": 255, "light.living_room_holiday_lights": 255, "light.living_room_main_lights": 255, "light.living_room_painting": 255, "light.living_room_stage_perimeter": 255, "light.living_room_walkway": 255 } }
+      ]
+    };
+    const stage = {
+      key: "stage", label: "Stage", independent: true, members: ["light.dining_room_piano_lamp", "light.living_room_holiday_lights", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights"],
+      presets: [
+        { key: "off", label: "Off", entity: "scene.stage_off", level: 0, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": "off", "light.living_room_holiday_lights": "off", "light.living_room_stage_perimeter": "off", "light.living_room_stage_spot_lights": "off" } },
+        { key: "mood", label: "Mood", entity: "scene.stage_mood", level: 1, dmxPreset: "Velvet Purple", dmxBrightness: 45, expected: { "light.dining_room_piano_lamp": 43, "light.living_room_holiday_lights": 117, "light.living_room_stage_perimeter": 114, "light.living_room_stage_spot_lights": "off" } },
+        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_stage_evening", level: 2, dmxPreset: "Jazz Gold", dmxBrightness: 67, expected: { "light.dining_room_piano_lamp": 165, "light.living_room_holiday_lights": 173, "light.living_room_stage_perimeter": 186, "light.living_room_stage_spot_lights": "off" } },
+        { key: "daytime", label: "Day", entity: "scene.stage_normal", level: 3, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": 127, "light.living_room_holiday_lights": 255, "light.living_room_stage_perimeter": 255, "light.living_room_stage_spot_lights": 122 } },
+        { key: "bright", label: "Bright", entity: "scene.stage_bright", level: 4, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": 255, "light.living_room_holiday_lights": 255, "light.living_room_stage_perimeter": 255, "light.living_room_stage_spot_lights": 255 } }
+      ]
+    };
+    return [kitchen, dining, living, stage];
+  }
+
+  _matchesLightingPreset(preset) {
+    const lightsMatch = Object.entries(preset.expected || {}).every(([entityId, expected]) => {
+      const state = this._state(entityId);
+      if (!state) return false;
+      if (expected === "off") return state.state === "off";
+      return state.state === "on" && Math.abs(Number(state.attributes?.brightness) - expected) <= 1;
+    });
+    const statesMatch = Object.entries(preset.expectedStates || {}).every(([entityId, expected]) => this._state(entityId)?.state === expected);
+    if (!lightsMatch || !statesMatch || !preset.dmxPreset) return lightsMatch && statesMatch;
+    return [1, 2].every((fixture) => this._state(`input_select.stage_uplight_${fixture}_preset`)?.state === preset.dmxPreset
+      && Math.abs(Number(this._state(`input_number.stage_uplight_${fixture}_brightness`)?.state) - preset.dmxBrightness) <= 0.5);
+  }
+
+  _lightingPresetActive(area, preset) {
+    if (area.key === "whole-house") return this._matchesLightingPreset(preset);
+    if (area.key === "kitchen") return this._matchesLightingPreset(preset);
+    if (area.key === "living" && this._state(this._config.entities.includeLiving)?.state !== "on") return this._matchesLightingPreset(preset);
+    const globalIntensity = this._currentIntensityKey();
+    if (!area.independent && globalIntensity !== "custom") return globalIntensity === preset.key;
+    return this._matchesLightingPreset(preset);
+  }
+
   _intensities() {
     return this._lightingModes().filter((intensity) => !intensity.off);
   }
@@ -509,6 +667,53 @@ class FoyerDashboardCard extends HTMLElement {
     if (intensity.livingScene) this._hass.callService("scene", "turn_on", { entity_id: intensity.livingScene });
   }
 
+  _handleLightPointerDown(event) {
+    if (event.target.closest('input[data-action="set-light-brightness"]')) this._lightSliderActive = true;
+  }
+
+  _handleLightPointerUp(event) {
+    if (!event.target.closest('input[data-action="set-light-brightness"]')) return;
+    window.setTimeout(() => {
+      if (!this._lightSliderActive) return;
+      this._lightSliderActive = false;
+      this._render();
+    }, 0);
+  }
+
+  _handleLightPointerCancel(event) {
+    if (!event.target.closest('input[data-action="set-light-brightness"]')) return;
+    this._lightSliderActive = false;
+    this._render();
+  }
+
+  _handleLightInput(event) {
+    const slider = event.target.closest('input[data-action="set-light-brightness"]');
+    if (!slider) return;
+    const output = slider.closest(".individual-light")?.querySelector(".individual-light-value");
+    if (output) output.textContent = Number(slider.value) === 0 ? "Off" : `${slider.value}%`;
+    slider.style.setProperty("--light-level", `${slider.value}%`);
+  }
+
+  _handleLightChange(event) {
+    const slider = event.target.closest('input[data-action="set-light-brightness"]');
+    if (!slider || !this._hass) return;
+    this._lightSliderActive = false;
+    const entityId = slider.dataset.entity;
+    const brightness = Number(slider.value);
+    if (!entityId?.startsWith("light.") || !Number.isFinite(brightness)) return;
+    const previous = this._optimisticLightBrightness.get(entityId);
+    if (previous) window.clearTimeout(previous.timer);
+    const timer = window.setTimeout(() => {
+      this._optimisticLightBrightness.delete(entityId);
+      this._render();
+    }, 3000);
+    this._optimisticLightBrightness.set(entityId, { brightness, timer });
+    this._press(`light-${entityId}`);
+    this._hass.callService("light", brightness === 0 ? "turn_off" : "turn_on", brightness === 0
+      ? { entity_id: entityId }
+      : { entity_id: entityId, brightness_pct: brightness });
+  }
+
   _handleClick(event) {
     if (event.target.classList?.contains("modal-backdrop")) {
       this._lightingModalOpen = false;
@@ -559,6 +764,36 @@ class FoyerDashboardCard extends HTMLElement {
     if (action === "close-lighting-modal") {
       this._lightingModalOpen = false;
       this._render();
+      return;
+    }
+
+    if (action === "lighting-preset") {
+      const entityId = target.dataset.entity;
+      const domain = entityId?.split(".")[0];
+      if (!entityId || !["scene", "script"].includes(domain)) return;
+      this._press(`lighting-${entityId}`);
+      this._hass.callService(domain, "turn_on", { entity_id: entityId });
+      if (target.dataset.dmxPreset) {
+        Promise.resolve(this._hass.callService("input_number", "set_value", { entity_id: "input_number.stage_uplights_fade", value: 1.5 })).then(() => Promise.all([
+          this._hass.callService("input_select", "select_option", { entity_id: "input_select.stage_uplights_preset", option: target.dataset.dmxPreset }),
+          this._hass.callService("input_number", "set_value", { entity_id: "input_number.stage_uplights_brightness", value: Number(target.dataset.dmxBrightness) })
+        ]));
+      }
+      return;
+    }
+
+    if (action === "toggle-lighting-area") {
+      const areaKey = target.dataset.area;
+      this._expandedLightingAreas.has(areaKey) ? this._expandedLightingAreas.delete(areaKey) : this._expandedLightingAreas.add(areaKey);
+      this._render();
+      return;
+    }
+
+    if (action === "toggle-light") {
+      const entityId = target.dataset.entity;
+      if (!entityId?.startsWith("light.")) return;
+      this._press(`light-${entityId}`);
+      this._hass.callService("light", "toggle", { entity_id: entityId });
       return;
     }
 
@@ -670,19 +905,93 @@ class FoyerDashboardCard extends HTMLElement {
 
   _renderLightingModal(includeLiving) {
     if (!this._lightingModalOpen) return "";
-    const intensity = this._currentIntensity();
+    const areas = this._lightingAreas();
+    const wholeHouse = this._config.wholeHouseLighting || [];
     return `
       <div class="modal-backdrop" role="presentation">
         <section class="lightbox" role="dialog" aria-modal="true" aria-label="Light Controls">
-          <header class="lightbox-head">
-            <div>
-              <h2>Light Controls</h2>
-              <p>${intensity.label}${includeLiving ? " + Living Room" : ""}</p>
+          <div class="lighting-modal-body">
+            ${wholeHouse.length ? `
+              <section class="whole-house-controls" aria-label="Whole House lighting controls">
+                <div class="whole-house-label">
+                  <strong><span>Whole</span><span>House</span></strong>
+                </div>
+                <div class="whole-house-actions">
+                  ${wholeHouse.map((preset) => this._renderLightingPreset({ key: "whole-house", label: "Whole House" }, preset)).join("")}
+                </div>
+              </section>
+            ` : ""}
+            <div class="area-controls" aria-label="Open Area light scenes">
+              ${areas.map((area) => {
+                const expanded = this._expandedLightingAreas.has(area.key);
+                return `
+                <section class="area-control-row ${expanded ? "expanded" : ""}" aria-labelledby="lighting-area-${this._escapeHtml(area.key)}">
+                  <div class="area-control-name" id="lighting-area-${this._escapeHtml(area.key)}">
+                    <strong>${this._escapeHtml(area.label)}</strong>
+                  </div>
+                  <div class="area-preset-grid">
+                    ${area.presets.map((preset) => this._renderLightingPreset(area, preset)).join("")}
+                  </div>
+                  <button class="area-expand" data-action="toggle-lighting-area" data-area="${this._escapeHtml(area.key)}" aria-label="${expanded ? "Hide" : "Show"} ${this._escapeHtml(area.label)} lights" aria-expanded="${expanded}">›</button>
+                  ${expanded ? `<div class="area-light-list">${area.members
+                    .map((entityId) => ({ entityId, name: this._areaRelativeLightName(entityId, area.label) }))
+                    .sort((left, right) => left.name.localeCompare(right.name))
+                    .map(({ entityId, name }) => this._renderIndividualLight(entityId, name))
+                    .join("")}</div>` : ""}
+                </section>
+              `; }).join("")}
             </div>
-            <button class="control-chip lightbox-close" data-action="close-lighting-modal" aria-label="Close light controls">Close</button>
-          </header>
-          <div class="lightbox-empty" aria-label="Granular light controls placeholder"></div>
+          </div>
         </section>
+      </div>
+    `;
+  }
+
+  _renderLightingPreset(area, preset) {
+    const entity = preset.entity;
+    const unavailable = !this._state(entity) || this._state(entity)?.state === "unavailable";
+    const pressed = this._pressedKey === `lighting-${entity}`;
+    const active = this._lightingPresetActive(area, preset);
+    const description = `${area.label} ${preset.label}`;
+    return `
+      <button class="lighting-preset ${preset.level === 0 ? "off" : ""} ${preset.wide ? "wide" : ""} ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="lighting-preset" data-entity="${this._escapeHtml(entity)}" data-dmx-preset="${this._escapeHtml(preset.dmxPreset || "")}" data-dmx-brightness="${preset.dmxBrightness ?? ""}" aria-label="${this._escapeHtml(description)}" aria-pressed="${active}" ${unavailable ? "disabled" : ""}>
+        ${preset.emoji ? `<span class="lighting-preset-emoji" aria-hidden="true">${this._escapeHtml(preset.emoji)}</span>` : preset.level === 0 ? this._renderBulbIcon(true) : `<span class="scene-level">${this._levelBars(preset.level).map((height) => `<i style="height: ${height}px;"></i>`).join("")}</span>`}
+        <strong>${this._escapeHtml(preset.label)}</strong>
+      </button>
+    `;
+  }
+
+  _areaRelativeLightName(entityId, areaLabel) {
+    const name = this._friendly(entityId);
+    const areaNames = areaLabel === "Living"
+      ? ["Living Room", "Living"]
+      : areaLabel === "Dining"
+        ? ["Dining Room", "Living Room", "Dining", "Room"]
+        : [areaLabel];
+    const prefix = areaNames
+      .map((areaName) => `${areaName} `)
+      .find((candidate) => name.toLocaleLowerCase().startsWith(candidate.toLocaleLowerCase()));
+    return prefix ? name.slice(prefix.length) : name;
+  }
+
+  _renderIndividualLight(entityId, name = this._friendly(entityId)) {
+    const state = this._state(entityId);
+    const optimisticBrightness = this._optimisticLightBrightness.get(entityId)?.brightness;
+    const on = optimisticBrightness !== undefined ? optimisticBrightness > 0 : state?.state === "on";
+    const supportsBrightness = state?.attributes?.supported_color_modes?.some((mode) => mode !== "onoff");
+    const brightness = optimisticBrightness !== undefined
+      ? optimisticBrightness
+      : on && Number.isFinite(Number(state?.attributes?.brightness))
+        ? Math.round(Number(state.attributes.brightness) / 2.55)
+        : 0;
+    return `
+      <div class="individual-light ${on ? "on" : ""} ${this._pressedKey === `light-${entityId}` ? "is-pressed" : ""}">
+        <button class="individual-light-power" data-action="toggle-light" data-entity="${this._escapeHtml(entityId)}" aria-label="Turn ${this._escapeHtml(name)} ${on ? "off" : "on"}" aria-pressed="${on}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4M8 14c-1.4-1.2-2-2.7-2-4.5A6 6 0 0 1 18 9.5c0 1.8-.7 3.3-2 4.5-.8.7-1 1.4-1 2H9c0-.6-.2-1.3-1-2Z"></path></svg>
+        </button>
+        <span class="individual-light-name">${this._escapeHtml(name)}</span>
+        <output class="individual-light-value">${on ? `${brightness}%` : "Off"}</output>
+        ${supportsBrightness ? `<input class="individual-light-slider" type="range" min="0" max="100" step="1" value="${brightness}" style="--light-level: ${brightness}%" data-action="set-light-brightness" data-entity="${this._escapeHtml(entityId)}" aria-label="${this._escapeHtml(name)} brightness">` : ""}
       </div>
     `;
   }
@@ -1058,7 +1367,9 @@ class FoyerDashboardCard extends HTMLElement {
   }
 
   _render() {
+    if (this._lightSliderActive) return;
     if (!this.shadowRoot) return;
+    const lightingScrollTop = this.shadowRoot.querySelector(".lighting-modal-body")?.scrollTop || 0;
     const includeLiving = this._state(this._config.entities.includeLiving)?.state === "on";
     const media = this._mediaModel();
     const intensities = [...this._intensities()].reverse();
@@ -1147,6 +1458,8 @@ class FoyerDashboardCard extends HTMLElement {
       ${this._renderLightingModal(includeLiving)}
       ${this._renderTransitModal()}
     `;
+    const lightingModalBody = this.shadowRoot.querySelector(".lighting-modal-body");
+    if (lightingModalBody) lightingModalBody.scrollTop = lightingScrollTop;
   }
 
   _styles() {
@@ -1451,12 +1764,52 @@ class FoyerDashboardCard extends HTMLElement {
         .nav-item svg { width: 16px; height: 16px; }
 
         .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 44px; background: rgba(20, 19, 17, 0.42); }
-        .lightbox { display: grid; grid-template-rows: auto 1fr; width: min(760px, 86vw); min-height: min(520px, 74vh); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
+        .lightbox { display: grid; grid-template-rows: 1fr; width: min(880px, 90vw); min-height: min(460px, 72vh); max-height: calc(100vh - 88px); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
         .lightbox-head { display: flex; align-items: start; justify-content: space-between; gap: 18px; padding: 22px 24px 14px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
         .lightbox h2 { margin: 0; font-size: 28px; line-height: 1; font-weight: 950; }
         .lightbox p { margin: 8px 0 0; color: var(--ink-450); font-size: 13px; font-weight: 900; text-transform: uppercase; }
         .lightbox-close { background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); }
-        .lightbox-empty { margin: 22px 24px 24px; border: 1px dashed rgba(20, 19, 17, 0.18); border-radius: 8px; background: repeating-linear-gradient(135deg, rgba(20, 19, 17, 0.026) 0, rgba(20, 19, 17, 0.026) 1px, transparent 1px, transparent 12px); }
+        .lighting-modal-body { min-height: 0; overflow: auto; }
+        .area-controls { padding: 14px 24px 8px; }
+        .area-control-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 38px; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
+        .area-control-row:last-child { border-bottom: 0; }
+        .area-control-name { display: grid; gap: 4px; }
+        .area-control-name strong, .whole-house-controls strong { color: var(--ink-900); font-size: 16px; font-weight: 900; line-height: 1; }
+        .area-preset-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+        .lighting-preset { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; gap: 8px; min-width: 0; min-height: 58px; padding: 9px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-760); font: inherit; text-align: left; box-shadow: var(--control-shadow); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease; }
+        .lighting-preset strong { min-width: 0; overflow: hidden; font-size: 13px; font-weight: 850; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+        .lighting-preset .scene-level { justify-self: center; height: 24px; gap: 3px; }
+        .lighting-preset .scene-level i { width: 5px; }
+        .lighting-preset .power-icon { width: 30px; height: 30px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+        .lighting-preset .power-icon svg { width: 20px; height: 20px; }
+        .lighting-preset.active { border-color: var(--control-active-border); background: var(--control-active-bg); color: var(--stone-50); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.42), 0 4px 8px rgba(43, 36, 24, 0.08); transform: translateY(1px); }
+        .lighting-preset:disabled { cursor: not-allowed; opacity: 0.42; }
+        .lighting-preset.is-pressed { transform: translateY(1px) scale(0.98); box-shadow: inset 0 2px 8px rgba(20, 19, 17, 0.2); }
+        .area-expand { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: var(--control-bg); color: var(--ink-600); font: inherit; font-size: 25px; line-height: 1; box-shadow: var(--control-shadow); transition: transform 160ms ease; }
+        .area-control-row.expanded .area-expand { transform: rotate(90deg); }
+        .area-light-list { grid-column: 2 / 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; padding: 3px 0 6px; }
+        .individual-light { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 9px; row-gap: 7px; min-width: 0; min-height: 74px; padding: 8px 10px; border: 1px solid rgba(20, 19, 17, 0.1); border-radius: 7px; background: rgba(255, 255, 255, 0.4); color: var(--ink-600); font: inherit; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+        .individual-light.on { border-color: rgba(185, 129, 53, 0.28); background: rgba(255, 248, 235, 0.78); color: var(--ink-900); }
+        .individual-light.is-pressed { box-shadow: inset 0 2px 8px rgba(20, 19, 17, 0.14); }
+        .individual-light-power { grid-column: 1; grid-row: 1 / 3; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: var(--control-shadow); }
+        .individual-light.on .individual-light-power { border-color: rgba(185, 129, 53, 0.5); background: var(--panel-dark); color: #f1bd69; }
+        .individual-light-power svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .individual-light-name { grid-column: 2; min-width: 0; overflow: hidden; font-size: 12px; font-weight: 800; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+        .individual-light-value { grid-column: 3; color: var(--ink-450); font-size: 10px; font-weight: 850; line-height: 1; }
+        .individual-light-slider { grid-column: 2 / 4; width: 100%; height: 22px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
+        .individual-light-slider::-webkit-slider-runnable-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
+        .individual-light-slider::-moz-range-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
+        .individual-light-slider::-webkit-slider-thumb { width: 21px; height: 21px; margin-top: -7px; appearance: none; border: 2px solid var(--panel-solid); border-radius: 999px; background: var(--panel-dark); box-shadow: 0 2px 5px rgba(20, 19, 17, 0.28); }
+        .individual-light-slider::-moz-range-thumb { width: 17px; height: 17px; border: 2px solid var(--panel-solid); border-radius: 999px; background: var(--panel-dark); box-shadow: 0 2px 5px rgba(20, 19, 17, 0.28); }
+        .whole-house-controls { display: grid; grid-template-columns: 92px minmax(0, 1fr) 38px; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid rgba(162, 67, 53, 0.2); background: rgba(255, 244, 238, 0.5); }
+        .whole-house-label strong { display: grid; gap: 1px; }
+        .whole-house-actions { grid-column: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+        .whole-house-actions .lighting-preset { min-height: 104px; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; padding: 14px 16px; }
+        .whole-house-actions .lighting-preset strong { font-size: 17px; white-space: normal; }
+        .whole-house-actions .lighting-preset.active strong { color: var(--stone-50); }
+        .whole-house-actions .lighting-preset .power-icon { width: 44px; height: 44px; }
+        .whole-house-actions .lighting-preset .power-icon svg { width: 28px; height: 28px; }
+        .lighting-preset-emoji { justify-self: center; font-size: 31px; line-height: 1; }
         .transit-lightbox { grid-template-rows: 1fr; width: min(680px, calc(100vw - 88px)); height: min(430px, calc(100vh - 88px)); min-height: 0; }
         .transit-detail-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; padding: 18px 20px 22px; overflow: auto; }
         .transit-detail-body.alerts-only { grid-template-columns: minmax(0, 1fr); }
@@ -1493,6 +1846,17 @@ class FoyerDashboardCard extends HTMLElement {
           .power-buttons, .intensity-row { grid-template-columns: 1fr; }
           .details-button { position: static; justify-self: end; margin-top: 8px; }
           .bottom-dock { flex-wrap: wrap; }
+          .modal-backdrop { padding: 18px; }
+          .lightbox { width: calc(100vw - 36px); max-height: calc(100vh - 36px); min-height: 0; }
+          .lightbox-head { padding: 18px 18px 12px; }
+          .area-controls { padding: 6px 18px; }
+          .area-control-row { grid-template-columns: minmax(0, 1fr) 38px; gap: 9px; padding: 12px 0; }
+          .area-control-name { grid-column: 1; }
+          .area-preset-grid { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+          .area-expand { grid-column: 2; grid-row: 1; }
+          .area-light-list { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+          .whole-house-controls { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 16px 18px; }
+          .whole-house-actions { grid-column: 1; }
         }
       </style>
     `;

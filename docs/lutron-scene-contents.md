@@ -1,7 +1,7 @@
 # Inferred Lutron Scene Contents
 
-Generated: `2026-08-23T07:13:37+00:00` by `tools/export_lutron_scene_contents.py`
-Source: `http://supervisor/core`; wait: `4s`; scenes: `34`; lights: `33`
+Generated: `2026-09-07T08:15:21+00:00` by `tools/export_lutron_scene_contents.py`
+Source: authenticated Home Assistant frontend; wait: `4s`; scenes: `36`; lights: `33`
 
 ```yaml
 scene.all_off:
@@ -1038,6 +1038,174 @@ scene.pantry_smart_bridge_living_room_evening:
       setting:
         state: "off"
   not_controlled_count: 25
+scene.pantry_smart_bridge_pathway_to_shower:
+  name: "Pathway To Shower"
+  controlled_entities:
+    - entity_id: light.dining_room_beer_shelf
+      name: "Dining Room Beer Shelf"
+      setting:
+        state: "off"
+    - entity_id: light.dining_room_main_lights
+      name: "Dining Room Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.dining_room_pendant
+      name: "Dining Room Pendant"
+      setting:
+        state: "off"
+    - entity_id: light.dining_room_piano_lamp
+      name: "Dining Room Piano Lamp"
+      setting:
+        state: "off"
+    - entity_id: light.front_foyer_main_lights
+      name: "Front Foyer Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.guest_bathroom_main_lights
+      name: "Guest Bathroom Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.kitchen_island_lights
+      name: "Kitchen Island Lights"
+      setting:
+        state: "off"
+    - entity_id: light.kitchen_island_toe_kick
+      name: "Kitchen Island Toe Kick"
+      setting:
+        state: "off"
+    - entity_id: light.kitchen_main_lights
+      name: "Kitchen Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.kitchen_perimeter_toe_kick
+      name: "Kitchen Perimeter Toe Kick"
+      setting:
+        state: "off"
+    - entity_id: light.kitchen_under_cabinet
+      name: "Kitchen Under Cabinet"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_allisons_desk_lamp
+      name: "Living Room Allison’s Desk Lamp"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_book_shelf
+      name: "Living Room Book Shelf"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_floor_lamp
+      name: "Living Room Floor Lamp"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_holiday_lights
+      name: "Living Room Holiday Lights"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_main_lights
+      name: "Living Room Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_painting
+      name: "Living Room Painting"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_stage_perimeter
+      name: "Living Room Stage Perimeter"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_stage_spot_lights
+      name: "Living Room Stage Spot Lights"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_walkway
+      name: "Living Room Walkway"
+      setting:
+        state: "off"
+    - entity_id: light.master_bathroom_commode
+      name: "Master Bathroom Commode"
+      setting:
+        state: "off"
+    - entity_id: light.master_bathroom_main_lights
+      name: "Master Bathroom Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.master_bathroom_shower_lights
+      name: "Master Bathroom Shower Lights"
+      setting:
+        state: "on"
+        brightness: 76
+        color_mode: "brightness"
+    - entity_id: light.master_bathroom_shower_niche
+      name: "Master Bathroom Shower Niche"
+      setting:
+        state: "on"
+        brightness: 76
+        color_mode: "brightness"
+    - entity_id: light.master_bathroom_vanity_lights
+      name: "Master Bathroom Vanity Lights"
+      setting:
+        state: "off"
+    - entity_id: light.master_bedroom_cove_lights
+      name: "Master Bedroom Cove Lights"
+      setting:
+        state: "off"
+    - entity_id: light.theater_clouds_front
+      name: "Theater Clouds Front"
+      setting:
+        state: "off"
+    - entity_id: light.theater_clouds_rear
+      name: "Theater Clouds Rear"
+      setting:
+        state: "off"
+    - entity_id: light.theater_desk_lamp
+      name: "Theater Desk Lamp"
+      setting:
+        state: "off"
+    - entity_id: light.theater_downlight_front
+      name: "Theater Downlight Front"
+      setting:
+        state: "on"
+        brightness: 12
+        color_mode: "brightness"
+    - entity_id: light.theater_downlight_rear
+      name: "Theater Downlight Rear"
+      setting:
+        state: "off"
+    - entity_id: light.theater_dresser_left
+      name: "Theater Dresser Left"
+      setting:
+        state: "off"
+    - entity_id: light.theater_dresser_right
+      name: "Theater Dresser Right"
+      setting:
+        state: "off"
+  not_controlled_count: 0
+scene.pantry_smart_bridge_stage_evening:
+  name: "Stage Evening"
+  controlled_entities:
+    - entity_id: light.dining_room_piano_lamp
+      name: "Dining Room Piano Lamp"
+      setting:
+        state: "on"
+        brightness: 165
+        color_mode: "brightness"
+    - entity_id: light.living_room_holiday_lights
+      name: "Living Room Holiday Lights"
+      setting:
+        state: "on"
+        brightness: 173
+        color_mode: "brightness"
+    - entity_id: light.living_room_stage_perimeter
+      name: "Living Room Stage Perimeter"
+      setting:
+        state: "on"
+        brightness: 186
+        color_mode: "brightness"
+    - entity_id: light.living_room_stage_spot_lights
+      name: "Living Room Stage Spot Lights"
+      setting:
+        state: "off"
+  not_controlled_count: 29
 scene.stage_bright:
   name: "Stage Bright"
   controlled_entities:
@@ -1381,26 +1549,24 @@ scene.stage_mood:
       name: "Dining Room Piano Lamp"
       setting:
         state: "on"
-        brightness: 38
+        brightness: 43
         color_mode: "brightness"
     - entity_id: light.living_room_holiday_lights
       name: "Living Room Holiday Lights"
       setting:
         state: "on"
-        brightness: 89
+        brightness: 117
         color_mode: "brightness"
     - entity_id: light.living_room_stage_perimeter
       name: "Living Room Stage Perimeter"
       setting:
         state: "on"
-        brightness: 112
+        brightness: 114
         color_mode: "brightness"
     - entity_id: light.living_room_stage_spot_lights
       name: "Living Room Stage Spot Lights"
       setting:
-        state: "on"
-        brightness: 2
-        color_mode: "brightness"
+        state: "off"
   not_controlled_count: 29
 scene.stage_normal:
   name: "Stage Normal"
