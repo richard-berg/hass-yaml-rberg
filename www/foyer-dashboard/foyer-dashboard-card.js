@@ -32,6 +32,7 @@ const DEFAULT_CONFIG = {
     allison: "person.allison_bishop",
     mediaPlayer: "media_player.living_room"
   },
+  homeSsids: ["BlindDog/DeafDog"],
   scripts: {
     on: "script.foyer_dashboard_open_area_on",
     bright: "script.foyer_dashboard_open_area_bright",
@@ -292,8 +293,58 @@ class FoyerDashboardCard extends HTMLElement {
     return (name || "?").trim().charAt(0).toUpperCase();
   }
 
-  _isHome(entityId) {
-    return this._state(entityId)?.state === "home";
+  _relativeAge(timestamp) {
+    const elapsed = Date.now() - Date.parse(timestamp);
+    if (!Number.isFinite(elapsed) || elapsed < 0) return "unknown age";
+    const minutes = Math.floor(elapsed / 60000);
+    if (minutes < 2) return "now";
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  }
+
+  _personModel(entityId) {
+    const person = this._state(entityId);
+    const state = person?.state;
+    const trackerId = person?.attributes?.source || person?.attributes?.device_trackers?.[0];
+    const trackerKey = trackerId?.startsWith("device_tracker.") ? trackerId.slice("device_tracker.".length) : null;
+    const ssid = trackerKey ? this._state(`sensor.${trackerKey}_ssid`) : null;
+    const connection = trackerKey ? this._state(`sensor.${trackerKey}_connection_type`) : null;
+    const homeWifi = this._config.homeSsids.includes(ssid?.state);
+    const timestamps = [person?.last_updated, ssid?.last_updated, connection?.last_updated]
+      .map((value) => Date.parse(value))
+      .filter(Number.isFinite);
+    const updatedAt = timestamps.length ? new Date(Math.max(...timestamps)).toISOString() : null;
+    const stale = !updatedAt || Date.now() - Date.parse(updatedAt) > 6 * 60 * 60 * 1000;
+    const accuracy = Number(person?.attributes?.gps_accuracy);
+    const homeRadius = Number(this._state("zone.home")?.attributes?.radius) || 100;
+    const poorAccuracy = Number.isFinite(accuracy) && accuracy > homeRadius;
+
+    let kind = "away";
+    let label = "Away";
+    if (!person || ["unknown", "unavailable"].includes(state)) {
+      kind = "unknown";
+      label = "Unknown";
+    } else if (state === "home") {
+      kind = stale || (poorAccuracy && !homeWifi) ? "uncertain" : "home";
+      label = kind === "home" ? "Home" : "Home?";
+    } else if (state !== "not_home") {
+      kind = "zone";
+      label = this._titleCase(state);
+    }
+
+    const evidence = [this._relativeAge(updatedAt)];
+    if (Number.isFinite(accuracy)) evidence.push(`±${Math.round(accuracy)}m`);
+    if (homeWifi) evidence.push("Wi-Fi");
+    return {
+      entityId,
+      name: this._friendly(entityId),
+      initial: this._initial(entityId),
+      kind,
+      label,
+      evidence: evidence.join(" · ")
+    };
   }
 
   _formatClock() {
@@ -730,6 +781,15 @@ class FoyerDashboardCard extends HTMLElement {
     if (!target || !this._hass) return;
 
     const action = target.dataset.action;
+    if (action === "open-person") {
+      this.dispatchEvent(new CustomEvent("hass-more-info", {
+        bubbles: true,
+        composed: true,
+        detail: { entityId: target.dataset.entity }
+      }));
+      return;
+    }
+
     if (action === "toggle-living") {
       this._press("living");
       const entityId = this._config.entities.includeLiving;
@@ -1003,9 +1063,16 @@ class FoyerDashboardCard extends HTMLElement {
   _renderPeople() {
     const richard = this._config.entities.richard;
     const allison = this._config.entities.allison;
-    return [richard, allison].map((entityId) => `
-      <span class="person-icon status-token ${this._isHome(entityId) ? "home" : "away"}" title="${this._friendly(entityId)} ${this._isHome(entityId) ? "home" : "away"}">${this._initial(entityId)}</span>
-    `).join("");
+    return [richard, allison].map((entityId) => {
+      const person = this._personModel(entityId);
+      const description = `${person.name}: ${person.label}, ${person.evidence}`;
+      return `
+        <button class="person-status ${person.kind}" data-action="open-person" data-entity="${this._escapeHtml(person.entityId)}" title="${this._escapeHtml(description)}" aria-label="${this._escapeHtml(description)}">
+          <span class="person-icon status-token">${this._escapeHtml(person.initial)}</span>
+          <span class="person-copy"><strong>${this._escapeHtml(person.label)}</strong><small>${this._escapeHtml(person.evidence)}</small></span>
+        </button>
+      `;
+    }).join("");
   }
 
   _transitDirections() {
@@ -1631,8 +1698,8 @@ class FoyerDashboardCard extends HTMLElement {
           box-shadow: var(--control-active-shadow);
         }
 
-        .person-icon { position: relative; width: 34px; height: 34px; border-radius: 999px; font-size: 13px; font-weight: 900; }
-        .person-icon { background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); }
+        .person-status { display: grid; grid-template-columns: 34px minmax(0, auto); align-items: center; gap: 7px; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--ink-760); font: inherit; text-align: left; cursor: pointer; }
+        .person-icon { position: relative; width: 34px; height: 34px; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); font-size: 13px; font-weight: 900; }
         .person-icon::after {
           content: "";
           position: absolute;
@@ -1644,7 +1711,12 @@ class FoyerDashboardCard extends HTMLElement {
           border-radius: 999px;
           background: var(--green-500);
         }
-        .person-icon.away::after { background: var(--brass-500); }
+        .person-status.away .person-icon::after { background: var(--ink-450); }
+        .person-status.zone .person-icon::after { background: var(--rain-500); }
+        .person-status.uncertain .person-icon::after, .person-status.unknown .person-icon::after { background: var(--brass-500); }
+        .person-copy { display: grid; gap: 1px; min-width: 0; }
+        .person-copy strong { max-width: 74px; overflow: hidden; font-size: 11px; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+        .person-copy small { color: var(--ink-450); font-size: 9px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
 
         .weather-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; padding: 16px; background: linear-gradient(145deg, rgba(255, 253, 247, 0.94), rgba(229, 216, 198, 0.76)), var(--panel-solid); }
         .weather-mark { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: radial-gradient(circle at 32% 32%, #ffe3a0 0 18%, transparent 19%), radial-gradient(circle at 58% 58%, #d8edf4 0 36%, transparent 37%), linear-gradient(145deg, #f6c76d, #6ea5b9); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 12px 24px rgba(79, 117, 139, 0.22); }
