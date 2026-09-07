@@ -221,7 +221,7 @@ switch:
     payload_on: 1
     payload_off: 2
   - platform: snmp
-    name: AP7901 Outlet 5 -
+    name: AP7901 Outlet 5 - DMXking eDMX1 PRO
     #unique_id: 00:C0:B7:F5:A2:A6.outlet.5
     host: 192.168.1.28
     community: wfycnfkxtewd

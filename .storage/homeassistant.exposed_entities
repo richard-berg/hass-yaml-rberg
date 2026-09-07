@@ -550,6 +550,13 @@
             "should_expose": true
           }
         }
+      },
+      "switch.ap7901_outlet_5_dmxking_edmx1_pro": {
+        "assistants": {
+          "conversation": {
+            "should_expose": true
+          }
+        }
       }
     }
   }
