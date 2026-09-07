@@ -1380,3 +1380,31 @@ open_area_stage_extras:
           entity_id: input_number.stage_uplights_brightness
         data:
           value: '{{ uplight_brightness[level] }}'
+pathway_to_shower:
+  alias: Pathway to Shower
+  description: 'Activate the native Lutron Pathway to Shower scene while applying
+    the same non-Lutron off behavior as All Lights Off: controlled Hood Light ramp-down,
+    Bedroom Pendant and Guest Bath Vanity off, and the standard timed DMX uplight
+    shutdown.'
+  icon: mdi:shower
+  mode: restart
+  sequence:
+  - parallel:
+    - alias: Native Lutron Pathway to Shower
+      action: scene.turn_on
+      target:
+        entity_id: scene.pantry_smart_bridge_pathway_to_shower
+    - alias: Hood Light controlled ramp-down
+      action: script.hood_light_turn_off
+    - alias: Bedroom Pendant off
+      action: light.turn_off
+      target:
+        entity_id: light.pendant
+    - alias: Guest Bath Vanity off
+      action: switch.turn_off
+      target:
+        entity_id: switch.guest_bath_vanity_switch
+    - alias: Foyer stage extras off with standard timing
+      action: script.open_area_stage_extras
+      data:
+        level: 'off'

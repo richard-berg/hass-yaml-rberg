@@ -87,7 +87,7 @@ const DEFAULT_CONFIG = {
   ],
   wholeHouseLighting: [
     { key: "off", label: "Off", entity: "script.all_lights_off", level: 0, off: true, wide: true, expected: Object.fromEntries(ALL_LIGHTS_OFF_ENTITIES.map((entityId) => [entityId, "off"])), expectedStates: { "switch.guest_bath_vanity_switch": "off" } },
-    { key: "pathway", label: "Pathway to Shower", entity: "scene.pantry_smart_bridge_pathway_to_shower", emoji: "💩", wide: true, expected: { "light.master_bathroom_shower_lights": 76, "light.master_bathroom_shower_niche": 76, "light.theater_downlight_front": 12 } }
+    { key: "pathway", label: "Pathway to Shower", entity: "script.pathway_to_shower", emoji: "💩", wide: true, expected: { ...Object.fromEntries(ALL_LIGHTS_OFF_ENTITIES.map((entityId) => [entityId, "off"])), "light.master_bathroom_shower_lights": 76, "light.master_bathroom_shower_niche": 76, "light.theater_downlight_front": 12 }, expectedStates: { "switch.guest_bath_vanity_switch": "off" } }
   ],
   transit: {
     staleAfterMinutes: 4,
