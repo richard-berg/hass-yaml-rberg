@@ -64,8 +64,7 @@
           fan_numbers:
           - number.pj_box_exhaust_port_1_on_power
           - number.pj_box_exhaust_port_2_on_power
-          notify_devices:
-          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+          notify_richard: true
     - conditions:
       - condition: state
         entity_id: media_player.pt_rz660
@@ -81,8 +80,7 @@
           fan_numbers:
           - number.pj_box_exhaust_port_1_on_power
           - number.pj_box_exhaust_port_2_on_power
-          notify_devices:
-          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+          notify_richard: true
     - conditions:
       - type: is_on
         condition: device
@@ -98,8 +96,7 @@
           fan_numbers:
           - number.pj_box_exhaust_port_1_on_power
           - number.pj_box_exhaust_port_2_on_power
-          notify_devices:
-          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+          notify_richard: true
     default:
     - delay:
         hours: 0
@@ -198,7 +195,7 @@
       include_easy_notify: enable_easy_notify
       include_persistent_notification: enable_persistent_notification
       notify_device:
-      - c4f2d6ae1c0c3da84ec3e3b86712daf7
+      - 79dc3f41b10219ec73b88c74ed297f68
       notify_interruption_level: active
       notify_action_buttons: enable_to_do_list_button_and_confirmation
       to_do_list: todo.smarthome_stuff
@@ -206,7 +203,7 @@
       button_entity: input_button.check_for_low_batteries
       exclude_sensors:
         entity_id: []
-        device_id: c4f2d6ae1c0c3da84ec3e3b86712daf7
+        device_id: 79dc3f41b10219ec73b88c74ed297f68
 - id: '1755321656471'
   alias: Link Master Bath Shower Lights
   description: ''
@@ -763,8 +760,7 @@
           fan_power: 4
           fan_numbers:
           - number.av_closet_port_1_on_power
-          notify_devices:
-          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+          notify_richard: true
     - conditions:
       - condition: numeric_state
         entity_id: sensor.av_rack_estimated_power_draw
@@ -777,8 +773,7 @@
           fan_power: 5
           fan_numbers:
           - number.av_closet_port_1_on_power
-          notify_devices:
-          - c4f2d6ae1c0c3da84ec3e3b86712daf7
+          notify_richard: true
   mode: queued
   max: 2
 - id: '1763263699031'
@@ -1259,12 +1254,12 @@
   conditions: []
   actions:
   - parallel:
-    - action: notify.mobile_app_richards_iphone_12_mini
+    - action: script.notify_richard
       data:
         title: 'EMERGENCY: {{ trigger.id }}!'
         message: Hazard detected in {{ trigger.id }}. Check the house immediately.
           Automation has disabled fans/HVAC and turned on lights.
-        data:
+        notification_data:
           push:
             sound:
               name: default

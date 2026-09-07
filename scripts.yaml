@@ -457,7 +457,7 @@ turn_on_trinnov_wait:
       target:
         entity_id: switch.ap7902_outlet_07_jbl_sdp_75
       data: {}
-    - action: notify.mobile_app_richards_iphone_12_mini
+    - action: script.notify_richard
       metadata: {}
       data:
         message: Trinnov power was cut; WOL won't work; you need to hit the physical
@@ -525,18 +525,17 @@ av_rack_fan_power:
         entity:
           domain: number
           multiple: true
-    notify_devices:
-      name: Notify Devices (optional)
-      description: Select one or more mobile_app devices
-      required: false
-      selector:
-        device:
-          integration: mobile_app
-          multiple: true
     send_persistent:
       name: Create Persistent Notification
       required: false
       default: true
+      selector:
+        boolean:
+    notify_richard:
+      name: Notify Richard
+      description: Send fan-control failures to Richard
+      required: false
+      default: false
       selector:
         boolean:
   sequence:
@@ -599,16 +598,12 @@ av_rack_fan_power:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{ notify_devices is defined and notify_devices | length
-          > 0 }}
-
-          '
+        value_template: '{{ notify_richard | default(false) }}'
       sequence:
-      - action: notify.mobile_app
+      - action: script.notify_richard
         data:
           title: Fan Control Failure
           message: '{{ message }}'
-          target: '{{ notify_devices }}'
 x32_unmute_channels:
   alias: X32 Unmute Channels
   description: Workaround for X32 startup auto-mute state desync
@@ -1436,3 +1431,36 @@ pathway_to_shower:
       action: script.open_area_stage_extras
       data:
         level: 'off'
+notify_richard:
+  alias: Notify Richard
+  description: Person-level notification endpoint for Richard. Update only this script
+    when Richard's phone changes.
+  icon: mdi:account-alert
+  mode: parallel
+  max: 10
+  fields:
+    message:
+      name: Message
+      description: Notification body
+      required: true
+      selector:
+        text:
+          multiline: true
+    title:
+      name: Title
+      description: Optional notification title
+      required: false
+      selector:
+        text: {}
+    notification_data:
+      name: Notification data
+      description: Optional Home Assistant Companion App payload
+      required: false
+      selector:
+        object: {}
+  sequence:
+  - action: notify.mobile_app_richards_iphone
+    data:
+      message: '{{ message }}'
+      title: '{{ title | default('''', true) }}'
+      data: '{{ notification_data | default({}, true) }}'
