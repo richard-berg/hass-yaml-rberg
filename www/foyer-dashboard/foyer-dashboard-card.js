@@ -28,6 +28,9 @@ const DEFAULT_CONFIG = {
     lightingIntensity: "input_select.foyer_dashboard_lighting_intensity",
     lightingPeriod: "input_select.open_area_lighting_period",
     transitDirection: "input_select.foyer_dashboard_transit_direction",
+    guestMode: "input_boolean.guest_mode",
+    partyMode: "input_boolean.party_mode",
+    concertMode: "input_boolean.concert_mode",
     richard: "person.richard_berg",
     allison: "person.allison_bishop",
     mediaPlayer: "media_player.living_room"
@@ -934,13 +937,12 @@ class FoyerDashboardCard extends HTMLElement {
       return;
     }
 
-    if (action === "reserved") {
-      this._press(`reserved-${target.dataset.mode}`);
-      this.dispatchEvent(new CustomEvent("hass-notification", {
-        bubbles: true,
-        composed: true,
-        detail: { message: `${target.textContent.trim()} mode is reserved for a later pass.` }
-      }));
+    if (action === "toggle-mode") {
+      const mode = target.dataset.mode;
+      const entityId = this._config.entities[`${mode}Mode`];
+      if (!entityId?.startsWith("input_boolean.")) return;
+      this._press(`mode-${mode}`);
+      this._hass.callService("input_boolean", "toggle", { entity_id: entityId });
     }
   }
 
@@ -1537,10 +1539,10 @@ class FoyerDashboardCard extends HTMLElement {
 
             <section class="panel no-drill mode-dock" aria-label="House mode shortcuts">
               <div class="mode-block">
-                <div class="mode-icons" aria-label="Reserved mode toggles">
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-guest" ? "is-pressed" : ""}" data-action="reserved" data-mode="guest" aria-label="Guest mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h10v14M14 11h6v9M9 12h.01"></path></svg><span>Guest</span></button>
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-party" ? "is-pressed" : ""}" data-action="reserved" data-mode="party" aria-label="Party mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg><span>Party</span></button>
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-performance" ? "is-pressed" : ""}" data-action="reserved" data-mode="performance" aria-label="Concert mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10M12 16v4M5 4h14l-2 12H7L5 4Z"></path></svg><span>Concert</span></button>
+                <div class="mode-icons" aria-label="House mode toggles">
+                  <button class="control-chip mode-icon ${this._state(this._config.entities.guestMode)?.state === "on" ? "active" : ""} ${this._pressedKey === "mode-guest" ? "is-pressed" : ""}" data-action="toggle-mode" data-mode="guest" aria-label="Toggle Guest mode" aria-pressed="${this._state(this._config.entities.guestMode)?.state === "on"}"><ha-icon icon="mdi:account-plus-outline" aria-hidden="true"></ha-icon><span>Guest</span></button>
+                  <button class="control-chip mode-icon ${this._state(this._config.entities.partyMode)?.state === "on" ? "active" : ""} ${this._pressedKey === "mode-party" ? "is-pressed" : ""}" data-action="toggle-mode" data-mode="party" aria-label="Toggle Party mode" aria-pressed="${this._state(this._config.entities.partyMode)?.state === "on"}"><ha-icon icon="mdi:party-popper" aria-hidden="true"></ha-icon><span>Party</span></button>
+                  <button class="control-chip mode-icon ${this._state(this._config.entities.concertMode)?.state === "on" ? "active" : ""} ${this._pressedKey === "mode-concert" ? "is-pressed" : ""}" data-action="toggle-mode" data-mode="concert" aria-label="Toggle Concert mode" aria-pressed="${this._state(this._config.entities.concertMode)?.state === "on"}"><ha-icon icon="mdi:piano" aria-hidden="true"></ha-icon><span>Concert</span></button>
                 </div>
               </div>
             </section>
@@ -1838,7 +1840,7 @@ class FoyerDashboardCard extends HTMLElement {
         .power-icon { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 999px; background: linear-gradient(145deg, #2d2923, #151310); color: #f1bd69; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 28px rgba(39, 31, 20, 0.18); }
         .power-icon.off { color: rgba(238, 229, 214, 0.78); }
         .power-icon svg { width: 44px; height: 44px; }
-        .power-icon svg, .mode-icon svg, .volume-button svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .power-icon svg, .volume-button svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .power-icon .slash { stroke-width: 2.5; }
         .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: 13px; font-weight: 950; white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
         .scope-toggle.on { border-color: rgba(185, 129, 53, 0.48); background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
@@ -1884,8 +1886,8 @@ class FoyerDashboardCard extends HTMLElement {
         .mode-dock { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr; align-content: start; padding: 6px; }
         .mode-block { display: grid; align-items: center; }
         .mode-icons { display: grid; grid-template-columns: 1fr; gap: 8px; }
-        .mode-icon { position: relative; justify-content: flex-start; width: 100%; min-width: 0; padding: 0 10px; font-size: 12px; text-align: left; }
-        .mode-icon svg { width: 20px; height: 20px; }
+        .mode-icon { position: relative; justify-content: flex-start; width: 100%; min-width: 0; min-height: 52px; gap: 10px; padding: 0 12px; font-size: 14px; text-align: left; }
+        .mode-icon ha-icon { flex: 0 0 auto; width: 28px; height: 28px; --mdc-icon-size: 28px; }
         .nav { flex: 1 1 auto; width: 100%; padding: 6px; }
         .nav-items { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; width: 100%; }
         .nav-item { min-width: 0; padding: 0 8px; color: var(--ink-600); font-size: 11px; }

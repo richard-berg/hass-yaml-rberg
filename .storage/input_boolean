@@ -38,6 +38,21 @@
         "id": "foyer_dashboard_include_living",
         "name": "Foyer Dashboard Include Living",
         "icon": "mdi:sofa"
+      },
+      {
+        "id": "party_mode",
+        "name": "Party Mode",
+        "icon": "mdi:party-popper"
+      },
+      {
+        "id": "concert_mode",
+        "name": "Concert Mode",
+        "icon": "mdi:music"
+      },
+      {
+        "id": "guest_mode",
+        "name": "Guest Mode",
+        "icon": "mdi:account-arrow-right"
       }
     ]
   }
