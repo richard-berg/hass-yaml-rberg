@@ -1117,7 +1117,6 @@ class FoyerDashboardCard extends HTMLElement {
           <header class="person-detail-head">
             <span class="person-detail-photo">${person.picture ? `<img src="${this._escapeHtml(person.picture)}" alt="">` : this._escapeHtml(person.initial)}</span>
             <div><h2>${this._escapeHtml(person.name)}</h2><p>${this._escapeHtml(person.label)}</p></div>
-            <button class="lightbox-close" data-action="close-person" aria-label="Close">×</button>
           </header>
           <dl class="person-detail-list">
             ${details.map(([label, value]) => `<div><dt>${this._escapeHtml(label)}</dt><dd>${this._escapeHtml(value)}</dd></div>`).join("")}
@@ -1613,6 +1612,15 @@ class FoyerDashboardCard extends HTMLElement {
           --radius-chip: var(--radius-control);
           --font-sans: "Aptos Display", "Avenir Next", "DIN Alternate", "Trebuchet MS", sans-serif;
           --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+          --type-micro: 10px;
+          --type-caption: 12px;
+          --type-meta: 14px;
+          --type-body: 16px;
+          --type-section: 20px;
+          --weight-display: 600;
+          --weight-body: 700;
+          --weight-label: 800;
+          --weight-emphasis: 900;
           --control-bg: rgba(255, 255, 255, 0.58);
           --control-border: rgba(20, 19, 17, 0.14);
           --control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08);
@@ -1710,8 +1718,8 @@ class FoyerDashboardCard extends HTMLElement {
         .controls { display: grid; grid-template-rows: minmax(0, 1fr); gap: 14px; }
 
         .status-top { display: grid; grid-template-columns: auto auto; align-items: center; justify-content: space-between; gap: 20px; padding: 8px 22px; }
-        .time { font-family: var(--font-serif); font-size: 68px; line-height: 0.95; font-weight: 650; }
-        .date { margin-top: 8px; color: var(--ink-450); font-size: 14px; font-weight: 800; text-transform: uppercase; }
+        .time { font-family: var(--font-serif); font-size: 80px; line-height: 0.95; font-weight: var(--weight-display); }
+        .date { margin-top: 8px; color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-label); text-transform: uppercase; }
         .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 16px; }
         .status-top .status-icons { justify-self: end; }
 
@@ -1736,8 +1744,8 @@ class FoyerDashboardCard extends HTMLElement {
           background: var(--control-bg);
           color: var(--ink-760);
           font: inherit;
-          font-size: 13px;
-          font-weight: 900;
+          font-size: var(--type-meta);
+          font-weight: var(--weight-emphasis);
           line-height: 1;
           white-space: nowrap;
           box-shadow: var(--control-shadow);
@@ -1753,7 +1761,7 @@ class FoyerDashboardCard extends HTMLElement {
         }
 
         .person-status { display: grid; justify-items: center; gap: 8px; min-width: 104px; min-height: 128px; padding: 6px 4px; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--ink-760); font: inherit; cursor: pointer; }
-        .person-icon { position: relative; width: 96px; height: 96px; overflow: visible; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); font-size: 24px; font-weight: 900; }
+        .person-icon { position: relative; width: 96px; height: 96px; overflow: visible; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); font-size: 24px; font-weight: var(--weight-emphasis); }
         .person-icon img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
         .person-icon::after {
           content: "";
@@ -1769,18 +1777,18 @@ class FoyerDashboardCard extends HTMLElement {
         .person-status.away .person-icon::after { background: var(--ink-450); }
         .person-status.zone .person-icon::after { background: var(--rain-500); }
         .person-status.uncertain .person-icon::after, .person-status.unknown .person-icon::after { background: var(--brass-500); }
-        .person-label { max-width: 104px; overflow: hidden; font-size: 14px; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+        .person-label { max-width: 104px; overflow: hidden; font-size: var(--type-meta); font-weight: var(--weight-label); line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
 
         .weather-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; padding: 16px; background: linear-gradient(145deg, rgba(255, 253, 247, 0.94), rgba(229, 216, 198, 0.76)), var(--panel-solid); }
         .weather-mark { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: radial-gradient(circle at 32% 32%, #ffe3a0 0 18%, transparent 19%), radial-gradient(circle at 58% 58%, #d8edf4 0 36%, transparent 37%), linear-gradient(145deg, #f6c76d, #6ea5b9); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 12px 24px rgba(79, 117, 139, 0.22); }
         .weather-mark svg { width: 64px; height: 64px; }
         .weather-now { display: flex; align-items: center; gap: 12px; min-height: 58px; padding-top: 5px; }
-        .temp { font-size: 46px; line-height: 0.92; font-weight: 900; }
-        .temp .degree { position: relative; top: -0.18em; margin-left: 1px; color: var(--ink-600); font-size: 0.68em; font-weight: 900; line-height: 0; }
-        .weather-meta { color: var(--ink-450); font-size: 14px; font-weight: 800; line-height: 1.25; text-transform: uppercase; }
-        .weather-copy { margin-top: 7px; color: var(--ink-600); font-size: 15px; font-weight: 750; }
+        .temp { font-size: 46px; line-height: 0.92; font-weight: var(--weight-emphasis); }
+        .temp .degree { position: relative; top: -0.18em; margin-left: 1px; color: var(--ink-600); font-size: 0.68em; font-weight: var(--weight-emphasis); line-height: 0; }
+        .weather-meta { color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-label); line-height: 1.25; text-transform: uppercase; }
+        .weather-copy { margin-top: 7px; color: var(--ink-600); font-size: var(--type-body); font-weight: var(--weight-body); }
         .forecast-strip { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(20, 19, 17, 0.1); }
-        .forecast-legend { display: grid; grid-template-columns: 26px minmax(0, 1fr) 34px; column-gap: 4px; align-items: center; margin-bottom: 6px; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; overflow: visible; }
+        .forecast-legend { display: grid; grid-template-columns: 26px minmax(0, 1fr) 34px; column-gap: 4px; align-items: center; margin-bottom: 6px; color: var(--ink-450); font-size: var(--type-micro); font-weight: var(--weight-emphasis); text-transform: uppercase; overflow: visible; }
         .forecast-legend span { display: inline-flex; align-items: center; gap: 5px; grid-row: 1; white-space: nowrap; position: relative; }
         .forecast-legend i { display: inline-block; }
         .legend-temp { grid-column: 1; justify-self: end; color: var(--brass-650); }
@@ -1790,7 +1798,7 @@ class FoyerDashboardCard extends HTMLElement {
         .legend-temp .legend-line { position: absolute; left: calc(100% + 5px); top: 50%; transform: translateY(-50%); }
         .legend-precip .legend-bar { position: absolute; right: calc(100% + 5px); top: 50%; transform: translateY(-50%); }
         .forecast-graph { display: grid; grid-template-columns: 26px minmax(0, 1fr) 34px; grid-template-rows: 68px auto; column-gap: 4px; align-items: stretch; }
-        .chart-scale { display: flex; flex-direction: column; justify-content: space-between; color: var(--ink-450); font-size: 9px; font-weight: 850; line-height: 1; white-space: nowrap; }
+        .chart-scale { display: flex; flex-direction: column; justify-content: space-between; color: var(--ink-450); font-size: var(--type-micro); font-weight: var(--weight-label); line-height: 1; white-space: nowrap; }
         .temp-scale { text-align: right; color: var(--brass-650); }
         .precip-scale { text-align: left; color: var(--rain-500); }
         .forecast-plot { position: relative; height: 68px; border-left: 1px solid rgba(130, 88, 34, 0.18); border-right: 1px solid rgba(60, 127, 161, 0.18); background: linear-gradient(to bottom, rgba(20, 19, 17, 0.08), rgba(20, 19, 17, 0.08) 1px, transparent 1px, transparent 50%, rgba(20, 19, 17, 0.06) 50%, rgba(20, 19, 17, 0.06) calc(50% + 1px), transparent calc(50% + 1px), transparent calc(100% - 1px), rgba(20, 19, 17, 0.08) calc(100% - 1px)); }
@@ -1799,15 +1807,15 @@ class FoyerDashboardCard extends HTMLElement {
         .forecast-hour.wet { background: linear-gradient(180deg, #7fb7cc, var(--rain-500)); box-shadow: 0 4px 10px rgba(60, 127, 161, 0.18); }
         .temp-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
         .temp-line polyline { fill: none; stroke: var(--brass-500); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 2px 3px rgba(130, 88, 34, 0.2)); }
-        .forecast-axis { grid-column: 2; display: flex; justify-content: space-between; margin-top: 5px; color: var(--ink-450); font-size: 10px; font-weight: 850; }
+        .forecast-axis { grid-column: 2; display: flex; justify-content: space-between; margin-top: 5px; color: var(--ink-450); font-size: var(--type-micro); font-weight: var(--weight-label); }
 
         .transit-card { padding: 12px; }
         .transit-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
         .direction-switch { display: inline-flex; align-items: center; gap: 2px; min-height: 38px; padding: 3px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: 999px; background: rgba(255, 255, 255, 0.5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7); }
-        .direction-option { min-height: 30px; padding: 0 10px; border-color: transparent; border-radius: 999px; background: transparent; color: var(--ink-450); box-shadow: none; font-size: 11px; text-transform: uppercase; }
+        .direction-option { min-height: 30px; padding: 0 10px; border-color: transparent; border-radius: 999px; background: transparent; color: var(--ink-450); box-shadow: none; font-size: var(--type-caption); text-transform: uppercase; }
         .direction-option.active { border-color: var(--control-active-border); background: var(--control-active-bg); color: var(--stone-50); box-shadow: var(--control-active-shadow); }
-        .tiny-alert { min-height: 32px; padding: 0 10px; color: var(--ink-450); font-size: 11px; }
-        .transit-state { display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .tiny-alert { min-height: 32px; padding: 0 10px; color: var(--ink-450); font-size: var(--type-caption); }
+        .transit-state { display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; color: var(--ink-450); font-size: var(--type-micro); font-weight: var(--weight-emphasis); text-transform: uppercase; }
         .transit-pulse { display: block; width: 12px; height: 12px; border-radius: 999px; background: var(--green-500); box-shadow: 0 0 0 5px rgba(47, 114, 82, 0.12); }
         .transit-pulse.offline { background: var(--red-500); box-shadow: 0 0 0 5px rgba(162, 67, 53, 0.12); }
         .route-list { display: grid; gap: 7px; }
@@ -1815,23 +1823,23 @@ class FoyerDashboardCard extends HTMLElement {
         .route-card:active { transform: translateY(1px); }
         .route-card.stale { opacity: 0.76; }
         .line-badges { display: flex; align-items: center; gap: 5px; }
-        .line { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; color: white; font-size: 15px; font-weight: 900; line-height: 1; }
+        .line { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; color: white; font-size: var(--type-body); font-weight: var(--weight-emphasis); line-height: 1; }
         .line.green { background: #00933c; }
         .line.blue { background: #0039a6; }
         .line.yellow { background: #fccc0a; color: #16120b; }
         .line.red { background: #ee352e; }
         .line.brown { background: #996633; }
-        .line.path { width: auto; min-width: 42px; padding: 0 8px; background: #1f8f5f; font-size: 10px; }
-        .line.arrival-line { flex: 0 0 auto; width: 22px; height: 22px; font-size: 12px; }
-        .line.path.arrival-line { width: auto; min-width: 36px; height: 22px; font-size: 9px; }
+        .line.path { width: auto; min-width: 42px; padding: 0 8px; background: #1f8f5f; font-size: var(--type-micro); }
+        .line.arrival-line { flex: 0 0 auto; width: 22px; height: 22px; font-size: var(--type-caption); }
+        .line.path.arrival-line { width: auto; min-width: 36px; height: 22px; font-size: var(--type-micro); }
         .route-main { min-width: 0; }
-        .route-place { color: var(--ink-760); font-size: 15px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .route-time { color: var(--ink-900); font-size: 26px; font-weight: 950; line-height: 1; text-align: right; }
-        .route-time span { display: block; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .route-place { color: var(--ink-760); font-size: var(--type-body); font-weight: var(--weight-emphasis); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .route-time { color: var(--ink-900); font-size: 26px; font-weight: var(--weight-emphasis); line-height: 1; text-align: right; }
+        .route-time span { display: block; color: var(--ink-450); font-size: var(--type-micro); font-weight: var(--weight-emphasis); text-transform: uppercase; }
         .route-time.offline { color: var(--ink-450); }
-        .route-empty { min-height: 120px; display: grid; place-items: center; color: var(--ink-450); font-size: 13px; font-weight: 850; }
+        .route-empty { min-height: 120px; display: grid; place-items: center; color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-label); }
 
-        .control-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(136px, 0.26fr); grid-template-rows: auto auto minmax(220px, 1fr) auto; gap: 14px; min-width: 0; min-height: 0; }
+        .control-layout { display: grid; grid-template-columns: minmax(0, 1fr) 190px; grid-template-rows: auto auto minmax(220px, 1fr) auto; gap: 14px; min-width: 0; min-height: 0; }
         .lighting-panel { grid-column: 1 / -1; display: grid; align-content: start; min-height: 0; padding: 18px; }
         .lighting-panel::after { display: none; }
         .lighting-shell { position: relative; display: grid; grid-template-rows: auto auto; align-content: start; gap: 8px; }
@@ -1842,7 +1850,7 @@ class FoyerDashboardCard extends HTMLElement {
         .power-icon svg { width: 44px; height: 44px; }
         .power-icon svg, .volume-button svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .power-icon .slash { stroke-width: 2.5; }
-        .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: 13px; font-weight: 950; white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
+        .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: var(--type-meta); font-weight: var(--weight-emphasis); white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
         .scope-toggle.on { border-color: rgba(185, 129, 53, 0.48); background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
         .scope-plus { color: var(--brass-500); font-size: 22px; line-height: 1; }
         .scope-toggle.on .scope-plus { color: #f1bd69; }
@@ -1853,7 +1861,7 @@ class FoyerDashboardCard extends HTMLElement {
         .scene-button { display: grid; align-content: space-between; border: 1px solid rgba(20, 19, 17, 0.14); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font: inherit; text-align: left; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
         .scene-button.power { display: grid; grid-template-columns: minmax(76px, 1fr) auto minmax(76px, 1fr); grid-template-rows: 1fr; align-items: center; column-gap: 6px; min-height: 142px; padding: 16px; }
         .scene-button.intensity { min-height: 78px; padding: 12px 17px 11px; }
-        .scene-button strong { font-size: 28px; line-height: 1.15; font-weight: 950; white-space: nowrap; }
+        .scene-button strong { font-size: 28px; line-height: 1.15; font-weight: var(--weight-emphasis); white-space: nowrap; }
         .scene-button.power strong { font-size: 40px; line-height: 1; }
         .scene-button.intensity strong { font-size: 17px; }
         .power-icon-cell { grid-column: 1; grid-row: 1; justify-self: center; z-index: 1; }
@@ -1871,13 +1879,13 @@ class FoyerDashboardCard extends HTMLElement {
         .dog-card { grid-column: 1; grid-row: 2 / 4; position: relative; min-height: 0; padding: 16px; border: 2px solid rgba(15, 13, 11, 0.96); background: linear-gradient(145deg, #090807, #3b332b 24%, #81705d 36%, #1a1713 55%, #4a3c2d 78%, #0d0b09); box-shadow: 0 26px 54px rgba(22, 18, 13, 0.34), inset 0 2px 0 rgba(255, 255, 255, 0.28), inset 0 -3px 0 rgba(0, 0, 0, 0.54), inset 0 0 0 6px rgba(185, 129, 53, 0.22); }
         .dog-card::before { content: ""; position: absolute; inset: 8px; z-index: 2; pointer-events: none; border: 2px solid rgba(240, 190, 108, 0.48); border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), inset 0 0 34px rgba(0, 0, 0, 0.28); background: linear-gradient(130deg, rgba(255, 255, 255, 0.28) 0 11%, transparent 12% 55%, rgba(255, 255, 255, 0.12) 56%, transparent 68%); }
         .dog-card img { position: relative; z-index: 1; width: 100%; height: 100%; min-height: 280px; display: block; object-fit: cover; object-position: 50% 47%; border: 1px solid rgba(255, 244, 221, 0.5); border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(20, 19, 17, 0.28), 0 12px 22px rgba(0, 0, 0, 0.34); filter: contrast(1.06) saturate(1.08); }
-        .media-panel { grid-column: 2; grid-row: 3; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; align-items: start; gap: 12px; min-width: 0; padding: 12px 14px; color: var(--ink-600); font-size: 13px; font-weight: 850; }
-        .media-panel strong { color: var(--ink-900); font-size: 15px; }
+        .media-panel { grid-column: 2; grid-row: 3; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; align-items: start; gap: 12px; min-width: 0; padding: 12px 14px; color: var(--ink-600); font-size: var(--type-meta); font-weight: var(--weight-label); }
+        .media-panel strong { color: var(--ink-900); font-size: var(--type-body); }
         .media-label { min-width: 0; line-height: 1.2; white-space: normal; overflow-wrap: anywhere; }
         .volume-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; width: 100%; }
         .volume-button { width: 100%; min-width: 0; padding: 0; }
         .volume-button svg { width: 19px; height: 19px; }
-        .volume-level { display: grid; place-items: center; min-height: 40px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.38); color: var(--ink-760); font-size: 12px; font-weight: 950; line-height: 1; box-shadow: var(--control-shadow); }
+        .volume-level { display: grid; place-items: center; min-height: 40px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.38); color: var(--ink-760); font-size: var(--type-caption); font-weight: var(--weight-emphasis); line-height: 1; box-shadow: var(--control-shadow); }
         .volume-level.muted { color: var(--brass-500); }
         .media-actions { display: grid; gap: 7px; width: 100%; }
         .small-button { width: 100%; min-width: 0; }
@@ -1886,40 +1894,39 @@ class FoyerDashboardCard extends HTMLElement {
         .mode-dock { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr; align-content: start; padding: 6px; }
         .mode-block { display: grid; align-items: center; }
         .mode-icons { display: grid; grid-template-columns: 1fr; gap: 8px; }
-        .mode-icon { position: relative; justify-content: flex-start; width: 100%; min-width: 0; min-height: 52px; gap: 10px; padding: 0 12px; font-size: 14px; text-align: left; }
+        .mode-icon { position: relative; justify-content: flex-start; width: 100%; min-width: 0; min-height: 52px; gap: 10px; padding: 0 12px; font-size: var(--type-meta); text-align: left; }
         .mode-icon ha-icon { flex: 0 0 auto; width: 28px; height: 28px; --mdc-icon-size: 28px; }
         .nav { flex: 1 1 auto; width: 100%; padding: 6px; }
         .nav-items { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; width: 100%; }
-        .nav-item { min-width: 0; padding: 0 8px; color: var(--ink-600); font-size: 11px; }
+        .nav-item { min-width: 0; padding: 0 8px; color: var(--ink-600); font-size: var(--type-caption); }
         .nav-item svg { width: 16px; height: 16px; }
 
         .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 44px; background: rgba(20, 19, 17, 0.42); }
         .lightbox { display: grid; grid-template-rows: 1fr; width: min(1100px, calc(100vw - 72px)); min-height: min(575px, calc(100vh - 72px)); max-height: calc(100vh - 72px); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
         .lightbox-head { display: flex; align-items: start; justify-content: space-between; gap: 18px; padding: 22px 24px 14px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
-        .lightbox h2 { margin: 0; font-size: 28px; line-height: 1; font-weight: 950; }
-        .lightbox p { margin: 8px 0 0; color: var(--ink-450); font-size: 13px; font-weight: 900; text-transform: uppercase; }
-        .lightbox-close { display: grid; place-items: center; width: 52px; height: 52px; padding: 0; border: 1px solid var(--control-active-border); border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); font: inherit; font-size: 28px; line-height: 1; }
+        .lightbox h2 { margin: 0; font-size: 28px; line-height: 1; font-weight: var(--weight-emphasis); }
+        .lightbox p { margin: 8px 0 0; color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-emphasis); text-transform: uppercase; }
         .person-lightbox { grid-template-rows: auto 1fr auto; width: min(820px, calc(100vw - 72px)); min-height: min(624px, calc(100vh - 72px)); padding-bottom: 20px; }
-        .person-detail-head { display: grid; grid-template-columns: 220px minmax(0, 1fr) 52px; align-items: center; gap: 24px; padding: 24px 34px 20px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
+        .person-detail-head { display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: center; gap: 24px; padding: 24px 34px 20px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
         .person-detail-head h2 { font-size: 42px; }
         .person-detail-head p { margin-top: 10px; font-size: 18px; }
-        .person-detail-photo { display: grid; place-items: center; width: 220px; height: 220px; overflow: hidden; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); font-size: 46px; font-weight: 950; }
+        .person-detail-photo { display: grid; place-items: center; width: 220px; height: 220px; overflow: hidden; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); font-size: 46px; font-weight: var(--weight-emphasis); }
         .person-detail-photo img { width: 100%; height: 100%; object-fit: cover; }
         .person-detail-list { display: grid; align-content: center; margin: 0; padding: 10px 34px; }
         .person-detail-list div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; min-height: 48px; padding: 8px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.08); }
         .person-detail-list div:last-child { border-bottom: 0; }
-        .person-detail-list dt { color: var(--ink-450); font-size: 18px; font-weight: 850; }
-        .person-detail-list dd { margin: 0; color: var(--ink-900); font-size: 20px; font-weight: 900; text-align: right; }
+        .person-detail-list dt { color: var(--ink-450); font-size: 18px; font-weight: var(--weight-label); }
+        .person-detail-list dd { margin: 0; color: var(--ink-900); font-size: var(--type-section); font-weight: var(--weight-emphasis); text-align: right; }
         .person-more-info { justify-self: stretch; margin: 6px 34px 0; min-height: 56px; font-size: 18px; }
         .lighting-modal-body { min-height: 0; overflow: auto; }
         .area-controls { padding: 18px 30px 12px; }
         .area-control-row { display: grid; grid-template-columns: 116px minmax(0, 1fr) 48px; align-items: center; gap: 16px; padding: 15px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
         .area-control-row:last-child { border-bottom: 0; }
         .area-control-name { display: grid; gap: 4px; }
-        .area-control-name strong, .whole-house-controls strong { color: var(--ink-900); font-size: 20px; font-weight: 900; line-height: 1; }
+        .area-control-name strong, .whole-house-controls strong { color: var(--ink-900); font-size: var(--type-section); font-weight: var(--weight-emphasis); line-height: 1; }
         .area-preset-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
         .lighting-preset { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 10px; min-width: 0; min-height: 74px; padding: 11px 13px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-760); font: inherit; text-align: left; box-shadow: var(--control-shadow); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease; }
-        .lighting-preset strong { min-width: 0; overflow: hidden; font-size: 16px; font-weight: 850; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+        .lighting-preset strong { min-width: 0; overflow: hidden; font-size: var(--type-body); font-weight: var(--weight-label); line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
         .lighting-preset .scene-level { justify-self: center; height: 31px; gap: 4px; }
         .lighting-preset .scene-level i { width: 6px; }
         .lighting-preset .power-icon { width: 40px; height: 40px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
@@ -1936,8 +1943,8 @@ class FoyerDashboardCard extends HTMLElement {
         .individual-light-power { grid-column: 1; grid-row: 1 / 3; display: grid; place-items: center; width: 54px; height: 54px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: var(--control-shadow); }
         .individual-light.on .individual-light-power { border-color: rgba(185, 129, 53, 0.5); background: var(--panel-dark); color: #f1bd69; }
         .individual-light-power svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .individual-light-name { grid-column: 2; min-width: 0; overflow: hidden; font-size: 15px; font-weight: 800; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-        .individual-light-value { grid-column: 3; color: var(--ink-450); font-size: 13px; font-weight: 850; line-height: 1; }
+        .individual-light-name { grid-column: 2; min-width: 0; overflow: hidden; font-size: var(--type-body); font-weight: var(--weight-label); line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+        .individual-light-value { grid-column: 3; color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-label); line-height: 1; }
         .individual-light-slider { grid-column: 2 / 4; width: 100%; height: 28px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
         .individual-light-slider::-webkit-slider-runnable-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
         .individual-light-slider::-moz-range-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
@@ -1959,8 +1966,8 @@ class FoyerDashboardCard extends HTMLElement {
         .direction-detail.selected { border-color: rgba(185, 129, 53, 0.48); background: rgba(255, 248, 235, 0.82); }
         .direction-detail.offline { opacity: 0.78; }
         .direction-detail-head, .arrival-row { display: grid; align-items: center; gap: 14px; }
-        .direction-detail-head { grid-template-columns: 1fr auto; color: var(--ink-900); font-size: 20px; font-weight: 950; }
-        .direction-detail-head span:last-child { color: var(--ink-450); font-size: 16px; }
+        .direction-detail-head { grid-template-columns: 1fr auto; color: var(--ink-900); font-size: var(--type-section); font-weight: var(--weight-emphasis); }
+        .direction-detail-head span:last-child { color: var(--ink-450); font-size: var(--type-body); }
         .transit-sources { display: grid; min-height: 0; gap: 15px; }
         .arrival-list { display: grid; grid-auto-rows: 82px; gap: 12px; min-height: 0; }
         .arrival-row { grid-template-columns: 94px minmax(0, 1fr) auto; min-height: 82px; padding: 12px 15px; border: 1px solid rgba(20, 19, 17, 0.08); border-radius: 7px; background: rgba(255, 255, 255, 0.46); }
@@ -1970,15 +1977,15 @@ class FoyerDashboardCard extends HTMLElement {
         .arrival-time { display: flex; align-items: baseline; gap: 3px; color: var(--ink-900); }
         .arrival-row.offline .arrival-time { color: var(--ink-450); }
         .arrival-time strong { font-size: 34px; line-height: 1; }
-        .arrival-time span, .arrival-due { color: var(--ink-450); font-size: 16px; font-weight: 900; text-transform: uppercase; }
-        .arrival-detail { display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden; color: var(--ink-760); font-size: 20px; font-weight: 850; white-space: nowrap; }
+        .arrival-time span, .arrival-due { color: var(--ink-450); font-size: var(--type-body); font-weight: var(--weight-emphasis); text-transform: uppercase; }
+        .arrival-detail { display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden; color: var(--ink-760); font-size: var(--type-section); font-weight: var(--weight-label); white-space: nowrap; }
         .arrival-detail .line.arrival-line { width: 32px; height: 32px; font-size: 17px; }
-        .arrival-detail .line.path.arrival-line { width: auto; min-width: 50px; height: 32px; font-size: 11px; }
+        .arrival-detail .line.path.arrival-line { width: auto; min-width: 50px; height: 32px; font-size: var(--type-caption); }
         .arrival-destination { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .arrival-row.catchable .arrival-time strong,
         .arrival-row.catchable .arrival-detail,
-        .arrival-row.catchable .arrival-due { color: var(--ink-900); font-weight: 950; }
-        .transit-updated { color: var(--ink-450); font-size: 14px; font-weight: 900; text-transform: uppercase; }
+        .arrival-row.catchable .arrival-due { color: var(--ink-900); font-weight: var(--weight-emphasis); }
+        .transit-updated { color: var(--ink-450); font-size: var(--type-meta); font-weight: var(--weight-emphasis); text-transform: uppercase; }
 
         @media (max-width: 920px) {
           :host { height: auto; min-height: 980px; }

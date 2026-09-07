@@ -12,3 +12,8 @@
 - Do not attempt Node-based syntax checks, builds, or tests.
 - Validate frontend JavaScript with VS Code diagnostics and live browser or Playwright inspection. Use other non-Node tooling only after confirming it is installed.
 - After changing JavaScript loaded as a Lovelace resource, increment its URL cache key through the Home Assistant dashboard resource API before browser validation.
+
+## Foyer dashboard target
+
+- The Foyer dashboard is used only on a 13-inch iPad Air in landscape orientation (`1366x1024` CSS viewport).
+- Design and validate it for that target only; phone, portrait, and general responsive layouts are not required.
