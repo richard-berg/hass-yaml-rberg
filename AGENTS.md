@@ -11,3 +11,4 @@
 - Node.js tooling is not installed: `node`, `npm`, and `npx` are unavailable.
 - Do not attempt Node-based syntax checks, builds, or tests.
 - Validate frontend JavaScript with VS Code diagnostics and live browser or Playwright inspection. Use other non-Node tooling only after confirming it is installed.
+- After changing JavaScript loaded as a Lovelace resource, increment its URL cache key through the Home Assistant dashboard resource API before browser validation.
