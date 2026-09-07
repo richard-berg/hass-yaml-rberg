@@ -1,7 +1,7 @@
 # Inferred Lutron Scene Contents
 
-Generated: `2026-08-22T07:14:24+00:00` by `tools/export_lutron_scene_contents.py`
-Source: `http://supervisor/core`; wait: `4s`; scenes: `31`; lights: `33`
+Generated: `2026-08-23T07:13:37+00:00` by `tools/export_lutron_scene_contents.py`
+Source: `http://supervisor/core`; wait: `4s`; scenes: `34`; lights: `33`
 
 ```yaml
 scene.all_off:
@@ -918,6 +918,126 @@ scene.master_bath_off:
       setting:
         state: "off"
   not_controlled_count: 28
+scene.pantry_smart_bridge_dining_evening:
+  name: "Dining Evening"
+  controlled_entities:
+    - entity_id: light.dining_room_beer_shelf
+      name: "Dining Room Beer Shelf"
+      setting:
+        state: "on"
+        brightness: 153
+        color_mode: "brightness"
+    - entity_id: light.dining_room_main_lights
+      name: "Dining Room Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.dining_room_pendant
+      name: "Dining Room Pendant"
+      setting:
+        state: "on"
+        brightness: 71
+        color_mode: "brightness"
+    - entity_id: light.dining_room_piano_lamp
+      name: "Dining Room Piano Lamp"
+      setting:
+        state: "on"
+        brightness: 165
+        color_mode: "brightness"
+    - entity_id: light.living_room_stage_perimeter
+      name: "Living Room Stage Perimeter"
+      setting:
+        state: "on"
+        brightness: 186
+        color_mode: "brightness"
+  not_controlled_count: 28
+scene.pantry_smart_bridge_kitchen_evening:
+  name: "Kitchen Evening"
+  controlled_entities:
+    - entity_id: light.front_foyer_main_lights
+      name: "Front Foyer Main Lights"
+      setting:
+        state: "on"
+        brightness: 12
+        color_mode: "brightness"
+    - entity_id: light.kitchen_island_lights
+      name: "Kitchen Island Lights"
+      setting:
+        state: "on"
+        brightness: 66
+        color_mode: "brightness"
+    - entity_id: light.kitchen_island_toe_kick
+      name: "Kitchen Island Toe Kick"
+      setting:
+        state: "on"
+        brightness: 153
+        color_mode: "brightness"
+    - entity_id: light.kitchen_main_lights
+      name: "Kitchen Main Lights"
+      setting:
+        state: "on"
+        brightness: 25
+        color_mode: "brightness"
+    - entity_id: light.kitchen_perimeter_toe_kick
+      name: "Kitchen Perimeter Toe Kick"
+      setting:
+        state: "on"
+        brightness: 153
+        color_mode: "brightness"
+    - entity_id: light.kitchen_under_cabinet
+      name: "Kitchen Under Cabinet"
+      setting:
+        state: "on"
+        brightness: 61
+        color_mode: "brightness"
+  not_controlled_count: 27
+scene.pantry_smart_bridge_living_room_evening:
+  name: "Living Room Evening"
+  controlled_entities:
+    - entity_id: light.living_room_allisons_desk_lamp
+      name: "Living Room Allison’s Desk Lamp"
+      setting:
+        state: "on"
+        brightness: 127
+        color_mode: "brightness"
+    - entity_id: light.living_room_book_shelf
+      name: "Living Room Book Shelf"
+      setting:
+        state: "on"
+        brightness: 102
+        color_mode: "brightness"
+    - entity_id: light.living_room_floor_lamp
+      name: "Living Room Floor Lamp"
+      setting:
+        state: "on"
+        brightness: 178
+        color_mode: "brightness"
+    - entity_id: light.living_room_holiday_lights
+      name: "Living Room Holiday Lights"
+      setting:
+        state: "on"
+        brightness: 173
+        color_mode: "brightness"
+    - entity_id: light.living_room_main_lights
+      name: "Living Room Main Lights"
+      setting:
+        state: "off"
+    - entity_id: light.living_room_painting
+      name: "Living Room Painting"
+      setting:
+        state: "on"
+        brightness: 76
+        color_mode: "brightness"
+    - entity_id: light.living_room_stage_perimeter
+      name: "Living Room Stage Perimeter"
+      setting:
+        state: "on"
+        brightness: 186
+        color_mode: "brightness"
+    - entity_id: light.living_room_walkway
+      name: "Living Room Walkway"
+      setting:
+        state: "off"
+  not_controlled_count: 25
 scene.stage_bright:
   name: "Stage Bright"
   controlled_entities:
