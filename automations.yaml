@@ -1846,3 +1846,21 @@
       data:
         option: Evening
   mode: restart
+- id: '1788818199866'
+  alias: Theater Pico Actions
+  description: Link the two Theater 4-button Picos; double-clicking the bottom button
+    turns off the master bathroom, bedroom, and theater lights.
+  use_blueprint:
+    path: richardberg/lutron_pico_scene_actions.yaml
+    input:
+      pico_1: 4c17ec2007def2882800d79fe45414d0
+      pico_2: bc18bccc67e52518f3f63062b36fc247
+      button4_doubleclick_action:
+      - action: scene.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - scene.master_bath_off
+          - scene.bedroom_off
+          - scene.theater_off
