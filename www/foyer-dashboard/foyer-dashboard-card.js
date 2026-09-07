@@ -309,14 +309,12 @@ class FoyerDashboardCard extends HTMLElement {
     const person = this._state(entityId);
     const state = person?.state;
     const trackerId = person?.attributes?.source || person?.attributes?.device_trackers?.[0];
+    const tracker = this._state(trackerId);
     const trackerKey = trackerId?.startsWith("device_tracker.") ? trackerId.slice("device_tracker.".length) : null;
     const ssid = trackerKey ? this._state(`sensor.${trackerKey}_ssid`) : null;
     const connection = trackerKey ? this._state(`sensor.${trackerKey}_connection_type`) : null;
     const homeWifi = this._config.homeSsids.includes(ssid?.state);
-    const timestamps = [person?.last_updated, ssid?.last_updated, connection?.last_updated]
-      .map((value) => Date.parse(value))
-      .filter(Number.isFinite);
-    const updatedAt = timestamps.length ? new Date(Math.max(...timestamps)).toISOString() : null;
+    const updatedAt = tracker?.last_changed || tracker?.last_updated || person?.last_updated || null;
     const stale = !updatedAt || Date.now() - Date.parse(updatedAt) > 6 * 60 * 60 * 1000;
     const accuracy = Number(person?.attributes?.gps_accuracy);
     const homeRadius = Number(this._state("zone.home")?.attributes?.radius) || 100;
@@ -349,6 +347,9 @@ class FoyerDashboardCard extends HTMLElement {
       updatedAt,
       accuracy: Number.isFinite(accuracy) ? Math.round(accuracy) : null,
       network: homeWifi ? ssid.state : connection?.state || ssid?.state || null,
+      sourceType: tracker?.attributes?.source_type || null,
+      connection: tracker?.state === "home" ? "Connected" : tracker?.state === "not_home" ? "Disconnected" : "Unavailable",
+      ipAddress: tracker?.attributes?.ip || null,
       tracker: trackerId ? this._friendly(trackerId, trackerId) : null
     };
   }
@@ -1098,12 +1099,16 @@ class FoyerDashboardCard extends HTMLElement {
   _renderPersonModal() {
     if (!this._personModal) return "";
     const person = this._personModel(this._personModal);
-    const details = [
-      ["Last signal", this._relativeAge(person.updatedAt)],
-      ["Location accuracy", person.accuracy === null ? "Unavailable" : `±${person.accuracy} m`],
-      ["Network", person.network || "Unavailable"],
-      ["Source", person.tracker || "Unavailable"]
-    ];
+    const details = [[person.sourceType === "router" ? "Presence since" : "Last signal", this._relativeAge(person.updatedAt)]];
+    if (person.sourceType === "router") {
+      details.push(["Connection", person.connection], ["LAN IP", person.ipAddress || "Not connected"]);
+    } else {
+      details.push(
+        ["Location accuracy", person.accuracy === null ? "Unavailable" : `±${person.accuracy} m`],
+        ["Network", person.network || "Unavailable"]
+      );
+    }
+    details.push(["Source", person.tracker || "Unavailable"]);
     return `
       <div class="modal-backdrop" role="presentation">
         <section class="lightbox person-lightbox" role="dialog" aria-modal="true" aria-label="${this._escapeHtml(`${person.name} presence details`)}">
