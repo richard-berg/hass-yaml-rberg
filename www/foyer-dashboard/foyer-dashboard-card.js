@@ -189,6 +189,7 @@ class FoyerDashboardCard extends HTMLElement {
     this._lightSliderActive = false;
     this._optimisticLightBrightness = new Map();
     this._transitModal = null;
+    this._personModal = null;
     this._forecastCache = { entityId: null, hourly: [], updatedAt: 0 };
     this._forecastPromise = null;
     this._forecastTimer = null;
@@ -341,9 +342,14 @@ class FoyerDashboardCard extends HTMLElement {
       entityId,
       name: this._friendly(entityId),
       initial: this._initial(entityId),
+      picture: person?.attributes?.entity_picture || null,
       kind,
       label,
-      evidence: evidence.join(" · ")
+      evidence: evidence.join(" · "),
+      updatedAt,
+      accuracy: Number.isFinite(accuracy) ? Math.round(accuracy) : null,
+      network: homeWifi ? ssid.state : connection?.state || ssid?.state || null,
+      tracker: trackerId ? this._friendly(trackerId, trackerId) : null
     };
   }
 
@@ -773,6 +779,7 @@ class FoyerDashboardCard extends HTMLElement {
     if (event.target.classList?.contains("modal-backdrop")) {
       this._lightingModalOpen = false;
       this._transitModal = null;
+      this._personModal = null;
       this._render();
       return;
     }
@@ -782,10 +789,24 @@ class FoyerDashboardCard extends HTMLElement {
 
     const action = target.dataset.action;
     if (action === "open-person") {
+      this._personModal = target.dataset.entity;
+      this._render();
+      return;
+    }
+
+    if (action === "close-person") {
+      this._personModal = null;
+      this._render();
+      return;
+    }
+
+    if (action === "open-person-more-info") {
+      const entityId = target.dataset.entity;
+      this._personModal = null;
       this.dispatchEvent(new CustomEvent("hass-more-info", {
         bubbles: true,
         composed: true,
-        detail: { entityId: target.dataset.entity }
+        detail: { entityId }
       }));
       return;
     }
@@ -1065,14 +1086,39 @@ class FoyerDashboardCard extends HTMLElement {
     const allison = this._config.entities.allison;
     return [richard, allison].map((entityId) => {
       const person = this._personModel(entityId);
-      const description = `${person.name}: ${person.label}, ${person.evidence}`;
       return `
-        <button class="person-status ${person.kind}" data-action="open-person" data-entity="${this._escapeHtml(person.entityId)}" title="${this._escapeHtml(description)}" aria-label="${this._escapeHtml(description)}">
-          <span class="person-icon status-token">${this._escapeHtml(person.initial)}</span>
-          <span class="person-copy"><strong>${this._escapeHtml(person.label)}</strong><small>${this._escapeHtml(person.evidence)}</small></span>
+        <button class="person-status ${person.kind}" data-action="open-person" data-entity="${this._escapeHtml(person.entityId)}" aria-label="${this._escapeHtml(`${person.name}: ${person.label}. Open details`)}">
+          <span class="person-icon status-token">${person.picture ? `<img src="${this._escapeHtml(person.picture)}" alt="">` : this._escapeHtml(person.initial)}</span>
+          <strong class="person-label">${this._escapeHtml(person.label)}</strong>
         </button>
       `;
     }).join("");
+  }
+
+  _renderPersonModal() {
+    if (!this._personModal) return "";
+    const person = this._personModel(this._personModal);
+    const details = [
+      ["Last signal", this._relativeAge(person.updatedAt)],
+      ["Location accuracy", person.accuracy === null ? "Unavailable" : `±${person.accuracy} m`],
+      ["Network", person.network || "Unavailable"],
+      ["Source", person.tracker || "Unavailable"]
+    ];
+    return `
+      <div class="modal-backdrop" role="presentation">
+        <section class="lightbox person-lightbox" role="dialog" aria-modal="true" aria-label="${this._escapeHtml(`${person.name} presence details`)}">
+          <header class="person-detail-head">
+            <span class="person-detail-photo">${person.picture ? `<img src="${this._escapeHtml(person.picture)}" alt="">` : this._escapeHtml(person.initial)}</span>
+            <div><h2>${this._escapeHtml(person.name)}</h2><p>${this._escapeHtml(person.label)}</p></div>
+            <button class="lightbox-close" data-action="close-person" aria-label="Close">×</button>
+          </header>
+          <dl class="person-detail-list">
+            ${details.map(([label, value]) => `<div><dt>${this._escapeHtml(label)}</dt><dd>${this._escapeHtml(value)}</dd></div>`).join("")}
+          </dl>
+          <button class="control-chip person-more-info" data-action="open-person-more-info" data-entity="${this._escapeHtml(person.entityId)}">Open history</button>
+        </section>
+      </div>
+    `;
   }
 
   _transitDirections() {
@@ -1396,7 +1442,7 @@ class FoyerDashboardCard extends HTMLElement {
               <div class="chart-scale temp-scale">${weather.chart.tempScale.map((label) => `<span>${label}</span>`).join("")}</div>
               <div class="forecast-plot">
                 <div class="forecast-hours">
-                  ${weather.chart.bars.map((hour) => `<span class="forecast-hour ${hour.wet ? "wet" : "dry"}" style="height: ${hour.height}px;" title="${hour.title}"></span>`).join("")}
+                  ${weather.chart.bars.map((hour) => `<span class="forecast-hour ${hour.wet ? "wet" : "dry"}" style="height: ${hour.height}px;"></span>`).join("")}
                 </div>
                 <svg class="temp-line" viewBox="0 0 240 64" preserveAspectRatio="none" aria-hidden="true">
                   <polyline points="${weather.chart.points}"></polyline>
@@ -1428,7 +1474,7 @@ class FoyerDashboardCard extends HTMLElement {
               return `<button class="control-chip direction-option ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="set-transit-direction" data-direction="${direction.option}" aria-label="Show ${direction.option} transit" aria-pressed="${active}">${direction.label}</button>`;
             }).join("")}
           </div>
-          ${alerts.length ? `<button class="control-chip tiny-alert" data-action="open-transit-alerts">${alerts.length} advisory${alerts.length === 1 ? "" : "ies"}</button>` : `<span class="transit-pulse ${hasLiveRows ? "live" : "offline"}" title="${hasLiveRows ? "MTA live" : "Transit data offline"}"></span>`}
+          ${alerts.length ? `<button class="control-chip tiny-alert" data-action="open-transit-alerts">${alerts.length} advisory${alerts.length === 1 ? "" : "ies"}</button>` : `<span class="transit-state"><span class="transit-pulse ${hasLiveRows ? "live" : "offline"}"></span>${hasLiveRows ? "Live" : "Offline"}</span>`}
         </div>
         <div class="route-list">
           ${rows.length ? rows.map((row) => this._renderTransitRow(row)).join("") : `<div class="route-empty">No configured ${this._escapeHtml(currentDirection)} routes</div>`}
@@ -1487,9 +1533,9 @@ class FoyerDashboardCard extends HTMLElement {
             <section class="panel no-drill mode-dock" aria-label="House mode shortcuts">
               <div class="mode-block">
                 <div class="mode-icons" aria-label="Reserved mode toggles">
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-guest" ? "is-pressed" : ""}" data-action="reserved" data-mode="guest" title="Guest" aria-label="Guest mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h10v14M14 11h6v9M9 12h.01"></path></svg><span>Guest</span></button>
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-party" ? "is-pressed" : ""}" data-action="reserved" data-mode="party" title="Party" aria-label="Party mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg><span>Party</span></button>
-                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-performance" ? "is-pressed" : ""}" data-action="reserved" data-mode="performance" title="Concert" aria-label="Concert mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10M12 16v4M5 4h14l-2 12H7L5 4Z"></path></svg><span>Concert</span></button>
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-guest" ? "is-pressed" : ""}" data-action="reserved" data-mode="guest" aria-label="Guest mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h10v14M14 11h6v9M9 12h.01"></path></svg><span>Guest</span></button>
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-party" ? "is-pressed" : ""}" data-action="reserved" data-mode="party" aria-label="Party mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg><span>Party</span></button>
+                  <button class="control-chip mode-icon ${this._pressedKey === "reserved-performance" ? "is-pressed" : ""}" data-action="reserved" data-mode="performance" aria-label="Concert mode reserved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10M12 16v4M5 4h14l-2 12H7L5 4Z"></path></svg><span>Concert</span></button>
                 </div>
               </div>
             </section>
@@ -1498,10 +1544,10 @@ class FoyerDashboardCard extends HTMLElement {
               <strong>Sonos</strong>
               <span class="media-label">${media.label}</span>
               <div class="volume-controls" aria-label="Sonos volume controls">
-                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-down" ? "is-pressed" : ""}" data-action="sonos-volume-down" title="Volume down" aria-label="Volume down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path></svg></button>
-                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-up" ? "is-pressed" : ""}" data-action="sonos-volume-up" title="Volume up" aria-label="Volume up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path><path d="M19 6a9 9 0 0 1 0 12"></path></svg></button>
+                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-down" ? "is-pressed" : ""}" data-action="sonos-volume-down" aria-label="Volume down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path></svg></button>
+                <button class="control-chip volume-button ${this._pressedKey === "sonos-volume-up" ? "is-pressed" : ""}" data-action="sonos-volume-up" aria-label="Volume up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M16 9a5 5 0 0 1 0 6"></path><path d="M19 6a9 9 0 0 1 0 12"></path></svg></button>
                 <span class="volume-level ${media.muted ? "muted" : ""}">${media.muted ? "Mute" : media.volumeLabel}</span>
-                <button class="control-chip volume-button ${media.muted ? "active" : ""} ${this._pressedKey === "sonos-mute" ? "is-pressed" : ""}" data-action="sonos-mute" title="${media.muted ? "Unmute" : "Mute"}" aria-label="${media.muted ? "Unmute" : "Mute"}" aria-pressed="${media.muted}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="m16 9 5 5M21 9l-5 5"></path></svg></button>
+                <button class="control-chip volume-button ${media.muted ? "active" : ""} ${this._pressedKey === "sonos-mute" ? "is-pressed" : ""}" data-action="sonos-mute" aria-label="${media.muted ? "Unmute" : "Mute"}" aria-pressed="${media.muted}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="m16 9 5 5M21 9l-5 5"></path></svg></button>
               </div>
               <div class="media-actions">
                 <button class="control-chip small-button ${this._pressedKey === "sonos-play" ? "is-pressed" : ""}" data-action="sonos-play">Play</button>
@@ -1528,6 +1574,7 @@ class FoyerDashboardCard extends HTMLElement {
       </main>
       ${this._renderLightingModal(includeLiving)}
       ${this._renderTransitModal()}
+      ${this._renderPersonModal()}
     `;
     const lightingModalBody = this.shadowRoot.querySelector(".lighting-modal-body");
     if (lightingModalBody) lightingModalBody.scrollTop = lightingScrollTop;
@@ -1652,13 +1699,13 @@ class FoyerDashboardCard extends HTMLElement {
         .no-drill::after,
         .nav::after { display: none; }
         .rail, .controls { position: relative; z-index: 1; min-width: 0; }
-        .rail { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px; }
+        .rail { display: grid; grid-template-rows: minmax(168px, auto) auto minmax(0, 1fr); gap: 12px; }
         .controls { display: grid; grid-template-rows: minmax(0, 1fr); gap: 14px; }
 
-        .status-top { display: grid; grid-template-columns: auto auto; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; }
-        .time { font-family: var(--font-serif); font-size: 34px; line-height: 1; font-weight: 650; }
-        .date { color: var(--ink-450); font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 8px; }
+        .status-top { display: grid; grid-template-columns: auto auto; align-items: center; justify-content: space-between; gap: 20px; padding: 8px 22px; }
+        .time { font-family: var(--font-serif); font-size: 68px; line-height: 0.95; font-weight: 650; }
+        .date { margin-top: 8px; color: var(--ink-450); font-size: 14px; font-weight: 800; text-transform: uppercase; }
+        .status-icons, .mode-icons, .nav-items { display: flex; align-items: center; gap: 16px; }
         .status-top .status-icons { justify-self: end; }
 
         .person-icon, .mode-icon, .nav-item {
@@ -1698,25 +1745,24 @@ class FoyerDashboardCard extends HTMLElement {
           box-shadow: var(--control-active-shadow);
         }
 
-        .person-status { display: grid; grid-template-columns: 34px minmax(0, auto); align-items: center; gap: 7px; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--ink-760); font: inherit; text-align: left; cursor: pointer; }
-        .person-icon { position: relative; width: 34px; height: 34px; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); font-size: 13px; font-weight: 900; }
+        .person-status { display: grid; justify-items: center; gap: 8px; min-width: 104px; min-height: 128px; padding: 6px 4px; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--ink-760); font: inherit; cursor: pointer; }
+        .person-icon { position: relative; width: 96px; height: 96px; overflow: visible; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); font-size: 24px; font-weight: 900; }
+        .person-icon img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
         .person-icon::after {
           content: "";
           position: absolute;
           right: 0;
           bottom: 0;
-          width: 8px;
-          height: 8px;
-          border: 2px solid var(--panel-solid);
+          width: 15px;
+          height: 15px;
+          border: 4px solid var(--panel-solid);
           border-radius: 999px;
           background: var(--green-500);
         }
         .person-status.away .person-icon::after { background: var(--ink-450); }
         .person-status.zone .person-icon::after { background: var(--rain-500); }
         .person-status.uncertain .person-icon::after, .person-status.unknown .person-icon::after { background: var(--brass-500); }
-        .person-copy { display: grid; gap: 1px; min-width: 0; }
-        .person-copy strong { max-width: 74px; overflow: hidden; font-size: 11px; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-        .person-copy small { color: var(--ink-450); font-size: 9px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+        .person-label { max-width: 104px; overflow: hidden; font-size: 14px; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
 
         .weather-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; padding: 16px; background: linear-gradient(145deg, rgba(255, 253, 247, 0.94), rgba(229, 216, 198, 0.76)), var(--panel-solid); }
         .weather-mark { display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: radial-gradient(circle at 32% 32%, #ffe3a0 0 18%, transparent 19%), radial-gradient(circle at 58% 58%, #d8edf4 0 36%, transparent 37%), linear-gradient(145deg, #f6c76d, #6ea5b9); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 12px 24px rgba(79, 117, 139, 0.22); }
@@ -1724,7 +1770,7 @@ class FoyerDashboardCard extends HTMLElement {
         .weather-now { display: flex; align-items: center; gap: 12px; min-height: 58px; padding-top: 5px; }
         .temp { font-size: 46px; line-height: 0.92; font-weight: 900; }
         .temp .degree { position: relative; top: -0.18em; margin-left: 1px; color: var(--ink-600); font-size: 0.68em; font-weight: 900; line-height: 0; }
-        .weather-meta { color: var(--ink-450); font-size: 13px; font-weight: 800; line-height: 1.25; text-transform: uppercase; }
+        .weather-meta { color: var(--ink-450); font-size: 14px; font-weight: 800; line-height: 1.25; text-transform: uppercase; }
         .weather-copy { margin-top: 7px; color: var(--ink-600); font-size: 15px; font-weight: 750; }
         .forecast-strip { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(20, 19, 17, 0.1); }
         .forecast-legend { display: grid; grid-template-columns: 26px minmax(0, 1fr) 34px; column-gap: 4px; align-items: center; margin-bottom: 6px; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; overflow: visible; }
@@ -1754,7 +1800,8 @@ class FoyerDashboardCard extends HTMLElement {
         .direction-option { min-height: 30px; padding: 0 10px; border-color: transparent; border-radius: 999px; background: transparent; color: var(--ink-450); box-shadow: none; font-size: 11px; text-transform: uppercase; }
         .direction-option.active { border-color: var(--control-active-border); background: var(--control-active-bg); color: var(--stone-50); box-shadow: var(--control-active-shadow); }
         .tiny-alert { min-height: 32px; padding: 0 10px; color: var(--ink-450); font-size: 11px; }
-        .transit-pulse { display: block; width: 12px; height: 12px; margin-right: 8px; border-radius: 999px; background: var(--green-500); box-shadow: 0 0 0 5px rgba(47, 114, 82, 0.12); }
+        .transit-state { display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .transit-pulse { display: block; width: 12px; height: 12px; border-radius: 999px; background: var(--green-500); box-shadow: 0 0 0 5px rgba(47, 114, 82, 0.12); }
         .transit-pulse.offline { background: var(--red-500); box-shadow: 0 0 0 5px rgba(162, 67, 53, 0.12); }
         .route-list { display: grid; gap: 7px; }
         .route-card { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 58px; padding: 9px 26px 9px 10px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: linear-gradient(145deg, rgba(255, 255, 255, 0.66), rgba(239, 230, 214, 0.62)); color: inherit; font: inherit; text-align: left; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease; }
@@ -1840,77 +1887,91 @@ class FoyerDashboardCard extends HTMLElement {
         .nav-item svg { width: 16px; height: 16px; }
 
         .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 44px; background: rgba(20, 19, 17, 0.42); }
-        .lightbox { display: grid; grid-template-rows: 1fr; width: min(880px, 90vw); min-height: min(460px, 72vh); max-height: calc(100vh - 88px); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
+        .lightbox { display: grid; grid-template-rows: 1fr; width: min(1100px, calc(100vw - 72px)); min-height: min(575px, calc(100vh - 72px)); max-height: calc(100vh - 72px); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
         .lightbox-head { display: flex; align-items: start; justify-content: space-between; gap: 18px; padding: 22px 24px 14px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
         .lightbox h2 { margin: 0; font-size: 28px; line-height: 1; font-weight: 950; }
         .lightbox p { margin: 8px 0 0; color: var(--ink-450); font-size: 13px; font-weight: 900; text-transform: uppercase; }
-        .lightbox-close { background: var(--control-active-bg); color: var(--stone-50); border-color: var(--control-active-border); }
+        .lightbox-close { display: grid; place-items: center; width: 52px; height: 52px; padding: 0; border: 1px solid var(--control-active-border); border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); font: inherit; font-size: 28px; line-height: 1; }
+        .person-lightbox { grid-template-rows: auto 1fr auto; width: min(820px, calc(100vw - 72px)); min-height: min(624px, calc(100vh - 72px)); padding-bottom: 20px; }
+        .person-detail-head { display: grid; grid-template-columns: 220px minmax(0, 1fr) 52px; align-items: center; gap: 24px; padding: 24px 34px 20px; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
+        .person-detail-head h2 { font-size: 42px; }
+        .person-detail-head p { margin-top: 10px; font-size: 18px; }
+        .person-detail-photo { display: grid; place-items: center; width: 220px; height: 220px; overflow: hidden; border-radius: 999px; background: var(--control-active-bg); color: var(--stone-50); font-size: 46px; font-weight: 950; }
+        .person-detail-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .person-detail-list { display: grid; align-content: center; margin: 0; padding: 10px 34px; }
+        .person-detail-list div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; min-height: 48px; padding: 8px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.08); }
+        .person-detail-list div:last-child { border-bottom: 0; }
+        .person-detail-list dt { color: var(--ink-450); font-size: 18px; font-weight: 850; }
+        .person-detail-list dd { margin: 0; color: var(--ink-900); font-size: 20px; font-weight: 900; text-align: right; }
+        .person-more-info { justify-self: stretch; margin: 6px 34px 0; min-height: 56px; font-size: 18px; }
         .lighting-modal-body { min-height: 0; overflow: auto; }
-        .area-controls { padding: 14px 24px 8px; }
-        .area-control-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 38px; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
+        .area-controls { padding: 18px 30px 12px; }
+        .area-control-row { display: grid; grid-template-columns: 116px minmax(0, 1fr) 48px; align-items: center; gap: 16px; padding: 15px 0; border-bottom: 1px solid rgba(20, 19, 17, 0.1); }
         .area-control-row:last-child { border-bottom: 0; }
         .area-control-name { display: grid; gap: 4px; }
-        .area-control-name strong, .whole-house-controls strong { color: var(--ink-900); font-size: 16px; font-weight: 900; line-height: 1; }
-        .area-preset-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
-        .lighting-preset { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; gap: 8px; min-width: 0; min-height: 58px; padding: 9px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-760); font: inherit; text-align: left; box-shadow: var(--control-shadow); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease; }
-        .lighting-preset strong { min-width: 0; overflow: hidden; font-size: 13px; font-weight: 850; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
-        .lighting-preset .scene-level { justify-self: center; height: 24px; gap: 3px; }
-        .lighting-preset .scene-level i { width: 5px; }
-        .lighting-preset .power-icon { width: 30px; height: 30px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
-        .lighting-preset .power-icon svg { width: 20px; height: 20px; }
+        .area-control-name strong, .whole-house-controls strong { color: var(--ink-900); font-size: 20px; font-weight: 900; line-height: 1; }
+        .area-preset-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+        .lighting-preset { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 10px; min-width: 0; min-height: 74px; padding: 11px 13px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-760); font: inherit; text-align: left; box-shadow: var(--control-shadow); transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease; }
+        .lighting-preset strong { min-width: 0; overflow: hidden; font-size: 16px; font-weight: 850; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+        .lighting-preset .scene-level { justify-self: center; height: 31px; gap: 4px; }
+        .lighting-preset .scene-level i { width: 6px; }
+        .lighting-preset .power-icon { width: 40px; height: 40px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+        .lighting-preset .power-icon svg { width: 26px; height: 26px; }
         .lighting-preset.active { border-color: var(--control-active-border); background: var(--control-active-bg); color: var(--stone-50); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.42), 0 4px 8px rgba(43, 36, 24, 0.08); transform: translateY(1px); }
         .lighting-preset:disabled { cursor: not-allowed; opacity: 0.42; }
         .lighting-preset.is-pressed { transform: translateY(1px) scale(0.98); box-shadow: inset 0 2px 8px rgba(20, 19, 17, 0.2); }
-        .area-expand { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: var(--control-bg); color: var(--ink-600); font: inherit; font-size: 25px; line-height: 1; box-shadow: var(--control-shadow); transition: transform 160ms ease; }
+        .area-expand { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: var(--control-bg); color: var(--ink-600); font: inherit; font-size: 30px; line-height: 1; box-shadow: var(--control-shadow); transition: transform 160ms ease; }
         .area-control-row.expanded .area-expand { transform: rotate(90deg); }
         .area-light-list { grid-column: 2 / 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; padding: 3px 0 6px; }
-        .individual-light { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 9px; row-gap: 7px; min-width: 0; min-height: 74px; padding: 8px 10px; border: 1px solid rgba(20, 19, 17, 0.1); border-radius: 7px; background: rgba(255, 255, 255, 0.4); color: var(--ink-600); font: inherit; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+        .individual-light { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 12px; row-gap: 9px; min-width: 0; min-height: 92px; padding: 10px 13px; border: 1px solid rgba(20, 19, 17, 0.1); border-radius: 7px; background: rgba(255, 255, 255, 0.4); color: var(--ink-600); font: inherit; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
         .individual-light.on { border-color: rgba(185, 129, 53, 0.28); background: rgba(255, 248, 235, 0.78); color: var(--ink-900); }
         .individual-light.is-pressed { box-shadow: inset 0 2px 8px rgba(20, 19, 17, 0.14); }
-        .individual-light-power { grid-column: 1; grid-row: 1 / 3; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: var(--control-shadow); }
+        .individual-light-power { grid-column: 1; grid-row: 1 / 3; display: grid; place-items: center; width: 54px; height: 54px; padding: 0; border: 1px solid var(--control-border); border-radius: 999px; background: #514c44; color: rgba(238, 229, 214, 0.8); box-shadow: var(--control-shadow); }
         .individual-light.on .individual-light-power { border-color: rgba(185, 129, 53, 0.5); background: var(--panel-dark); color: #f1bd69; }
-        .individual-light-power svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .individual-light-name { grid-column: 2; min-width: 0; overflow: hidden; font-size: 12px; font-weight: 800; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-        .individual-light-value { grid-column: 3; color: var(--ink-450); font-size: 10px; font-weight: 850; line-height: 1; }
-        .individual-light-slider { grid-column: 2 / 4; width: 100%; height: 22px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
+        .individual-light-power svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .individual-light-name { grid-column: 2; min-width: 0; overflow: hidden; font-size: 15px; font-weight: 800; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+        .individual-light-value { grid-column: 3; color: var(--ink-450); font-size: 13px; font-weight: 850; line-height: 1; }
+        .individual-light-slider { grid-column: 2 / 4; width: 100%; height: 28px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
         .individual-light-slider::-webkit-slider-runnable-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
         .individual-light-slider::-moz-range-track { height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--brass-500) 0 var(--light-level), rgba(20, 19, 17, 0.14) var(--light-level) 100%); }
         .individual-light-slider::-webkit-slider-thumb { width: 21px; height: 21px; margin-top: -7px; appearance: none; border: 2px solid var(--panel-solid); border-radius: 999px; background: var(--panel-dark); box-shadow: 0 2px 5px rgba(20, 19, 17, 0.28); }
         .individual-light-slider::-moz-range-thumb { width: 17px; height: 17px; border: 2px solid var(--panel-solid); border-radius: 999px; background: var(--panel-dark); box-shadow: 0 2px 5px rgba(20, 19, 17, 0.28); }
-        .whole-house-controls { display: grid; grid-template-columns: 92px minmax(0, 1fr) 38px; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid rgba(162, 67, 53, 0.2); background: rgba(255, 244, 238, 0.5); }
+        .whole-house-controls { display: grid; grid-template-columns: 116px minmax(0, 1fr) 48px; align-items: center; gap: 16px; padding: 24px 30px; border-bottom: 1px solid rgba(162, 67, 53, 0.2); background: rgba(255, 244, 238, 0.5); }
         .whole-house-label strong { display: grid; gap: 1px; }
         .whole-house-actions { grid-column: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-        .whole-house-actions .lighting-preset { min-height: 104px; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; padding: 14px 16px; }
-        .whole-house-actions .lighting-preset strong { font-size: 17px; white-space: normal; }
+        .whole-house-actions .lighting-preset { min-height: 126px; grid-template-columns: 58px minmax(0, 1fr); gap: 16px; padding: 18px 20px; }
+        .whole-house-actions .lighting-preset strong { font-size: 21px; white-space: normal; }
         .whole-house-actions .lighting-preset.active strong { color: var(--stone-50); }
-        .whole-house-actions .lighting-preset .power-icon { width: 44px; height: 44px; }
-        .whole-house-actions .lighting-preset .power-icon svg { width: 28px; height: 28px; }
-        .lighting-preset-emoji { justify-self: center; font-size: 31px; line-height: 1; }
-        .transit-lightbox { grid-template-rows: 1fr; width: min(680px, calc(100vw - 88px)); height: min(430px, calc(100vh - 88px)); min-height: 0; }
-        .transit-detail-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; padding: 18px 20px 22px; overflow: auto; }
+        .whole-house-actions .lighting-preset .power-icon { width: 54px; height: 54px; }
+        .whole-house-actions .lighting-preset .power-icon svg { width: 34px; height: 34px; }
+        .lighting-preset-emoji { justify-self: center; font-size: 38px; line-height: 1; }
+        .transit-lightbox { grid-template-rows: 1fr; width: min(1400px, calc(100vw - 72px)); height: min(645px, calc(100vh - 72px)); min-height: 0; }
+        .transit-detail-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 22px; padding: 28px 30px; overflow: auto; }
         .transit-detail-body.alerts-only { grid-template-columns: minmax(0, 1fr); }
-        .direction-detail { display: grid; align-content: start; gap: 12px; padding: 14px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.48); }
+        .direction-detail { display: grid; align-content: start; gap: 18px; padding: 22px; border: 1px solid rgba(20, 19, 17, 0.12); border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.48); }
         .direction-detail.selected { border-color: rgba(185, 129, 53, 0.48); background: rgba(255, 248, 235, 0.82); }
         .direction-detail.offline { opacity: 0.78; }
-        .direction-detail-head, .arrival-row { display: grid; align-items: center; gap: 10px; }
-        .direction-detail-head { grid-template-columns: 1fr auto; color: var(--ink-900); font-size: 14px; font-weight: 950; }
-        .direction-detail-head span:last-child { color: var(--ink-450); font-size: 12px; }
-        .transit-sources { display: grid; gap: 10px; }
-        .arrival-list { display: grid; gap: 5px; }
-        .arrival-row { grid-template-columns: 58px minmax(0, 1fr) auto; min-height: 34px; padding: 6px 8px; border: 1px solid rgba(20, 19, 17, 0.08); border-radius: 7px; background: rgba(255, 255, 255, 0.46); }
+        .direction-detail-head, .arrival-row { display: grid; align-items: center; gap: 14px; }
+        .direction-detail-head { grid-template-columns: 1fr auto; color: var(--ink-900); font-size: 20px; font-weight: 950; }
+        .direction-detail-head span:last-child { color: var(--ink-450); font-size: 16px; }
+        .transit-sources { display: grid; min-height: 0; gap: 15px; }
+        .arrival-list { display: grid; grid-auto-rows: 82px; gap: 12px; min-height: 0; }
+        .arrival-row { grid-template-columns: 94px minmax(0, 1fr) auto; min-height: 82px; padding: 12px 15px; border: 1px solid rgba(20, 19, 17, 0.08); border-radius: 7px; background: rgba(255, 255, 255, 0.46); }
         .arrival-row.catchable { border-color: rgba(185, 129, 53, 0.46); background: rgba(255, 248, 235, 0.86); box-shadow: inset 3px 0 0 rgba(185, 129, 53, 0.72); }
         .arrival-row.alert-row { border-color: rgba(162, 67, 53, 0.24); background: rgba(255, 241, 235, 0.68); }
         .arrival-row.offline { color: var(--ink-450); }
         .arrival-time { display: flex; align-items: baseline; gap: 3px; color: var(--ink-900); }
         .arrival-row.offline .arrival-time { color: var(--ink-450); }
-        .arrival-time strong { font-size: 18px; line-height: 1; }
-        .arrival-time span, .arrival-due { color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
-        .arrival-detail { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; color: var(--ink-760); font-size: 12px; font-weight: 850; white-space: nowrap; }
+        .arrival-time strong { font-size: 34px; line-height: 1; }
+        .arrival-time span, .arrival-due { color: var(--ink-450); font-size: 16px; font-weight: 900; text-transform: uppercase; }
+        .arrival-detail { display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden; color: var(--ink-760); font-size: 20px; font-weight: 850; white-space: nowrap; }
+        .arrival-detail .line.arrival-line { width: 32px; height: 32px; font-size: 17px; }
+        .arrival-detail .line.path.arrival-line { width: auto; min-width: 50px; height: 32px; font-size: 11px; }
         .arrival-destination { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .arrival-row.catchable .arrival-time strong,
         .arrival-row.catchable .arrival-detail,
         .arrival-row.catchable .arrival-due { color: var(--ink-900); font-weight: 950; }
-        .transit-updated { color: var(--ink-450); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .transit-updated { color: var(--ink-450); font-size: 14px; font-weight: 900; text-transform: uppercase; }
 
         @media (max-width: 920px) {
           :host { height: auto; min-height: 980px; }
