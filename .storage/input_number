@@ -33,6 +33,16 @@
         "step": 1.0,
         "unit_of_measurement": "%",
         "mode": "slider"
+      },
+      {
+        "id": "stage_uplights_fade",
+        "name": "Stage Uplights Fade",
+        "icon": "mdi:transition",
+        "min": 0.0,
+        "max": 10.0,
+        "step": 0.1,
+        "unit_of_measurement": "s",
+        "mode": "box"
       }
     ]
   }

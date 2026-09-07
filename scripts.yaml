@@ -1006,7 +1006,9 @@ open_area_lights_off:
   description: 'Turns off lights in the open-floor-plan meta-area: Kitchen, Foyer,
     Dining, Stage, and Living. Kitchen runs through script.kitchen_off so Hood Light
     behavior stays centralized; Stage Etc Off is the canonical Stage scene and supersedes
-    Stage Off.'
+    Stage Off. DMX stage uplights are zeroed via script.open_area_stage_extras, which
+    is the shared owner of the spotlight/holiday/uplight settings across every open-area
+    level.'
   icon: mdi:floor-plan
   sequence:
   - parallel:
@@ -1020,18 +1022,17 @@ open_area_lights_off:
         - scene.stage_etc_off
         - scene.living_room_off
       data: {}
-  - action: input_number.set_value
-    metadata: {}
-    target:
-      entity_id: input_number.stage_uplights_brightness
-    data:
-      value: 0
+    - action: script.open_area_stage_extras
+      data:
+        level: 'off'
   mode: single
 foyer_dashboard_open_area_everyday:
   alias: Foyer Dashboard Open Area Daytime
   description: Set Kitchen, Dining, and Foyer to daytime/normal lighting in parallel;
     Kitchen runs through its behavior script so the Hood Light follows, and Living
-    Room is included when the foyer dashboard helper is on.
+    Room is included when the foyer dashboard helper is on. Stage spotlights, holiday
+    lights, and DMX stage uplights run through script.open_area_stage_extras and are
+    applied regardless of the Living Room helper.
   icon: mdi:lightbulb-group
   mode: restart
   sequence:
@@ -1056,11 +1057,17 @@ foyer_dashboard_open_area_everyday:
         - action: scene.turn_on
           target:
             entity_id: scene.living_room_normal
+    - sequence:
+      - action: script.open_area_stage_extras
+        data:
+          level: daytime
 foyer_dashboard_open_area_off:
   alias: Foyer Dashboard Open Area Off
   description: Turn off Kitchen, Dining, and Foyer lighting in parallel; Kitchen runs
     through its behavior script so the Hood Light follows, and Living Room is included
-    when the foyer dashboard helper is on.
+    when the foyer dashboard helper is on. Stage spotlights, holiday lights, and DMX
+    stage uplights run through script.open_area_stage_extras and are turned off regardless
+    of the Living Room helper.
   icon: mdi:lightbulb-group-off
   mode: restart
   sequence:
@@ -1085,11 +1092,17 @@ foyer_dashboard_open_area_off:
         - action: scene.turn_on
           target:
             entity_id: scene.living_room_off
+    - sequence:
+      - action: script.open_area_stage_extras
+        data:
+          level: 'off'
 foyer_dashboard_open_area_mood:
   alias: Foyer Dashboard Open Area Mood
   description: Set Kitchen, Dining, and Foyer to mood lighting in parallel; Kitchen
     runs through its behavior script so the Hood Light follows, and Living Room is
-    included when the foyer dashboard helper is on.
+    included when the foyer dashboard helper is on. Stage spotlights, holiday lights,
+    and DMX stage uplights (Velvet Purple) run through script.open_area_stage_extras
+    and are applied regardless of the Living Room helper.
   icon: mdi:string-lights
   mode: restart
   sequence:
@@ -1114,6 +1127,10 @@ foyer_dashboard_open_area_mood:
         - action: scene.turn_on
           target:
             entity_id: scene.living_room_mood
+    - sequence:
+      - action: script.open_area_stage_extras
+        data:
+          level: mood
 kitchen_bright:
   alias: Kitchen Bright
   description: 'Kitchen button-1 behavior: activate Smart Bridge Kitchen Bright and
@@ -1172,7 +1189,9 @@ foyer_dashboard_open_area_bright:
   alias: Foyer Dashboard Open Area Bright
   description: Set Kitchen, Dining, and Foyer to bright lighting in parallel; Kitchen
     runs through its behavior script so the Hood Light follows, and Living Room is
-    included when the foyer dashboard helper is on.
+    included when the foyer dashboard helper is on. Stage spotlights, holiday lights,
+    and DMX stage uplights run through script.open_area_stage_extras and are applied
+    regardless of the Living Room helper.
   icon: mdi:brightness-7
   mode: restart
   sequence:
@@ -1197,10 +1216,16 @@ foyer_dashboard_open_area_bright:
         - action: scene.turn_on
           target:
             entity_id: scene.living_room_bright
+    - sequence:
+      - action: script.open_area_stage_extras
+        data:
+          level: bright
 foyer_dashboard_open_area_evening:
   alias: Foyer Dashboard Open Area Evening
   description: Set Kitchen, Dining, and optional Living Room to Evening Lutron scenes
     in parallel; Kitchen runs through its behavior script so the Hood Light follows.
+    Stage spotlights, holiday lights, and DMX stage uplights (Jazz Gold) run through
+    script.open_area_stage_extras and are applied regardless of the Living Room helper.
   icon: mdi:weather-sunset
   mode: restart
   sequence:
@@ -1225,6 +1250,10 @@ foyer_dashboard_open_area_evening:
         - action: scene.turn_on
           target:
             entity_id: scene.pantry_smart_bridge_living_room_evening
+    - sequence:
+      - action: script.open_area_stage_extras
+        data:
+          level: evening
 kitchen_evening:
   alias: Kitchen Evening
   description: 'Kitchen Evening behavior: activate Smart Bridge Kitchen Evening and
@@ -1259,3 +1288,88 @@ foyer_dashboard_open_area_on:
       - action: script.foyer_dashboard_open_area_evening
     default:
     - action: script.foyer_dashboard_open_area_everyday
+open_area_stage_extras:
+  alias: Open Area Stage Extras
+  description: 'Stage spotlights, holiday lights, and DMX stage uplights for the five
+    open-area lighting levels. Applied regardless of input_boolean.foyer_dashboard_include_living:
+    the Lutron living-room scenes only touch the spotlights in their Off variant,
+    and holiday/uplights should follow the global scene even when Living Room is excluded.
+    Holiday brightness deliberately mirrors what the Lutron living-room scenes already
+    set, so this stays idempotent when both run in the same parallel block. Spotlights
+    are always off here; concert/performance modes own them. Two timing knobs live
+    in the variables block, both scoped to these buttons only: open_area_lead_in_ms
+    holds the uplights back while the Lutron dimmers climb to striking voltage (the
+    SlimPARs visibly light at 1/255, so without it they win the race), and open_area_fade
+    is written to input_number.stage_uplights_fade for the apply automations to use
+    as the scene.apply transition, matching the Lutron ramp rate. Concert/stage-management
+    surfaces set their own fade (0 for instant cues) and skip this script entirely.'
+  icon: mdi:spotlight-beam
+  mode: restart
+  fields:
+    level:
+      name: Level
+      description: Open-area lighting level to apply.
+      required: true
+      example: evening
+      selector:
+        select:
+          options:
+          - bright
+          - daytime
+          - evening
+          - mood
+          - 'off'
+  sequence:
+  - variables:
+      holiday_brightness:
+        bright: 255
+        daytime: 255
+        evening: 173
+        mood: 117
+        'off': 0
+      uplight_preset:
+        bright: 'Off'
+        daytime: 'Off'
+        evening: Jazz Gold
+        mood: Velvet Purple
+        'off': 'Off'
+      uplight_brightness:
+        bright: 0
+        daytime: 0
+        evening: 67
+        mood: 45
+        'off': 0
+      open_area_fade: 1.5
+      open_area_lead_in_ms: 600
+  - parallel:
+    - alias: Spotlights off, holiday lights to level
+      action: scene.apply
+      data:
+        entities:
+          light.living_room_stage_spot_lights:
+            state: 'off'
+          light.living_room_holiday_lights:
+            state: '{{ ''on'' if holiday_brightness[level] > 0 else ''off'' }}'
+            brightness: '{{ holiday_brightness[level] }}'
+    - alias: Stage uplights lead-in, fade, preset, and brightness
+      sequence:
+      - alias: Let the Lutron dimmers reach striking voltage; the SlimPARs light at
+          1/255
+        delay:
+          milliseconds: '{{ open_area_lead_in_ms }}'
+      - alias: Slow ramp to match the Lutron dimmers; must be set before preset/brightness
+        action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: '{{ open_area_fade }}'
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.stage_uplights_preset
+        data:
+          option: '{{ uplight_preset[level] }}'
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_brightness
+        data:
+          value: '{{ uplight_brightness[level] }}'

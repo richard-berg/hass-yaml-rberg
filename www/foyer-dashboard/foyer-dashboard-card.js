@@ -498,8 +498,15 @@ class FoyerDashboardCard extends HTMLElement {
   }
 
   _syncLivingToIntensity() {
-    const livingScene = this._currentIntensity().livingScene;
-    if (livingScene) this._hass.callService("scene", "turn_on", { entity_id: livingScene });
+    // Re-run the whole intensity script, not just the living scene: the script also owns
+    // stage spotlights, holiday lights, and DMX uplights via script.open_area_stage_extras.
+    const intensity = this._currentIntensity();
+    const scriptId = intensity.script ? this._scriptId(intensity.script) : null;
+    if (scriptId) {
+      this._hass.callService("script", "turn_on", { entity_id: scriptId });
+      return;
+    }
+    if (intensity.livingScene) this._hass.callService("scene", "turn_on", { entity_id: intensity.livingScene });
   }
 
   _handleClick(event) {
@@ -518,8 +525,9 @@ class FoyerDashboardCard extends HTMLElement {
       this._press("living");
       const entityId = this._config.entities.includeLiving;
       const isOn = this._state(entityId)?.state === "on";
-      this._hass.callService("input_boolean", isOn ? "turn_off" : "turn_on", { entity_id: entityId });
-      if (!isOn) this._syncLivingToIntensity();
+      const toggled = this._hass.callService("input_boolean", isOn ? "turn_off" : "turn_on", { entity_id: entityId });
+      // Wait for the helper to land: the intensity script branches on it.
+      if (!isOn) Promise.resolve(toggled).then(() => this._syncLivingToIntensity());
       return;
     }
 
