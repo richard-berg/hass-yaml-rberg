@@ -77,6 +77,15 @@
           "Uptown/Queens/Bronx",
           "Downtown/Brooklyn"
         ]
+      },
+      {
+        "id": "open_area_lighting_period",
+        "name": "Open Area Lighting Period",
+        "icon": "mdi:theme-light-dark",
+        "options": [
+          "Daytime",
+          "Evening"
+        ]
       }
     ]
   }

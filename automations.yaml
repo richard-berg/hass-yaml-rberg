@@ -1576,30 +1576,17 @@
       transition: '{{ states(''input_number.stage_uplights_fade'') | float(0) }}'
   mode: restart
 - id: '1787375078127'
-  alias: Open Area Picos Bottom Double Click -> Lights Off
-  description: 'Bottom/off double-click on any 4-button Pico in the Kitchen, Dining,
-    Living, Foyer, and Stage open-floor-plan meta-area turns off all open-area lights.
-    Bathrooms, bedroom, and theater are intentionally separate.
-
-
-    Uses the richardberg/lutron_pico_scene_actions_7 blueprint, which measures the
-    double-click window from button RELEASE rather than press.
-
-
-    time_before_double_click is raised to 500ms (blueprint default is 300ms) because
-    these Picos are natively associated with lights in the Lutron app. Measured on
-    the Air Fryer Pico: press->release is 371ms on an associated Pico versus 162ms
-    on the unassociated bedroom Picos, because the bridge runs its own hold-to-dim
-    arbitration before reporting release. That 210ms comes out of the double-click
-    budget. A real double-click measured release->press2 of 310ms and missed the 300ms
-    window by 8ms. 500ms restores comfortable margin. Raising this costs nothing today
-    since button4_press_action is empty; if a short-press action is ever bound here
-    it will be delayed by up to 500ms.
-
-
-    Living Room Pico On Alli''s Desk (a112ee9fb703377cbc93993dcbdf61ef) is deliberately
-    NOT included: it is a PJ2-3BRL 3-button raise/lower, not a PJ2-4B 4-button scene
-    Pico, so it cannot be an input to this blueprint.'
+  alias: Open Area Picos Double Click Scenes
+  description: Double-click any included 4-button Pico to apply its intent across
+    the Open Area without changing native Smart Bridge single-click behavior. Button
+    1 applies Bright with Living Room; button 2 applies the sun-derived Daytime or
+    Evening level and includes Living Room only when an LR-only light is on; button
+    3 applies Mood with the same conditional Living Room rule; button 4 turns off
+    the entire Open Area including Living Room. LR-only means Allison desk, bookshelf,
+    floor lamp, main lights, painting, and walkway. Long presses remain unassigned.
+    Double-click detection is measured from release with a 500ms window for bridge-associated
+    Picos. The Living Room PJ2-3BRL raise/lower Pico is excluded because this blueprint
+    requires PJ2-4B devices.
   use_blueprint:
     input:
       button4_doubleclick_action:
@@ -1612,6 +1599,38 @@
       pico_6: dc309e52227cea159ee8df1cd7095033
       pico_7: f3d4e7bb9bf4801526b01ca7e0a90379
       time_before_double_click: 500
+      button1_doubleclick_action:
+      - action: script.foyer_dashboard_open_area_bright
+        data:
+          include_living: true
+      button2_doubleclick_action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_select.open_area_lighting_period
+            state: Evening
+          sequence:
+          - action: script.foyer_dashboard_open_area_evening
+            data:
+              include_living: '{{ expand([''light.living_room_allisons_desk_lamp'',
+                ''light.living_room_book_shelf'', ''light.living_room_floor_lamp'',
+                ''light.living_room_main_lights'', ''light.living_room_painting'',
+                ''light.living_room_walkway'']) | selectattr(''state'', ''eq'', ''on'')
+                | list | count > 0 }}'
+        default:
+        - action: script.foyer_dashboard_open_area_everyday
+          data:
+            include_living: '{{ expand([''light.living_room_allisons_desk_lamp'',
+              ''light.living_room_book_shelf'', ''light.living_room_floor_lamp'',
+              ''light.living_room_main_lights'', ''light.living_room_painting'', ''light.living_room_walkway''])
+              | selectattr(''state'', ''eq'', ''on'') | list | count > 0 }}'
+      button3_doubleclick_action:
+      - action: script.foyer_dashboard_open_area_mood
+        data:
+          include_living: '{{ expand([''light.living_room_allisons_desk_lamp'', ''light.living_room_book_shelf'',
+            ''light.living_room_floor_lamp'', ''light.living_room_main_lights'', ''light.living_room_painting'',
+            ''light.living_room_walkway'']) | selectattr(''state'', ''eq'', ''on'')
+            | list | count > 0 }}'
     path: richardberg/lutron_pico_scene_actions_7.yaml
 - id: '1787469198024'
   alias: Foyer Dashboard Sync Lighting Intensity
@@ -1795,4 +1814,40 @@
         endif -%}\n        {%- endfor -%}\n        {%- if check.ok -%}{%- set ns.option
         = option -%}{%- endif -%}\n      {%- endfor -%}\n    {%- endif -%}\n  {%-
         endif -%}\n{%- endfor -%}\n{{- ns.option -}}"
+  mode: restart
+- id: '1788796580434'
+  alias: Open Area Lighting Period from Sun
+  description: Maintain the shared Open Area Daytime/Evening period from local astronomical
+    sunrise and sunset. Daytime begins 30 minutes after sunrise and ends 30 minutes
+    before sunset; startup recalculates the period after downtime.
+  triggers:
+  - trigger: sun
+    event: sunrise
+    offset: 00:30:00
+  - trigger: sun
+    event: sunset
+    offset: -00:30:00
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: sun
+        after: sunrise
+        after_offset: 00:30:00
+        before: sunset
+        before_offset: -00:30:00
+      sequence:
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.open_area_lighting_period
+        data:
+          option: Daytime
+    default:
+    - action: input_select.select_option
+      target:
+        entity_id: input_select.open_area_lighting_period
+      data:
+        option: Evening
   mode: restart

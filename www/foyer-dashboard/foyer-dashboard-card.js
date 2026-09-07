@@ -26,6 +26,7 @@ const DEFAULT_CONFIG = {
     weather: "weather.forecast_home",
     includeLiving: "input_boolean.foyer_dashboard_include_living",
     lightingIntensity: "input_select.foyer_dashboard_lighting_intensity",
+    lightingPeriod: "input_select.open_area_lighting_period",
     transitDirection: "input_select.foyer_dashboard_transit_direction",
     richard: "person.richard_berg",
     allison: "person.allison_bishop",
@@ -611,9 +612,8 @@ class FoyerDashboardCard extends HTMLElement {
     return normalized;
   }
 
-  _onIntensityKey(date = new Date()) {
-    const hour = date.getHours();
-    return hour >= 17 || hour < 5 ? "evening" : "daytime";
+  _onIntensityKey() {
+    return this._normalizeIntensityKey(this._state(this._config.entities.lightingPeriod)?.state) === "evening" ? "evening" : "daytime";
   }
 
   _modeForKey(key) {
@@ -634,6 +634,10 @@ class FoyerDashboardCard extends HTMLElement {
 
   _currentIntensity() {
     return this._modeForKey(this._currentIntensityKey()) || { key: "custom", label: "Custom", level: 0, custom: true };
+  }
+
+  _includeLiving() {
+    return this._state(this._config.entities.includeLiving)?.state === "on";
   }
 
   _press(key) {
@@ -661,7 +665,7 @@ class FoyerDashboardCard extends HTMLElement {
     const intensity = this._currentIntensity();
     const scriptId = intensity.script ? this._scriptId(intensity.script) : null;
     if (scriptId) {
-      this._hass.callService("script", "turn_on", { entity_id: scriptId });
+      this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
       return;
     }
     if (intensity.livingScene) this._hass.callService("scene", "turn_on", { entity_id: intensity.livingScene });
@@ -741,7 +745,7 @@ class FoyerDashboardCard extends HTMLElement {
       const intensity = this._normalizeIntensityKey(target.dataset.intensity);
       this._press(`intensity-${intensity}`);
       this._setOptimisticIntensity(intensity);
-      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
+      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
       return;
     }
 
@@ -750,7 +754,7 @@ class FoyerDashboardCard extends HTMLElement {
       const scriptId = this._scriptId("on") || this._scriptId(intensity);
       this._press("power-on");
       this._setOptimisticIntensity(intensity);
-      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
+      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
       return;
     }
 

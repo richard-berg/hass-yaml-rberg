@@ -1035,11 +1035,10 @@ open_area_lights_off:
   mode: single
 foyer_dashboard_open_area_everyday:
   alias: Foyer Dashboard Open Area Daytime
-  description: Set Kitchen, Dining, and Foyer to daytime/normal lighting in parallel;
-    Kitchen runs through its behavior script so the Hood Light follows, and Living
-    Room is included when the foyer dashboard helper is on. Stage spotlights, holiday
-    lights, and DMX stage uplights run through script.open_area_stage_extras and are
-    applied regardless of the Living Room helper.
+  description: Set Kitchen, Dining, and Foyer to daytime lighting in parallel; Kitchen
+    runs through its behavior script so the Hood Light follows. The caller explicitly
+    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
+    uplights are always applied.
   icon: mdi:lightbulb-group
   mode: restart
   sequence:
@@ -1057,9 +1056,8 @@ foyer_dashboard_open_area_everyday:
           entity_id: scene.dining_normal
     - sequence:
       - if:
-        - condition: state
-          entity_id: input_boolean.foyer_dashboard_include_living
-          state: 'on'
+        - condition: template
+          value_template: '{{ include_living | default(false) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1068,6 +1066,13 @@ foyer_dashboard_open_area_everyday:
       - action: script.open_area_stage_extras
         data:
           level: daytime
+  fields:
+    include_living:
+      name: Include Living Room
+      description: Whether this invocation includes the Living Room scene.
+      required: false
+      selector:
+        boolean: {}
 foyer_dashboard_open_area_off:
   alias: Foyer Dashboard Open Area Off
   description: Turn off Kitchen, Dining, and Foyer lighting in parallel; Kitchen runs
@@ -1106,10 +1111,9 @@ foyer_dashboard_open_area_off:
 foyer_dashboard_open_area_mood:
   alias: Foyer Dashboard Open Area Mood
   description: Set Kitchen, Dining, and Foyer to mood lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows, and Living Room is
-    included when the foyer dashboard helper is on. Stage spotlights, holiday lights,
-    and DMX stage uplights (Velvet Purple) run through script.open_area_stage_extras
-    and are applied regardless of the Living Room helper.
+    runs through its behavior script so the Hood Light follows. The caller explicitly
+    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
+    uplights are always applied.
   icon: mdi:string-lights
   mode: restart
   sequence:
@@ -1127,9 +1131,8 @@ foyer_dashboard_open_area_mood:
           entity_id: scene.dining_mood
     - sequence:
       - if:
-        - condition: state
-          entity_id: input_boolean.foyer_dashboard_include_living
-          state: 'on'
+        - condition: template
+          value_template: '{{ include_living | default(false) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1138,6 +1141,13 @@ foyer_dashboard_open_area_mood:
       - action: script.open_area_stage_extras
         data:
           level: mood
+  fields:
+    include_living:
+      name: Include Living Room
+      description: Whether this invocation includes the Living Room scene.
+      required: false
+      selector:
+        boolean: {}
 kitchen_bright:
   alias: Kitchen Bright
   description: 'Kitchen button-1 behavior: activate Smart Bridge Kitchen Bright and
@@ -1195,10 +1205,9 @@ kitchen_off:
 foyer_dashboard_open_area_bright:
   alias: Foyer Dashboard Open Area Bright
   description: Set Kitchen, Dining, and Foyer to bright lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows, and Living Room is
-    included when the foyer dashboard helper is on. Stage spotlights, holiday lights,
-    and DMX stage uplights run through script.open_area_stage_extras and are applied
-    regardless of the Living Room helper.
+    runs through its behavior script so the Hood Light follows. The caller explicitly
+    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
+    uplights are always applied.
   icon: mdi:brightness-7
   mode: restart
   sequence:
@@ -1216,9 +1225,8 @@ foyer_dashboard_open_area_bright:
           entity_id: scene.dining_bright
     - sequence:
       - if:
-        - condition: state
-          entity_id: input_boolean.foyer_dashboard_include_living
-          state: 'on'
+        - condition: template
+          value_template: '{{ include_living | default(false) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1227,12 +1235,19 @@ foyer_dashboard_open_area_bright:
       - action: script.open_area_stage_extras
         data:
           level: bright
+  fields:
+    include_living:
+      name: Include Living Room
+      description: Whether this invocation includes the Living Room scene.
+      required: false
+      selector:
+        boolean: {}
 foyer_dashboard_open_area_evening:
   alias: Foyer Dashboard Open Area Evening
-  description: Set Kitchen, Dining, and optional Living Room to Evening Lutron scenes
-    in parallel; Kitchen runs through its behavior script so the Hood Light follows.
-    Stage spotlights, holiday lights, and DMX stage uplights (Jazz Gold) run through
-    script.open_area_stage_extras and are applied regardless of the Living Room helper.
+  description: Set Kitchen, Dining, and Foyer to evening lighting in parallel; Kitchen
+    runs through its behavior script so the Hood Light follows. The caller explicitly
+    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
+    uplights are always applied.
   icon: mdi:weather-sunset
   mode: restart
   sequence:
@@ -1250,9 +1265,8 @@ foyer_dashboard_open_area_evening:
           entity_id: scene.pantry_smart_bridge_dining_evening
     - sequence:
       - if:
-        - condition: state
-          entity_id: input_boolean.foyer_dashboard_include_living
-          state: 'on'
+        - condition: template
+          value_template: '{{ include_living | default(false) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1261,6 +1275,13 @@ foyer_dashboard_open_area_evening:
       - action: script.open_area_stage_extras
         data:
           level: evening
+  fields:
+    include_living:
+      name: Include Living Room
+      description: Whether this invocation includes the Living Room scene.
+      required: false
+      selector:
+        boolean: {}
 kitchen_evening:
   alias: Kitchen Evening
   description: 'Kitchen Evening behavior: activate Smart Bridge Kitchen Evening and
@@ -1277,24 +1298,31 @@ kitchen_evening:
         brightness: 10
 foyer_dashboard_open_area_on:
   alias: Foyer Dashboard Open Area On
-  description: Turn the open area on using Evening lighting from 5 PM through overnight,
-    otherwise Daytime lighting.
+  description: Turn the open area on using the shared sun-derived lighting period.
+    The caller explicitly controls Living Room inclusion.
   icon: mdi:lightbulb-on
   mode: restart
   sequence:
   - choose:
     - conditions:
-      - condition: time
-        after: '17:00:00'
+      - condition: state
+        entity_id: input_select.open_area_lighting_period
+        state: Evening
       sequence:
       - action: script.foyer_dashboard_open_area_evening
-    - conditions:
-      - condition: time
-        before: 05:00:00
-      sequence:
-      - action: script.foyer_dashboard_open_area_evening
+        data:
+          include_living: '{{ include_living | default(false) }}'
     default:
     - action: script.foyer_dashboard_open_area_everyday
+      data:
+        include_living: '{{ include_living | default(false) }}'
+  fields:
+    include_living:
+      name: Include Living Room
+      description: Whether this invocation includes the Living Room scene.
+      required: false
+      selector:
+        boolean: {}
 open_area_stage_extras:
   alias: Open Area Stage Extras
   description: 'Stage spotlights, holiday lights, and DMX stage uplights for the five
