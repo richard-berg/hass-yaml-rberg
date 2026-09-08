@@ -1,18 +1,6 @@
 const TRANSIT_UPTOWN = "Uptown/Queens/Bronx";
 const TRANSIT_DOWNTOWN = "Downtown/Brooklyn";
 const TRANSIT_ARRIVAL_SLOTS = ["next_arrival", "second_arrival", "third_arrival"];
-const ALL_LIGHTS_OFF_ENTITIES = [
-  "light.dining_room_beer_shelf", "light.dining_room_main_lights", "light.dining_room_pendant", "light.dining_room_piano_lamp",
-  "light.front_foyer_main_lights", "light.guest_bathroom_main_lights",
-  "light.kitchen_island_lights", "light.kitchen_island_toe_kick", "light.kitchen_main_lights", "light.kitchen_perimeter_toe_kick", "light.kitchen_under_cabinet",
-  "light.living_room_allisons_desk_lamp", "light.living_room_book_shelf", "light.living_room_floor_lamp", "light.living_room_holiday_lights", "light.living_room_main_lights", "light.living_room_painting", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights", "light.living_room_walkway",
-  "light.master_bathroom_commode", "light.master_bathroom_main_lights", "light.master_bathroom_shower_lights", "light.master_bathroom_shower_niche", "light.master_bathroom_vanity_lights", "light.master_bedroom_cove_lights",
-  "light.theater_clouds_front", "light.theater_clouds_rear", "light.theater_desk_lamp", "light.theater_downlight_front", "light.theater_downlight_rear", "light.theater_dresser_left", "light.theater_dresser_right",
-  "light.hood_light_light_0", "light.pendant",
-  "light.stage_uplight_1_red", "light.stage_uplight_1_green", "light.stage_uplight_1_blue", "light.stage_uplight_1_amber", "light.stage_uplight_1_white", "light.stage_uplight_1_uv",
-  "light.stage_uplight_2_red", "light.stage_uplight_2_green", "light.stage_uplight_2_blue", "light.stage_uplight_2_amber", "light.stage_uplight_2_white", "light.stage_uplight_2_uv"
-];
-
 const mtaSource = (line, prefix) => ({
   line,
   arrival_entities: TRANSIT_ARRIVAL_SLOTS.map((slot) => `${prefix}_${slot}`),
@@ -91,8 +79,8 @@ const DEFAULT_CONFIG = {
     }
   ],
   wholeHouseLighting: [
-    { key: "off", label: "Off", entity: "script.all_lights_off", level: 0, off: true, wide: true, expected: Object.fromEntries(ALL_LIGHTS_OFF_ENTITIES.map((entityId) => [entityId, "off"])), expectedStates: { "switch.guest_bath_vanity_switch": "off" } },
-    { key: "pathway", label: "Pathway to Shower", entity: "script.pathway_to_shower", emoji: "💩", wide: true, expected: { ...Object.fromEntries(ALL_LIGHTS_OFF_ENTITIES.map((entityId) => [entityId, "off"])), "light.master_bathroom_shower_lights": 76, "light.master_bathroom_shower_niche": 76, "light.theater_downlight_front": 12 }, expectedStates: { "switch.guest_bath_vanity_switch": "off" } }
+    { key: "off", label: "Off", entity: "script.all_lights_off", level: 0, off: true, wide: true },
+    { key: "pathway", label: "Pathway to Shower", entity: "script.pathway_to_shower", emoji: "💩", wide: true }
   ],
   transit: {
     staleAfterMinutes: 4,
@@ -588,11 +576,11 @@ class FoyerDashboardCard extends HTMLElement {
 
   _lightingModes() {
     return [
-      { key: "bright", label: "Bright", script: "bright", livingScene: "scene.living_room_bright", level: 4 },
-      { key: "daytime", label: "Daytime", script: "daytime", livingScene: "scene.living_room_normal", level: 3 },
-      { key: "evening", label: "Evening", script: "evening", livingScene: "scene.pantry_smart_bridge_living_room_evening", level: 2 },
-      { key: "mood", label: "Mood", script: "mood", livingScene: "scene.living_room_mood", level: 1 },
-      { key: "off", label: "Off", script: "off", livingScene: "scene.living_room_off", level: 0, off: true }
+      { key: "bright", label: "Bright", script: "bright", level: 4 },
+      { key: "daytime", label: "Daytime", script: "daytime", level: 3 },
+      { key: "evening", label: "Evening", script: "evening", level: 2 },
+      { key: "mood", label: "Mood", script: "mood", level: 1 },
+      { key: "off", label: "Off", script: "off", level: 0, off: true }
     ];
   }
 
@@ -640,19 +628,7 @@ class FoyerDashboardCard extends HTMLElement {
     return [kitchen, dining, living, stage];
   }
 
-  _matchesLightingPreset(preset) {
-    const lightsMatch = Object.entries(preset.expected || {}).every(([entityId, expected]) => {
-      const state = this._state(entityId);
-      if (!state) return false;
-      if (expected === "off") return state.state === "off";
-      return state.state === "on" && Math.abs(Number(state.attributes?.brightness) - expected) <= 1;
-    });
-    const statesMatch = Object.entries(preset.expectedStates || {}).every(([entityId, expected]) => this._state(entityId)?.state === expected);
-    return lightsMatch && statesMatch;
-  }
-
   _lightingPresetActive(area, preset) {
-    if (area.key === "whole-house") return this._matchesLightingPreset(preset);
     return this._state(`binary_sensor.${area.key}_${preset.key}_scene_active`)?.state === "on";
   }
 
@@ -691,10 +667,6 @@ class FoyerDashboardCard extends HTMLElement {
     return this._modeForKey(this._currentIntensityKey()) || { key: "custom", label: "Custom", level: 0, custom: true };
   }
 
-  _includeLiving() {
-    return this._state(this._config.entities.includeLiving)?.state === "on";
-  }
-
   _press(key) {
     this._pressedKey = key;
     if (this._pressedTimer) window.clearTimeout(this._pressedTimer);
@@ -712,18 +684,6 @@ class FoyerDashboardCard extends HTMLElement {
       this._optimisticIntensity = null;
       this._render();
     }, 2500);
-  }
-
-  _syncLivingToIntensity() {
-    // Re-run the whole intensity script, not just the living scene: the script also owns
-    // stage spotlights, holiday lights, and DMX uplights via script.open_area_stage_extras.
-    const intensity = this._currentIntensity();
-    const scriptId = intensity.script ? this._scriptId(intensity.script) : null;
-    if (scriptId) {
-      this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
-      return;
-    }
-    if (intensity.livingScene) this._hass.callService("scene", "turn_on", { entity_id: intensity.livingScene });
   }
 
   _handleLightPointerDown(event) {
@@ -812,10 +772,7 @@ class FoyerDashboardCard extends HTMLElement {
     if (action === "toggle-living") {
       this._press("living");
       const entityId = this._config.entities.includeLiving;
-      const isOn = this._state(entityId)?.state === "on";
-      const toggled = this._hass.callService("input_boolean", isOn ? "turn_off" : "turn_on", { entity_id: entityId });
-      // Wait for the helper to land: the intensity script branches on it.
-      if (!isOn) Promise.resolve(toggled).then(() => this._syncLivingToIntensity());
+      this._hass.callService("input_boolean", "toggle", { entity_id: entityId });
       return;
     }
 
@@ -824,7 +781,7 @@ class FoyerDashboardCard extends HTMLElement {
       const intensity = this._normalizeIntensityKey(target.dataset.intensity);
       this._press(`intensity-${intensity}`);
       this._setOptimisticIntensity(intensity);
-      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
+      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
       return;
     }
 
@@ -833,7 +790,7 @@ class FoyerDashboardCard extends HTMLElement {
       const scriptId = this._scriptId("on") || this._scriptId(intensity);
       this._press("power-on");
       this._setOptimisticIntensity(intensity);
-      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId, variables: { include_living: this._includeLiving() } });
+      if (scriptId) this._hass.callService("script", "turn_on", { entity_id: scriptId });
       return;
     }
 

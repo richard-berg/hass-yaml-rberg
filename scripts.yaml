@@ -1031,9 +1031,9 @@ open_area_lights_off:
 foyer_dashboard_open_area_everyday:
   alias: Foyer Dashboard Open Area Daytime
   description: Set Kitchen, Dining, and Foyer to daytime lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows. The caller explicitly
-    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
-    uplights are always applied.
+    runs through its behavior script so the Hood Light follows. Living Room inclusion
+    follows the dashboard helper unless a caller explicitly overrides it. Stage spotlights,
+    holiday lights, and DMX stage uplights are always applied.
   icon: mdi:lightbulb-group
   mode: restart
   sequence:
@@ -1052,7 +1052,8 @@ foyer_dashboard_open_area_everyday:
     - sequence:
       - if:
         - condition: template
-          value_template: '{{ include_living | default(false) }}'
+          value_template: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+            ''on'')) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1064,7 +1065,8 @@ foyer_dashboard_open_area_everyday:
   fields:
     include_living:
       name: Include Living Room
-      description: Whether this invocation includes the Living Room scene.
+      description: Optional Living Room override; when omitted, use the Foyer dashboard
+        helper.
       required: false
       selector:
         boolean: {}
@@ -1106,9 +1108,9 @@ foyer_dashboard_open_area_off:
 foyer_dashboard_open_area_mood:
   alias: Foyer Dashboard Open Area Mood
   description: Set Kitchen, Dining, and Foyer to mood lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows. The caller explicitly
-    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
-    uplights are always applied.
+    runs through its behavior script so the Hood Light follows. Living Room inclusion
+    follows the dashboard helper unless a caller explicitly overrides it. Stage spotlights,
+    holiday lights, and DMX stage uplights are always applied.
   icon: mdi:string-lights
   mode: restart
   sequence:
@@ -1127,7 +1129,8 @@ foyer_dashboard_open_area_mood:
     - sequence:
       - if:
         - condition: template
-          value_template: '{{ include_living | default(false) }}'
+          value_template: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+            ''on'')) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1139,7 +1142,8 @@ foyer_dashboard_open_area_mood:
   fields:
     include_living:
       name: Include Living Room
-      description: Whether this invocation includes the Living Room scene.
+      description: Optional Living Room override; when omitted, use the Foyer dashboard
+        helper.
       required: false
       selector:
         boolean: {}
@@ -1200,9 +1204,9 @@ kitchen_off:
 foyer_dashboard_open_area_bright:
   alias: Foyer Dashboard Open Area Bright
   description: Set Kitchen, Dining, and Foyer to bright lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows. The caller explicitly
-    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
-    uplights are always applied.
+    runs through its behavior script so the Hood Light follows. Living Room inclusion
+    follows the dashboard helper unless a caller explicitly overrides it. Stage spotlights,
+    holiday lights, and DMX stage uplights are always applied.
   icon: mdi:brightness-7
   mode: restart
   sequence:
@@ -1221,7 +1225,8 @@ foyer_dashboard_open_area_bright:
     - sequence:
       - if:
         - condition: template
-          value_template: '{{ include_living | default(false) }}'
+          value_template: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+            ''on'')) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1233,16 +1238,17 @@ foyer_dashboard_open_area_bright:
   fields:
     include_living:
       name: Include Living Room
-      description: Whether this invocation includes the Living Room scene.
+      description: Optional Living Room override; when omitted, use the Foyer dashboard
+        helper.
       required: false
       selector:
         boolean: {}
 foyer_dashboard_open_area_evening:
   alias: Foyer Dashboard Open Area Evening
   description: Set Kitchen, Dining, and Foyer to evening lighting in parallel; Kitchen
-    runs through its behavior script so the Hood Light follows. The caller explicitly
-    controls Living Room inclusion. Stage spotlights, holiday lights, and DMX stage
-    uplights are always applied.
+    runs through its behavior script so the Hood Light follows. Living Room inclusion
+    follows the dashboard helper unless a caller explicitly overrides it. Stage spotlights,
+    holiday lights, and DMX stage uplights are always applied.
   icon: mdi:weather-sunset
   mode: restart
   sequence:
@@ -1261,7 +1267,8 @@ foyer_dashboard_open_area_evening:
     - sequence:
       - if:
         - condition: template
-          value_template: '{{ include_living | default(false) }}'
+          value_template: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+            ''on'')) }}'
         then:
         - action: scene.turn_on
           target:
@@ -1273,7 +1280,8 @@ foyer_dashboard_open_area_evening:
   fields:
     include_living:
       name: Include Living Room
-      description: Whether this invocation includes the Living Room scene.
+      description: Optional Living Room override; when omitted, use the Foyer dashboard
+        helper.
       required: false
       selector:
         boolean: {}
@@ -1294,7 +1302,8 @@ kitchen_evening:
 foyer_dashboard_open_area_on:
   alias: Foyer Dashboard Open Area On
   description: Turn the open area on using the shared sun-derived lighting period.
-    The caller explicitly controls Living Room inclusion.
+    Living Room inclusion follows the dashboard helper unless a caller explicitly
+    overrides it.
   icon: mdi:lightbulb-on
   mode: restart
   sequence:
@@ -1306,15 +1315,18 @@ foyer_dashboard_open_area_on:
       sequence:
       - action: script.foyer_dashboard_open_area_evening
         data:
-          include_living: '{{ include_living | default(false) }}'
+          include_living: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+            ''on'')) }}'
     default:
     - action: script.foyer_dashboard_open_area_everyday
       data:
-        include_living: '{{ include_living | default(false) }}'
+        include_living: '{{ include_living | default(is_state(''input_boolean.foyer_dashboard_include_living'',
+          ''on'')) }}'
   fields:
     include_living:
       name: Include Living Room
-      description: Whether this invocation includes the Living Room scene.
+      description: Optional Living Room override; when omitted, use the Foyer dashboard
+        helper.
       required: false
       selector:
         boolean: {}

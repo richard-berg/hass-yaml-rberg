@@ -1961,3 +1961,47 @@
         data:
           option: '{{ target_period }}'
   mode: restart
+- id: '1788827293890'
+  alias: Foyer Dashboard Include Living Room
+  description: When the Foyer dashboard Living Room scope is enabled, extend the currently
+    recognized Open Area lighting level into the Living Room. Custom lighting is left
+    unchanged.
+  triggers:
+  - trigger: state
+    entity_id: input_boolean.foyer_dashboard_include_living
+    from: 'off'
+    to: 'on'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.foyer_dashboard_lighting_intensity
+        state: Bright
+      sequence:
+      - action: script.foyer_dashboard_open_area_bright
+    - conditions:
+      - condition: state
+        entity_id: input_select.foyer_dashboard_lighting_intensity
+        state: Daytime
+      sequence:
+      - action: script.foyer_dashboard_open_area_everyday
+    - conditions:
+      - condition: state
+        entity_id: input_select.foyer_dashboard_lighting_intensity
+        state: Evening
+      sequence:
+      - action: script.foyer_dashboard_open_area_evening
+    - conditions:
+      - condition: state
+        entity_id: input_select.foyer_dashboard_lighting_intensity
+        state: Mood
+      sequence:
+      - action: script.foyer_dashboard_open_area_mood
+    - conditions:
+      - condition: state
+        entity_id: input_select.foyer_dashboard_lighting_intensity
+        state: 'Off'
+      sequence:
+      - action: script.foyer_dashboard_open_area_off
+  mode: restart
