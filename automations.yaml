@@ -1864,3 +1864,100 @@
           - scene.master_bath_off
           - scene.bedroom_off
           - scene.theater_off
+- id: '1788825806319'
+  alias: Open Area Scenes Follow Lighting Period
+  description: When the Open Area lighting period crosses between Daytime and Evening,
+    switch each area only if that area's scene for the previous period was active.
+    Snapshot helper states before changing overlapping Dining, Living, and Stage lights.
+    Keep the dashboard intensity selector aligned only when it also matched the previous
+    period.
+  triggers:
+  - trigger: state
+    entity_id: input_select.open_area_lighting_period
+    from: Daytime
+    to: Evening
+    id: to_evening
+  - trigger: state
+    entity_id: input_select.open_area_lighting_period
+    from: Evening
+    to: Daytime
+    id: to_daytime
+  conditions: []
+  actions:
+  - variables:
+      source_period: '{{ ''daytime'' if trigger.id == ''to_evening'' else ''evening''
+        }}'
+      target_period: '{{ ''Evening'' if trigger.id == ''to_evening'' else ''Daytime''
+        }}'
+      kitchen_was_active: '{{ is_state(''binary_sensor.kitchen_'' ~ source_period
+        ~ ''_scene_active'', ''on'') }}'
+      dining_was_active: '{{ is_state(''binary_sensor.dining_'' ~ source_period ~
+        ''_scene_active'', ''on'') }}'
+      living_was_active: '{{ is_state(''binary_sensor.living_'' ~ source_period ~
+        ''_scene_active'', ''on'') }}'
+      stage_was_active: '{{ is_state(''binary_sensor.stage_'' ~ source_period ~ ''_scene_active'',
+        ''on'') }}'
+      global_was_active: '{{ is_state(''input_select.foyer_dashboard_lighting_intensity'',
+        source_period | title) }}'
+  - parallel:
+    - sequence:
+      - condition: template
+        value_template: '{{ kitchen_was_active }}'
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: to_evening
+          sequence:
+          - action: script.kitchen_evening
+        default:
+        - action: script.kitchen_normal
+    - sequence:
+      - condition: template
+        value_template: '{{ dining_was_active }}'
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: to_evening
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.pantry_smart_bridge_dining_evening
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.dining_normal
+    - sequence:
+      - condition: template
+        value_template: '{{ living_was_active }}'
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: to_evening
+          sequence:
+          - action: scene.turn_on
+            target:
+              entity_id: scene.pantry_smart_bridge_living_room_evening
+        default:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_normal
+    - sequence:
+      - condition: template
+        value_template: '{{ stage_was_active }}'
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: to_evening
+          sequence:
+          - action: script.stage_evening
+        default:
+        - action: script.stage_daytime
+    - sequence:
+      - condition: template
+        value_template: '{{ global_was_active }}'
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.foyer_dashboard_lighting_intensity
+        data:
+          option: '{{ target_period }}'
+  mode: restart

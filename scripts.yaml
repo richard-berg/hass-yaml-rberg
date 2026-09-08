@@ -1464,3 +1464,138 @@ notify_richard:
       message: '{{ message }}'
       title: '{{ title | default('''', true) }}'
       data: '{{ notification_data | default({}, true) }}'
+stage_daytime:
+  alias: Stage Daytime
+  description: Apply the Stage Daytime scene and its two-fixture DMX state in parallel.
+  icon: mdi:spotlight-beam
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.stage_normal
+    - sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: 1.5
+      - parallel:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.stage_uplights_preset
+          data:
+            option: 'Off'
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.stage_uplights_brightness
+          data:
+            value: 0
+stage_bright:
+  alias: Stage Bright
+  description: Apply the Stage Bright scene and zero both DMX fixtures in parallel.
+  icon: mdi:brightness-7
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.stage_bright
+    - sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: 1.5
+      - parallel:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.stage_uplights_preset
+          data:
+            option: 'Off'
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.stage_uplights_brightness
+          data:
+            value: 0
+stage_evening:
+  alias: Stage Evening
+  description: Apply the Stage Evening scene and Jazz Gold DMX state in parallel.
+  icon: mdi:weather-sunset
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.pantry_smart_bridge_stage_evening
+    - sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: 1.5
+      - parallel:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.stage_uplights_preset
+          data:
+            option: Jazz Gold
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.stage_uplights_brightness
+          data:
+            value: 67
+stage_mood:
+  alias: Stage Mood
+  description: Apply the Stage Mood scene and Velvet Purple DMX state in parallel.
+  icon: mdi:spotlight-beam
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.stage_mood
+    - sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: 1.5
+      - parallel:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.stage_uplights_preset
+          data:
+            option: Velvet Purple
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.stage_uplights_brightness
+          data:
+            value: 45
+stage_off:
+  alias: Stage Off
+  description: Apply the Stage Off scene and zero both DMX fixtures in parallel.
+  icon: mdi:lightbulb-group-off
+  mode: restart
+  sequence:
+  - parallel:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.stage_off
+    - sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.stage_uplights_fade
+        data:
+          value: 1.5
+      - parallel:
+        - action: input_select.select_option
+          target:
+            entity_id: input_select.stage_uplights_preset
+          data:
+            option: 'Off'
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.stage_uplights_brightness
+          data:
+            value: 0

@@ -600,41 +600,41 @@ class FoyerDashboardCard extends HTMLElement {
     const kitchen = {
       key: "kitchen", label: "Kitchen", members: ["light.front_foyer_main_lights", "light.kitchen_island_lights", "light.kitchen_island_toe_kick", "light.kitchen_main_lights", "light.kitchen_perimeter_toe_kick", "light.kitchen_under_cabinet", "light.hood_light_light_0"],
       presets: [
-        { key: "off", label: "Off", entity: "script.kitchen_off", level: 0, expected: { "light.front_foyer_main_lights": "off", "light.kitchen_island_lights": "off", "light.kitchen_island_toe_kick": "off", "light.kitchen_main_lights": "off", "light.kitchen_perimeter_toe_kick": "off", "light.kitchen_under_cabinet": "off", "light.hood_light_light_0": "off" } },
-        { key: "mood", label: "Mood", entity: "script.kitchen_mood", level: 1, expected: { "light.front_foyer_main_lights": "off", "light.kitchen_island_lights": "off", "light.kitchen_island_toe_kick": 38, "light.kitchen_main_lights": "off", "light.kitchen_perimeter_toe_kick": 38, "light.kitchen_under_cabinet": "off", "light.hood_light_light_0": "off" } },
-        { key: "evening", label: "Evening", entity: "script.kitchen_evening", level: 2, expected: { "light.front_foyer_main_lights": 12, "light.kitchen_island_lights": 66, "light.kitchen_island_toe_kick": 153, "light.kitchen_main_lights": 25, "light.kitchen_perimeter_toe_kick": 153, "light.kitchen_under_cabinet": 61, "light.hood_light_light_0": 26 } },
-        { key: "daytime", label: "Day", entity: "script.kitchen_normal", level: 3, expected: { "light.front_foyer_main_lights": 191, "light.kitchen_island_lights": 191, "light.kitchen_island_toe_kick": 165, "light.kitchen_main_lights": 127, "light.kitchen_perimeter_toe_kick": 165, "light.kitchen_under_cabinet": 102, "light.hood_light_light_0": 51 } },
-        { key: "bright", label: "Bright", entity: "script.kitchen_bright", level: 4, expected: { "light.front_foyer_main_lights": 255, "light.kitchen_island_lights": 255, "light.kitchen_island_toe_kick": 255, "light.kitchen_main_lights": 255, "light.kitchen_perimeter_toe_kick": 255, "light.kitchen_under_cabinet": 255, "light.hood_light_light_0": 255 } }
+        { key: "off", label: "Off", entity: "script.kitchen_off", level: 0 },
+        { key: "mood", label: "Mood", entity: "script.kitchen_mood", level: 1 },
+        { key: "evening", label: "Evening", entity: "script.kitchen_evening", level: 2 },
+        { key: "daytime", label: "Day", entity: "script.kitchen_normal", level: 3 },
+        { key: "bright", label: "Bright", entity: "script.kitchen_bright", level: 4 }
       ]
     };
     const dining = {
       key: "dining", label: "Dining", members: ["light.dining_room_beer_shelf", "light.dining_room_main_lights", "light.dining_room_pendant", "light.dining_room_piano_lamp", "light.living_room_stage_perimeter"],
       presets: [
-        { key: "off", label: "Off", entity: "scene.dining_off", level: 0, expected: { "light.dining_room_beer_shelf": "off", "light.dining_room_main_lights": "off", "light.dining_room_pendant": "off", "light.dining_room_piano_lamp": "off", "light.living_room_stage_perimeter": "off" } },
-        { key: "mood", label: "Mood", entity: "scene.dining_mood", level: 1, expected: { "light.dining_room_beer_shelf": 30, "light.dining_room_main_lights": "off", "light.dining_room_pendant": 12, "light.dining_room_piano_lamp": 43, "light.living_room_stage_perimeter": 114 } },
-        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_dining_evening", level: 2, expected: { "light.dining_room_beer_shelf": 153, "light.dining_room_main_lights": "off", "light.dining_room_pendant": 71, "light.dining_room_piano_lamp": 165, "light.living_room_stage_perimeter": 186 } },
-        { key: "daytime", label: "Day", entity: "scene.dining_normal", level: 3, expected: { "light.dining_room_beer_shelf": 119, "light.dining_room_main_lights": 25, "light.dining_room_pendant": 127, "light.dining_room_piano_lamp": 114, "light.living_room_stage_perimeter": 255 } },
-        { key: "bright", label: "Bright", entity: "scene.dining_bright", level: 4, expected: { "light.dining_room_beer_shelf": 255, "light.dining_room_main_lights": 255, "light.dining_room_pendant": 255, "light.dining_room_piano_lamp": 255, "light.living_room_stage_perimeter": 255 } }
+        { key: "off", label: "Off", entity: "scene.dining_off", level: 0 },
+        { key: "mood", label: "Mood", entity: "scene.dining_mood", level: 1 },
+        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_dining_evening", level: 2 },
+        { key: "daytime", label: "Day", entity: "scene.dining_normal", level: 3 },
+        { key: "bright", label: "Bright", entity: "scene.dining_bright", level: 4 }
       ]
     };
     const living = {
       key: "living", label: "Living", members: ["light.living_room_allisons_desk_lamp", "light.living_room_book_shelf", "light.living_room_floor_lamp", "light.living_room_holiday_lights", "light.living_room_main_lights", "light.living_room_painting", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights", "light.living_room_walkway"],
       presets: [
-        { key: "off", label: "Off", entity: "scene.living_room_off", level: 0, expected: { "light.living_room_allisons_desk_lamp": "off", "light.living_room_book_shelf": "off", "light.living_room_floor_lamp": "off", "light.living_room_holiday_lights": "off", "light.living_room_main_lights": "off", "light.living_room_painting": "off", "light.living_room_stage_perimeter": "off", "light.living_room_stage_spot_lights": "off", "light.living_room_walkway": "off" } },
-        { key: "mood", label: "Mood", entity: "scene.living_room_mood", level: 1, expected: { "light.living_room_allisons_desk_lamp": 51, "light.living_room_book_shelf": 25, "light.living_room_floor_lamp": 51, "light.living_room_holiday_lights": 117, "light.living_room_main_lights": "off", "light.living_room_painting": "off", "light.living_room_stage_perimeter": 114, "light.living_room_walkway": "off" } },
-        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_living_room_evening", level: 2, expected: { "light.living_room_allisons_desk_lamp": 127, "light.living_room_book_shelf": 102, "light.living_room_floor_lamp": 178, "light.living_room_holiday_lights": 173, "light.living_room_main_lights": "off", "light.living_room_painting": 76, "light.living_room_stage_perimeter": 186, "light.living_room_walkway": "off" } },
-        { key: "daytime", label: "Day", entity: "scene.living_room_normal", level: 3, expected: { "light.living_room_allisons_desk_lamp": 183, "light.living_room_book_shelf": 114, "light.living_room_floor_lamp": 204, "light.living_room_holiday_lights": 255, "light.living_room_main_lights": 38, "light.living_room_painting": 153, "light.living_room_stage_perimeter": 186, "light.living_room_walkway": 20 } },
-        { key: "bright", label: "Bright", entity: "scene.living_room_bright", level: 4, expected: { "light.living_room_allisons_desk_lamp": 255, "light.living_room_book_shelf": 255, "light.living_room_floor_lamp": 255, "light.living_room_holiday_lights": 255, "light.living_room_main_lights": 255, "light.living_room_painting": 255, "light.living_room_stage_perimeter": 255, "light.living_room_walkway": 255 } }
+        { key: "off", label: "Off", entity: "scene.living_room_off", level: 0 },
+        { key: "mood", label: "Mood", entity: "scene.living_room_mood", level: 1 },
+        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_living_room_evening", level: 2 },
+        { key: "daytime", label: "Day", entity: "scene.living_room_normal", level: 3 },
+        { key: "bright", label: "Bright", entity: "scene.living_room_bright", level: 4 }
       ]
     };
     const stage = {
-      key: "stage", label: "Stage", independent: true, members: ["light.dining_room_piano_lamp", "light.living_room_holiday_lights", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights"],
+      key: "stage", label: "Stage", members: ["light.dining_room_piano_lamp", "light.living_room_holiday_lights", "light.living_room_stage_perimeter", "light.living_room_stage_spot_lights"],
       presets: [
-        { key: "off", label: "Off", entity: "scene.stage_off", level: 0, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": "off", "light.living_room_holiday_lights": "off", "light.living_room_stage_perimeter": "off", "light.living_room_stage_spot_lights": "off" } },
-        { key: "mood", label: "Mood", entity: "scene.stage_mood", level: 1, dmxPreset: "Velvet Purple", dmxBrightness: 45, expected: { "light.dining_room_piano_lamp": 43, "light.living_room_holiday_lights": 117, "light.living_room_stage_perimeter": 114, "light.living_room_stage_spot_lights": "off" } },
-        { key: "evening", label: "Evening", entity: "scene.pantry_smart_bridge_stage_evening", level: 2, dmxPreset: "Jazz Gold", dmxBrightness: 67, expected: { "light.dining_room_piano_lamp": 165, "light.living_room_holiday_lights": 173, "light.living_room_stage_perimeter": 186, "light.living_room_stage_spot_lights": "off" } },
-        { key: "daytime", label: "Day", entity: "scene.stage_normal", level: 3, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": 127, "light.living_room_holiday_lights": 255, "light.living_room_stage_perimeter": 255, "light.living_room_stage_spot_lights": 122 } },
-        { key: "bright", label: "Bright", entity: "scene.stage_bright", level: 4, dmxPreset: "Off", dmxBrightness: 0, expected: { "light.dining_room_piano_lamp": 255, "light.living_room_holiday_lights": 255, "light.living_room_stage_perimeter": 255, "light.living_room_stage_spot_lights": 255 } }
+        { key: "off", label: "Off", entity: "script.stage_off", level: 0 },
+        { key: "mood", label: "Mood", entity: "script.stage_mood", level: 1 },
+        { key: "evening", label: "Evening", entity: "script.stage_evening", level: 2 },
+        { key: "daytime", label: "Day", entity: "script.stage_daytime", level: 3 },
+        { key: "bright", label: "Bright", entity: "script.stage_bright", level: 4 }
       ]
     };
     return [kitchen, dining, living, stage];
@@ -648,18 +648,12 @@ class FoyerDashboardCard extends HTMLElement {
       return state.state === "on" && Math.abs(Number(state.attributes?.brightness) - expected) <= 1;
     });
     const statesMatch = Object.entries(preset.expectedStates || {}).every(([entityId, expected]) => this._state(entityId)?.state === expected);
-    if (!lightsMatch || !statesMatch || !preset.dmxPreset) return lightsMatch && statesMatch;
-    return [1, 2].every((fixture) => this._state(`input_select.stage_uplight_${fixture}_preset`)?.state === preset.dmxPreset
-      && Math.abs(Number(this._state(`input_number.stage_uplight_${fixture}_brightness`)?.state) - preset.dmxBrightness) <= 0.5);
+    return lightsMatch && statesMatch;
   }
 
   _lightingPresetActive(area, preset) {
     if (area.key === "whole-house") return this._matchesLightingPreset(preset);
-    if (area.key === "kitchen") return this._matchesLightingPreset(preset);
-    if (area.key === "living" && this._state(this._config.entities.includeLiving)?.state !== "on") return this._matchesLightingPreset(preset);
-    const globalIntensity = this._currentIntensityKey();
-    if (!area.independent && globalIntensity !== "custom") return globalIntensity === preset.key;
-    return this._matchesLightingPreset(preset);
+    return this._state(`binary_sensor.${area.key}_${preset.key}_scene_active`)?.state === "on";
   }
 
   _intensities() {
@@ -862,12 +856,6 @@ class FoyerDashboardCard extends HTMLElement {
       if (!entityId || !["scene", "script"].includes(domain)) return;
       this._press(`lighting-${entityId}`);
       this._hass.callService(domain, "turn_on", { entity_id: entityId });
-      if (target.dataset.dmxPreset) {
-        Promise.resolve(this._hass.callService("input_number", "set_value", { entity_id: "input_number.stage_uplights_fade", value: 1.5 })).then(() => Promise.all([
-          this._hass.callService("input_select", "select_option", { entity_id: "input_select.stage_uplights_preset", option: target.dataset.dmxPreset }),
-          this._hass.callService("input_number", "set_value", { entity_id: "input_number.stage_uplights_brightness", value: Number(target.dataset.dmxBrightness) })
-        ]));
-      }
       return;
     }
 
@@ -1042,7 +1030,7 @@ class FoyerDashboardCard extends HTMLElement {
     const active = this._lightingPresetActive(area, preset);
     const description = `${area.label} ${preset.label}`;
     return `
-      <button class="lighting-preset ${preset.level === 0 ? "off" : ""} ${preset.wide ? "wide" : ""} ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="lighting-preset" data-entity="${this._escapeHtml(entity)}" data-dmx-preset="${this._escapeHtml(preset.dmxPreset || "")}" data-dmx-brightness="${preset.dmxBrightness ?? ""}" aria-label="${this._escapeHtml(description)}" aria-pressed="${active}" ${unavailable ? "disabled" : ""}>
+      <button class="lighting-preset ${preset.level === 0 ? "off" : ""} ${preset.wide ? "wide" : ""} ${active ? "active" : ""} ${pressed ? "is-pressed" : ""}" data-action="lighting-preset" data-entity="${this._escapeHtml(entity)}" aria-label="${this._escapeHtml(description)}" aria-pressed="${active}" ${unavailable ? "disabled" : ""}>
         ${preset.emoji ? `<span class="lighting-preset-emoji" aria-hidden="true">${this._escapeHtml(preset.emoji)}</span>` : preset.level === 0 ? this._renderBulbIcon(true) : `<span class="scene-level">${this._levelBars(preset.level).map((height) => `<i style="height: ${height}px;"></i>`).join("")}</span>`}
         <strong>${this._escapeHtml(preset.label)}</strong>
       </button>
