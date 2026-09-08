@@ -1509,14 +1509,14 @@ class FoyerDashboardCard extends HTMLElement {
             <div class="bottom-dock">
               <nav class="panel no-drill nav" aria-label="Dashboard tabs">
                 <div class="nav-items">
-                  <span class="control-chip nav-item active"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9H5v-9"></path></svg>Home</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Lists</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V6h16v14M9 20V9h6v11M4 12h5M15 12h5"></path></svg>Rooms</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 4.9L20 9l-4 3.9.9 5.6L12 15.9l-4.9 2.6.9-5.6L4 9l5.6-1.1L12 3Z"></path></svg>Show</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 8h4M18 16h4"></path></svg>Mixer</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"></path></svg>Energy</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7zM4 10h3M4 14h3M17 10h3M17 14h3M10 4v3M14 4v3M10 17v3M14 17v3"></path></svg>System</span>
-                  <span class="control-chip nav-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6ZM9 4v14M15 6v14"></path></svg>Map</span>
+                  <span class="control-chip nav-item active"><ha-icon icon="mdi:home" aria-hidden="true"></ha-icon>Home</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:format-list-bulleted" aria-hidden="true"></ha-icon>Lists</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:floor-plan" aria-hidden="true"></ha-icon>Rooms</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:star-outline" aria-hidden="true"></ha-icon>Show</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:tune-vertical" aria-hidden="true"></ha-icon>Mixer</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:lightning-bolt" aria-hidden="true"></ha-icon>Energy</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:chip" aria-hidden="true"></ha-icon>System</span>
+                  <span class="control-chip nav-item"><ha-icon icon="mdi:map" aria-hidden="true"></ha-icon>Map</span>
                 </div>
               </nav>
             </div>
@@ -1793,7 +1793,7 @@ class FoyerDashboardCard extends HTMLElement {
         .power-icon { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 999px; background: linear-gradient(145deg, #2d2923, #151310); color: #f1bd69; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 28px rgba(39, 31, 20, 0.18); }
         .power-icon.off { color: rgba(238, 229, 214, 0.78); }
         .power-icon svg { width: 44px; height: 44px; }
-        .power-icon svg, .volume-button svg, .nav-item svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .power-icon svg, .volume-button svg { stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .power-icon .slash { stroke-width: 2.5; }
         .scope-toggle { display: grid; grid-template-columns: auto minmax(0, max-content); place-content: center; align-items: center; align-self: stretch; column-gap: 7px; min-height: 0; padding: 10px 8px; border-radius: var(--radius-control); border-color: rgba(20, 19, 17, 0.14); background: linear-gradient(180deg, rgba(238, 229, 214, 0.92), rgba(203, 187, 164, 0.7)); color: var(--ink-900); font-size: var(--type-meta); font-weight: var(--weight-emphasis); white-space: normal; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 8px 16px rgba(43, 36, 24, 0.08); }
         .scope-toggle.on { border-color: rgba(185, 129, 53, 0.48); background: linear-gradient(180deg, #211e19, #3f3527); color: var(--stone-50); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 22px rgba(43, 36, 24, 0.14); }
@@ -1844,7 +1844,7 @@ class FoyerDashboardCard extends HTMLElement {
         .nav { flex: 1 1 auto; width: 100%; padding: 6px; }
         .nav-items { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; width: 100%; }
         .nav-item { min-width: 0; padding: 0 8px; color: var(--ink-600); font-size: var(--type-caption); }
-        .nav-item svg { width: 16px; height: 16px; }
+        .nav-item ha-icon { width: 16px; height: 16px; --mdc-icon-size: 16px; }
 
         .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 44px; background: rgba(20, 19, 17, 0.42); }
         .lightbox { display: grid; grid-template-rows: 1fr; width: min(1100px, calc(100vw - 72px)); min-height: min(575px, calc(100vh - 72px)); max-height: calc(100vh - 72px); border: 1px solid rgba(20, 19, 17, 0.18); border-radius: 12px; background: linear-gradient(145deg, rgba(255, 251, 243, 0.98), rgba(232, 222, 205, 0.96)); box-shadow: 0 30px 80px rgba(22, 20, 16, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); }
