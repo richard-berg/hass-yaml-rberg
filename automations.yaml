@@ -1864,6 +1864,7 @@
           - scene.master_bath_off
           - scene.bedroom_off
           - scene.theater_off
+      time_before_double_click: 500
 - id: '1788825806319'
   alias: Open Area Scenes Follow Lighting Period
   description: When the Open Area lighting period crosses between Daytime and Evening,
