@@ -507,6 +507,13 @@
         "domain": "hacs",
         "is_persistent": false,
         "issue_id": "restart_required_784997417_tags/v2.3.1"
+      },
+      {
+        "created": "2026-10-20T09:21:25.667223+00:00",
+        "dismissed_version": null,
+        "domain": "homeassistant",
+        "is_persistent": false,
+        "issue_id": "config_entry_reauth_honeywell_01JYAQ75C0CEWB8C18DDN51BCW"
       }
     ]
   }
