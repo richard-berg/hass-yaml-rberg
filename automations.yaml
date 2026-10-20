@@ -1340,8 +1340,8 @@
   mode: single
 - id: '1785125142066'
   alias: Stage Uplights — master preset fan-out
-  description: When the master preset changes, apply it to both fixture presets. Fixtures
-    can then be independently overridden.
+  description: When the master preset changes, apply it to all three fixture presets.
+    Fixtures can then be independently overridden.
   triggers:
   - trigger: state
     entity_id:
@@ -1353,12 +1353,13 @@
       entity_id:
       - input_select.stage_uplight_1_preset
       - input_select.stage_uplight_2_preset
+      - input_select.stage_uplight_3_preset
     data:
       option: '{{ trigger.to_state.state }}'
   mode: restart
 - id: '1785125142070'
   alias: Stage Uplights — master brightness fan-out
-  description: When the master brightness changes, apply it to both fixture brightness
+  description: When the master brightness changes, apply it to all three fixture brightness
     sliders. Fixtures can then be independently overridden.
   triggers:
   - trigger: state
@@ -1371,6 +1372,7 @@
       entity_id:
       - input_number.stage_uplight_1_brightness
       - input_number.stage_uplight_2_brightness
+      - input_number.stage_uplight_3_brightness
     data:
       value: '{{ trigger.to_state.state | float }}'
   mode: restart
@@ -1637,13 +1639,13 @@
     them regardless of input_boolean.foyer_dashboard_include_living. Stage perimeter
     is the one entity that differs between variants at Daytime, where scene.dining_normal
     sets 255 but scene.living_room_normal overrides to 186. Stage uplights are matched
-    on the four per-fixture helpers rather than the twelve DMX channel entities: the
-    channels are derived from preset x brightness, so matching them would mean duplicating
-    the preset recipes here. A level matches only if BOTH the uplight helpers and
-    the Lutron lights agree, so dragging the uplight brightness or changing the preset
-    drops the dashboard to Custom the same way a Lutron dimmer change does. Editing
-    light.stage_uplight_* channels directly is not detected, but the apply automations
-    overwrite those on the next helper change anyway.'
+    on the six per-fixture helpers rather than the eighteen DMX channel entities:
+    the channels are derived from preset x brightness, so matching them would mean
+    duplicating the preset recipes here. A level matches only if BOTH the uplight
+    helpers and the Lutron lights agree, so dragging the uplight brightness or changing
+    the preset drops the dashboard to Custom the same way a Lutron dimmer change does.
+    Editing light.stage_uplight_* channels directly is not detected, but the apply
+    automations overwrite those on the next helper change anyway.'
   triggers:
   - trigger: state
     entity_id:
@@ -1696,6 +1698,8 @@
     - input_select.stage_uplight_2_preset
     - input_number.stage_uplight_1_brightness
     - input_number.stage_uplight_2_brightness
+    - input_select.stage_uplight_3_preset
+    - input_number.stage_uplight_3_brightness
     id: stage_uplight_helper
   actions:
   - delay:
@@ -1795,7 +1799,7 @@
         \ 'Off': {'preset': 'Off', 'brightness': 0}\n} -%}\n{%- set ns = namespace(option='Custom')
         -%}\n{%- for option, definitions in variants.items() -%}\n  {%- if ns.option
         == 'Custom' -%}\n    {%- set up = uplights[option] -%}\n    {%- set uplight_check
-        = namespace(ok=true) -%}\n    {%- for fixture in ['1', '2'] -%}\n      {%-
+        = namespace(ok=true) -%}\n    {%- for fixture in ['1', '2', '3'] -%}\n      {%-
         if not is_state('input_select.stage_uplight_' ~ fixture ~ '_preset', up.preset)
         -%}{%- set uplight_check.ok = false -%}{%- endif -%}\n      {%- if states('input_number.stage_uplight_'
         ~ fixture ~ '_brightness') | float(-1) != up.brightness -%}{%- set uplight_check.ok
@@ -2005,4 +2009,102 @@
         state: 'Off'
       sequence:
       - action: script.foyer_dashboard_open_area_off
+  mode: restart
+- id: '1792488194841'
+  alias: Stage Uplight 3 — apply preset & brightness
+  description: 'Reads input_select.stage_uplight_3_preset + input_number.stage_uplight_3_brightness
+    and writes the 6 DMX channels (13-18). Preset recipes match uplights 1 and 2;
+    brightness scales them uniformly. Fade duration comes from input_number.stage_uplights_fade,
+    which callers set BEFORE changing preset/brightness: it is part of the look being
+    applied, not a fixed property of the fixtures. Open Area scene buttons set 1.5s
+    to match the Lutron dimmer ramp; concert/stage-management surfaces should set
+    0 for instant cues. Defaults to 0 (snap) when unset.'
+  triggers:
+  - entity_id:
+    - input_select.stage_uplight_3_preset
+    - input_number.stage_uplight_3_brightness
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - variables:
+      presets:
+        Jazz Gold:
+          r: 210
+          g: 95
+          b: 0
+          a: 255
+          w: 25
+          uv: 0
+        Midnight Blue:
+          r: 0
+          g: 0
+          b: 255
+          a: 0
+          w: 0
+          uv: 90
+        Velvet Purple:
+          r: 170
+          g: 0
+          b: 220
+          a: 0
+          w: 0
+          uv: 110
+        Slow Burn:
+          r: 255
+          g: 0
+          b: 0
+          a: 130
+          w: 0
+          uv: 0
+        Cool Jazz:
+          r: 0
+          g: 110
+          b: 200
+          a: 0
+          w: 25
+          uv: 0
+        Intermission:
+          r: 60
+          g: 25
+          b: 0
+          a: 200
+          w: 255
+          uv: 0
+        'Off':
+          r: 0
+          g: 0
+          b: 0
+          a: 0
+          w: 0
+          uv: 0
+      preset_name: '{{ states(''input_select.stage_uplight_3_preset'') }}'
+      brightness_pct: '{{ states(''input_number.stage_uplight_3_brightness'') | float(0)
+        }}'
+      mix: '{{ presets.get(preset_name, presets[''Off'']) }}'
+      scale: '{{ brightness_pct / 100 }}'
+  - action: scene.apply
+    data:
+      entities:
+        light.stage_uplight_3_red:
+          brightness: '{{ (mix.r * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.r * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_3_green:
+          brightness: '{{ (mix.g * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.g * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_3_blue:
+          brightness: '{{ (mix.b * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.b * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_3_amber:
+          brightness: '{{ (mix.a * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.a * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_3_white:
+          brightness: '{{ (mix.w * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.w * scale) | round(0) | int > 0 else ''off'' }}'
+        light.stage_uplight_3_uv:
+          brightness: '{{ (mix.uv * scale) | round(0) | int }}'
+          state: '{{ ''on'' if (mix.uv * scale) | round(0) | int > 0 else ''off''
+            }}'
+      transition: '{{ states(''input_number.stage_uplights_fade'') | float(0) }}'
   mode: restart

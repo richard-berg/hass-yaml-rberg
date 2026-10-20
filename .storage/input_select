@@ -86,6 +86,20 @@
           "Daytime",
           "Evening"
         ]
+      },
+      {
+        "id": "stage_uplight_3_preset",
+        "name": "Stage Uplight 3 Preset",
+        "icon": "mdi:palette-outline",
+        "options": [
+          "Jazz Gold",
+          "Midnight Blue",
+          "Velvet Purple",
+          "Slow Burn",
+          "Cool Jazz",
+          "Intermission",
+          "Off"
+        ]
       }
     ]
   }

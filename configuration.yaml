@@ -254,7 +254,7 @@ switch:
     payload_off: 2
 
 
-# ha-artnet-led configuration for two Chauvet SlimPAR H6 USB uplights
+# ha-artnet-led configuration for three Chauvet SlimPAR H6 USB uplights
 # Running in 6-channel mode via sACN (E1.31)
 # Add this block to your Home Assistant configuration.yaml
 #
@@ -282,7 +282,7 @@ switch:
 #   - No hardware dimmer speed channel. Fading between scenes is done
 #     via ha-artnet-led's transition parameter (seconds) on service
 #     calls, e.g.: light.turn_on with transition: 3
-#   - Fixture 1 starts at d001, Fixture 2 at d007.
+#   - Fixture 1 starts at d001, Fixture 2 at d007, Fixture 3 at d013
 
 light:
   - platform: artnet_led
@@ -330,4 +330,24 @@ light:
             type: dimmer
           - channel: 12
             name: stage_uplight_2_uv
+            type: dimmer
+
+          # ── Stage Uplight 3 — DMX d013–d018 ──
+          - channel: 13
+            name: stage_uplight_3_red
+            type: dimmer
+          - channel: 14
+            name: stage_uplight_3_green
+            type: dimmer
+          - channel: 15
+            name: stage_uplight_3_blue
+            type: dimmer
+          - channel: 16
+            name: stage_uplight_3_amber
+            type: dimmer
+          - channel: 17
+            name: stage_uplight_3_white
+            type: dimmer
+          - channel: 18
+            name: stage_uplight_3_uv
             type: dimmer
