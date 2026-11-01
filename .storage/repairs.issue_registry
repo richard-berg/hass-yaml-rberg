@@ -509,11 +509,32 @@
         "issue_id": "restart_required_784997417_tags/v2.3.1"
       },
       {
-        "created": "2026-10-20T09:21:25.667223+00:00",
+        "created": "2026-10-24T11:15:56.030928+00:00",
         "dismissed_version": null,
-        "domain": "homeassistant",
+        "domain": "hacs",
         "is_persistent": false,
-        "issue_id": "config_entry_reauth_honeywell_01JYAQ75C0CEWB8C18DDN51BCW"
+        "issue_id": "restart_required_194140521_tags/v3.4.0"
+      },
+      {
+        "created": "2026-10-31T17:25:35.958117+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_668937922_tags/3.0.2"
+      },
+      {
+        "created": "2026-10-31T17:25:35.977635+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_194140521_tags/v3.4.1"
+      },
+      {
+        "created": "2026-10-31T17:25:36.617100+00:00",
+        "dismissed_version": null,
+        "domain": "hacs",
+        "is_persistent": false,
+        "issue_id": "restart_required_1289599380_tags/v9.0.0"
       }
     ]
   }
